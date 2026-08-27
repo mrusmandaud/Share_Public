@@ -1,0 +1,115 @@
+if (_requestCode == 1001) {
+
+    if (_resultCode != Activity.RESULT_OK ||
+        _data == null ||
+        _data.getData() == null) {
+
+        SketchwareUtil.showMessage(
+            getApplicationContext(),
+            "Save cancelled"
+        );
+
+        return;
+    }
+
+    android.net.Uri uri = _data.getData();
+
+    android.content.SharedPreferences prefs =
+        getSharedPreferences(
+            "ExportData",
+            MODE_PRIVATE
+        );
+
+    String exportText =
+        prefs.getString(
+            "pending_export_text",
+            ""
+        );
+
+    int exportNumber =
+        prefs.getInt(
+            "pending_export_number",
+            1
+        );
+
+    if (exportText == null ||
+        exportText.trim().equals("")) {
+
+        SketchwareUtil.showMessage(
+            getApplicationContext(),
+            "Export data is empty"
+        );
+
+        return;
+    }
+
+    java.io.OutputStream output = null;
+
+    try {
+
+        output =
+            getContentResolver()
+                .openOutputStream(uri);
+
+        if (output == null) {
+
+            SketchwareUtil.showMessage(
+                getApplicationContext(),
+                "Unable to save file"
+            );
+
+            return;
+        }
+
+        output.write(
+            exportText.getBytes("UTF-8")
+        );
+
+        output.flush();
+        output.close();
+        output = null;
+
+        prefs.edit()
+            .putInt(
+                "next_export_number",
+                exportNumber + 1
+            )
+            .remove(
+                "pending_export_text"
+            )
+            .remove(
+                "pending_export_number"
+            )
+            .remove(
+                "pending_export_filename"
+            )
+            .apply();
+
+        SketchwareUtil.showMessage(
+            getApplicationContext(),
+            "File saved successfully"
+        );
+
+    } catch (Exception e) {
+
+        try {
+
+            if (output != null) {
+                output.close();
+            }
+
+        } catch (Exception ignored) {
+        }
+
+        SketchwareUtil.showMessage(
+            getApplicationContext(),
+            "Unable to save file"
+        );
+    }
+}
+
+switch (_requestCode) {
+
+    default:
+        break;
+}

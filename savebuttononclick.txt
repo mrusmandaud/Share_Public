@@ -1,0 +1,95 @@
+if (!binding.checkbox1.isChecked()) {
+
+    SketchwareUtil.showMessage(
+        getApplicationContext(),
+        "Please confirm and save"
+    );
+
+    return;
+}
+
+
+String name =
+    binding.nameInput
+        .getText()
+        .toString()
+        .trim();
+
+
+String phone =
+    binding.phoneInput
+        .getText()
+        .toString()
+        .trim();
+
+
+String product =
+    binding.productInput
+        .getText()
+        .toString()
+        .trim();
+
+
+if (
+    name.equals("") ||
+    phone.equals("") ||
+    product.equals("")
+) {
+
+    SketchwareUtil.showMessage(
+        getApplicationContext(),
+        "Fill Name, Phone and Product"
+    );
+
+    return;
+}
+
+
+String record =
+    name +
+    " | " +
+    phone +
+    " | " +
+    product +
+    "\n";
+
+
+try {
+
+    FileOutputStream fos =
+        openFileOutput(
+            "saverecords.txt",
+            MODE_APPEND
+        );
+
+
+    fos.write(
+        record.getBytes("UTF-8")
+    );
+
+
+    fos.close();
+
+
+    binding.nameInput.setText("");
+
+    binding.phoneInput.setText("");
+
+    binding.productInput.setText("");
+
+    binding.checkbox1.setChecked(false);
+
+
+    SketchwareUtil.showMessage(
+        getApplicationContext(),
+        "Saved"
+    );
+
+
+} catch (Exception e) {
+
+    SketchwareUtil.showMessage(
+        getApplicationContext(),
+        "Save error"
+    );
+}

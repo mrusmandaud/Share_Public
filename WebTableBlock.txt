@@ -1,0 +1,29 @@
+android.webkit.WebView tableView =
+    new android.webkit.WebView(
+        SaverecordsActivity.this
+    );
+
+tableView.setBackgroundColor(Color.WHITE);
+
+tableView.setLongClickable(true);
+
+tableView.getSettings().setJavaScriptEnabled(true);
+
+tableView.setHorizontalScrollBarEnabled(false);
+
+tableView.setOverScrollMode(
+    View.OVER_SCROLL_NEVER
+);
+
+tableView.setLayoutParams(
+    new LinearLayout.LayoutParams(
+        -1,
+        -1
+    )
+);
+
+binding.recordsContainer.removeAllViews();
+
+binding.recordsContainer.addView(
+    tableView
+);

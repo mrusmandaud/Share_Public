@@ -1,0 +1,56 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="260dp"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="6dp"
+	android:background="#FFFFFF">
+	<Button
+		android:id="@+id/copyButton"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:background="#FFFFFF"
+		android:gravity="center_vertical"
+		android:text="Copy"
+		android:textSize="15sp"
+		android:textColor="#000000" />
+	<Button
+		android:id="@+id/shareButton"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:background="#FFFFFF"
+		android:gravity="center_vertical"
+		android:text="Share"
+		android:textSize="15sp"
+		android:textColor="#000000" />
+	<Button
+		android:id="@+id/ExportButton"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:background="#FFFFFF"
+		android:gravity="center_vertical"
+		android:text="Export"
+		android:textSize="15sp"
+		android:textColor="#000000" />
+	<Button
+		android:id="@+id/selectAllButton"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:background="#FFFFFF"
+		android:gravity="center_vertical"
+		android:text="Select All"
+		android:textSize="15sp"
+		android:textColor="#000000" />
+	<Button
+		android:id="@+id/deselectAllButton"
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:background="#FFFFFF"
+		android:gravity="center_vertical"
+		android:text="Deselect All"
+		android:textSize="15sp"
+		android:textColor="#000000" />
+</LinearLayout>
+

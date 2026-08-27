@@ -1,0 +1,657 @@
+// ==========================================================
+    // BUTTONS
+    // Back + Copy + Share + Export + Select All + Deselect All
+    // ==========================================================
+
+
+    // ==========================================================
+    // BACK BUTTON
+    // ==========================================================
+
+    binding.backButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                finish();
+            }
+        }
+    );
+
+
+    // ==========================================================
+    // GET POPUP DATA
+    // ==========================================================
+
+    final Object tag =
+        binding.recordsContainer.getTag();
+
+
+    // Popup does not exist when Activity starts.
+    // Therefore, stop here until Popup() creates it.
+
+    if (!(tag instanceof Object[])) {
+        return;
+    }
+
+
+    final Object[] popupData =
+        (Object[]) tag;
+
+
+    if (popupData.length < 3) {
+        return;
+    }
+
+
+    final android.webkit.WebView tableView =
+        (android.webkit.WebView) popupData[0];
+
+
+    final android.view.View popupView =
+        (android.view.View) popupData[1];
+
+
+    final android.widget.PopupWindow popupWindow =
+        (android.widget.PopupWindow) popupData[2];
+
+
+    if (tableView == null ||
+        popupView == null ||
+        popupWindow == null) {
+
+        return;
+    }
+
+
+    // ==========================================================
+    // COPY BUTTON
+    // ==========================================================
+
+    android.view.View copyButton =
+        popupView.findViewById(
+            R.id.copyButton
+        );
+
+
+    if (copyButton != null) {
+
+        copyButton.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                    android.view.View v
+                ) {
+
+                    tableView.evaluateJavascript(
+
+                        "(function(){"
+                        + "var cells=document.querySelectorAll('tbody td.data');"
+                        + "var selected=[];"
+                        + "for(var i=0;i<cells.length;i++){"
+                        + "var bg=getComputedStyle(cells[i]).backgroundColor;"
+                        + "if(bg==='rgb(33, 150, 243)'||"
+                        + "bg==='rgba(33, 150, 243, 1)'){"
+                        + "selected.push(cells[i].innerText);"
+                        + "}"
+                        + "}"
+                        + "return JSON.stringify(selected);"
+                        + "})()",
+
+                        new android.webkit.ValueCallback<String>() {
+
+                            @Override
+                            public void onReceiveValue(
+                                String value
+                            ) {
+
+                                try {
+
+                                    Object decoded =
+                                        new org.json.JSONTokener(
+                                            value
+                                        ).nextValue();
+
+
+                                    if (!(decoded instanceof String)) {
+
+                                        SketchwareUtil.showMessage(
+                                            getApplicationContext(),
+                                            "Copy failed"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    org.json.JSONArray array =
+                                        new org.json.JSONArray(
+                                            decoded.toString()
+                                        );
+
+
+                                    if (array.length() == 0) {
+
+                                        SketchwareUtil.showMessage(
+                                            getApplicationContext(),
+                                            "Nothing selected"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    StringBuilder text =
+                                        new StringBuilder();
+
+
+                                    for (
+                                        int i = 0;
+                                        i < array.length();
+                                        i++
+                                    ) {
+
+                                        if (i > 0) {
+                                            text.append("\t");
+                                        }
+
+                                        text.append(
+                                            array.getString(i)
+                                        );
+                                    }
+
+
+                                    android.content.ClipboardManager clipboard =
+                                        (android.content.ClipboardManager)
+                                        getSystemService(
+                                            CLIPBOARD_SERVICE
+                                        );
+
+
+                                    clipboard.setPrimaryClip(
+                                        android.content.ClipData.newPlainText(
+                                            "Selected Records",
+                                            text.toString()
+                                        )
+                                    );
+
+
+                                    SketchwareUtil.showMessage(
+                                        getApplicationContext(),
+                                        "Copied"
+                                    );
+
+
+                                } catch (Exception e) {
+
+                                    SketchwareUtil.showMessage(
+                                        getApplicationContext(),
+                                        "Copy failed"
+                                    );
+                                }
+                            }
+                        }
+                    );
+
+
+                    popupWindow.dismiss();
+                }
+            }
+        );
+    }
+
+
+    // ==========================================================
+    // SHARE BUTTON
+    // ==========================================================
+
+    android.view.View shareButton =
+        popupView.findViewById(
+            R.id.shareButton
+        );
+
+
+    if (shareButton != null) {
+
+        shareButton.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                    android.view.View v
+                ) {
+
+                    tableView.evaluateJavascript(
+
+                        "(function(){"
+                        + "var cells=document.querySelectorAll('tbody td.data');"
+                        + "var selected=[];"
+                        + "for(var i=0;i<cells.length;i++){"
+                        + "var bg=getComputedStyle(cells[i]).backgroundColor;"
+                        + "if(bg==='rgb(33, 150, 243)'||"
+                        + "bg==='rgba(33, 150, 243, 1)'){"
+                        + "selected.push(cells[i].innerText);"
+                        + "}"
+                        + "}"
+                        + "return JSON.stringify(selected);"
+                        + "})()",
+
+                        new android.webkit.ValueCallback<String>() {
+
+                            @Override
+                            public void onReceiveValue(
+                                String value
+                            ) {
+
+                                try {
+
+                                    Object decoded =
+                                        new org.json.JSONTokener(
+                                            value
+                                        ).nextValue();
+
+
+                                    if (!(decoded instanceof String)) {
+
+                                        SketchwareUtil.showMessage(
+                                            getApplicationContext(),
+                                            "Share failed"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    org.json.JSONArray array =
+                                        new org.json.JSONArray(
+                                            decoded.toString()
+                                        );
+
+
+                                    if (array.length() == 0) {
+
+                                        SketchwareUtil.showMessage(
+                                            getApplicationContext(),
+                                            "Nothing selected"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    StringBuilder text =
+                                        new StringBuilder();
+
+
+                                    for (
+                                        int i = 0;
+                                        i < array.length();
+                                        i++
+                                    ) {
+
+                                        if (i > 0) {
+                                            text.append("\t");
+                                        }
+
+                                        text.append(
+                                            array.getString(i)
+                                        );
+                                    }
+
+
+                                    android.content.Intent shareIntent =
+                                        new android.content.Intent(
+                                            android.content.Intent.ACTION_SEND
+                                        );
+
+
+                                    shareIntent.setType(
+                                        "text/plain"
+                                    );
+
+
+                                    shareIntent.putExtra(
+                                        android.content.Intent.EXTRA_TEXT,
+                                        text.toString()
+                                    );
+
+
+                                    startActivity(
+                                        android.content.Intent.createChooser(
+                                            shareIntent,
+                                            "Share Records"
+                                        )
+                                    );
+
+
+                                } catch (Exception e) {
+
+                                    SketchwareUtil.showMessage(
+                                        getApplicationContext(),
+                                        "Share failed"
+                                    );
+                                }
+                            }
+                        }
+                    );
+
+
+                    popupWindow.dismiss();
+                }
+            }
+        );
+    }
+
+
+    // ==========================================================
+    // EXPORT BUTTON
+    // ==========================================================
+
+    android.view.View exportButton =
+        popupView.findViewById(
+            R.id.ExportButton
+        );
+
+
+    if (exportButton != null) {
+
+        exportButton.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                    android.view.View v
+                ) {
+
+                    tableView.evaluateJavascript(
+
+                        "(function(){"
+                        + "var cells=document.querySelectorAll('tbody td.data');"
+                        + "var selected=[];"
+                        + "for(var i=0;i<cells.length;i++){"
+                        + "var bg=getComputedStyle(cells[i]).backgroundColor;"
+                        + "if(bg==='rgb(33, 150, 243)'||"
+                        + "bg==='rgba(33, 150, 243, 1)'){"
+                        + "selected.push(cells[i].innerText);"
+                        + "}"
+                        + "}"
+                        + "return JSON.stringify(selected);"
+                        + "})()",
+
+                        new android.webkit.ValueCallback<String>() {
+
+                            @Override
+                            public void onReceiveValue(
+                                String value
+                            ) {
+
+                                try {
+
+                                    Object decoded =
+                                        new org.json.JSONTokener(
+                                            value
+                                        ).nextValue();
+
+
+                                    if (!(decoded instanceof String)) {
+
+                                        SketchwareUtil.showMessage(
+                                            getApplicationContext(),
+                                            "Export failed"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    org.json.JSONArray array =
+                                        new org.json.JSONArray(
+                                            decoded.toString()
+                                        );
+
+
+                                    if (array.length() == 0) {
+
+                                        SketchwareUtil.showMessage(
+                                            getApplicationContext(),
+                                            "Nothing selected"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    // ======================================
+                                    // BUILD EXPORT TEXT
+                                    // ======================================
+
+                                    StringBuilder text =
+                                        new StringBuilder();
+
+
+                                    for (
+                                        int i = 0;
+                                        i < array.length();
+                                        i++
+                                    ) {
+
+                                        if (i > 0) {
+                                            text.append("\t");
+                                        }
+
+                                        text.append(
+                                            array.getString(i)
+                                        );
+                                    }
+
+
+                                    String exportText =
+                                        text.toString();
+
+
+                                    // ======================================
+                                    // EXPORT PREFERENCES
+                                    // ======================================
+
+                                    android.content.SharedPreferences prefs =
+                                        getSharedPreferences(
+                                            "ExportData",
+                                            MODE_PRIVATE
+                                        );
+
+
+                                    int exportNumber =
+                                        prefs.getInt(
+                                            "next_export_number",
+                                            1
+                                        );
+
+
+                                    // ======================================
+                                    // DATE
+                                    // ======================================
+
+                                    java.text.SimpleDateFormat dateFormat =
+                                        new java.text.SimpleDateFormat(
+                                            "yyyyMMdd",
+                                            java.util.Locale.US
+                                        );
+
+
+                                    String date =
+                                        dateFormat.format(
+                                            new java.util.Date()
+                                        );
+
+
+                                    // ======================================
+                                    // SERIAL
+                                    // ======================================
+
+                                    String serial =
+                                        String.format(
+                                            java.util.Locale.US,
+                                            "%02d",
+                                            exportNumber
+                                        );
+
+
+                                    // ======================================
+                                    // FILE NAME
+                                    // ======================================
+
+                                    String fileName =
+                                        "SaveRecords_" +
+                                        date +
+                                        "_" +
+                                        serial +
+                                        ".txt";
+
+
+                                    // ======================================
+                                    // SAVE PENDING DATA
+                                    // ======================================
+
+                                    prefs.edit()
+                                        .putString(
+                                            "pending_export_text",
+                                            exportText
+                                        )
+                                        .putInt(
+                                            "pending_export_number",
+                                            exportNumber
+                                        )
+                                        .putString(
+                                            "pending_export_filename",
+                                            fileName
+                                        )
+                                        .apply();
+
+
+                                    // ======================================
+                                    // SAVE LOCATION PICKER
+                                    // ======================================
+
+                                    android.content.Intent saveIntent =
+                                        new android.content.Intent(
+                                            android.content.Intent.ACTION_CREATE_DOCUMENT
+                                        );
+
+
+                                    saveIntent.addCategory(
+                                        android.content.Intent.CATEGORY_OPENABLE
+                                    );
+
+
+                                    saveIntent.setType(
+                                        "text/plain"
+                                    );
+
+
+                                    saveIntent.putExtra(
+                                        android.content.Intent.EXTRA_TITLE,
+                                        fileName
+                                    );
+
+
+                                    // ======================================
+                                    // START SAVE PICKER
+                                    // ======================================
+
+                                    startActivityForResult(
+                                        saveIntent,
+                                        1001
+                                    );
+
+
+                                    // ======================================
+                                    // CLOSE POPUP
+                                    // ======================================
+
+                                    popupWindow.dismiss();
+
+
+                                } catch (Exception e) {
+
+                                    SketchwareUtil.showMessage(
+                                        getApplicationContext(),
+                                        "Export failed"
+                                    );
+                                }
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    }
+
+
+    // ==========================================================
+    // SELECT ALL
+    // ==========================================================
+
+    android.view.View selectAllButton =
+        popupView.findViewById(
+            R.id.selectAllButton
+        );
+
+
+    if (selectAllButton != null) {
+
+        selectAllButton.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                    android.view.View v
+                ) {
+
+                    tableView.evaluateJavascript(
+                        "window._selectAllCells && "
+                        + "window._selectAllCells();",
+                        null
+                    );
+
+
+                    popupWindow.dismiss();
+                }
+            }
+        );
+    }
+
+
+    // ==========================================================
+    // DESELECT ALL
+    // ==========================================================
+
+    android.view.View deselectAllButton =
+        popupView.findViewById(
+            R.id.deselectAllButton
+        );
+
+
+    if (deselectAllButton != null) {
+
+        deselectAllButton.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                    android.view.View v
+                ) {
+
+                    tableView.evaluateJavascript(
+                        "window._deselectAllCells && "
+                        + "window._deselectAllCells();",
+                        null
+                    );
+
+
+                    popupWindow.dismiss();
+                }
+            }
+        );
+    }

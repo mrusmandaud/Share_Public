@@ -1,0 +1,180 @@
+android.webkit.WebView tableView = null;
+
+for (int i = 0;
+     i < binding.recordsContainer.getChildCount();
+     i++) {
+
+    android.view.View child =
+        binding.recordsContainer.getChildAt(i);
+
+    if (child instanceof android.webkit.WebView) {
+        tableView = (android.webkit.WebView) child;
+        break;
+    }
+}
+
+if (tableView == null) {
+
+    SketchwareUtil.showMessage(
+        getApplicationContext(),
+        "Records table not available"
+    );
+
+    return;
+}
+
+tableView.evaluateJavascript(
+    "(function(){"
+    + "var cells=document.querySelectorAll('tbody td.data');"
+    + "var selected=[];"
+    + "for(var i=0;i<cells.length;i++){"
+    + "var bg=getComputedStyle(cells[i]).backgroundColor;"
+    + "if(bg==='rgb(33, 150, 243)'||"
+    + "bg==='rgba(33, 150, 243, 1)'){"
+    + "selected.push(cells[i].innerText);"
+    + "}"
+    + "}"
+    + "return JSON.stringify(selected);"
+    + "})()",
+
+    new android.webkit.ValueCallback<String>() {
+
+        @Override
+        public void onReceiveValue(String value) {
+
+            try {
+
+                Object decoded =
+                    new org.json.JSONTokener(value).nextValue();
+
+                if (!(decoded instanceof String)) {
+
+                    SketchwareUtil.showMessage(
+                        getApplicationContext(),
+                        "Export failed"
+                    );
+
+                    return;
+                }
+
+                org.json.JSONArray array =
+                    new org.json.JSONArray(
+                        decoded.toString()
+                    );
+
+                if (array.length() == 0) {
+
+                    SketchwareUtil.showMessage(
+                        getApplicationContext(),
+                        "Nothing selected"
+                    );
+
+                    return;
+                }
+
+                StringBuilder text =
+                    new StringBuilder();
+
+                for (
+                    int i = 0;
+                    i < array.length();
+                    i++
+                ) {
+
+                    if (i > 0) {
+                        text.append("\t");
+                    }
+
+                    text.append(
+                        array.getString(i)
+                    );
+                }
+
+                String exportText =
+                    text.toString();
+
+                android.content.SharedPreferences prefs =
+                    getSharedPreferences(
+                        "ExportData",
+                        MODE_PRIVATE
+                    );
+
+                int exportNumber =
+                    prefs.getInt(
+                        "next_export_number",
+                        1
+                    );
+
+                java.text.SimpleDateFormat dateFormat =
+                    new java.text.SimpleDateFormat(
+                        "yyyyMMdd",
+                        java.util.Locale.US
+                    );
+
+                String date =
+                    dateFormat.format(
+                        new java.util.Date()
+                    );
+
+                String serial =
+                    String.format(
+                        java.util.Locale.US,
+                        "%02d",
+                        exportNumber
+                    );
+
+                String fileName =
+                    "SaveRecords_" +
+                    date +
+                    "_" +
+                    serial +
+                    ".txt";
+
+                prefs.edit()
+                    .putString(
+                        "pending_export_text",
+                        exportText
+                    )
+                    .putInt(
+                        "pending_export_number",
+                        exportNumber
+                    )
+                    .putString(
+                        "pending_export_filename",
+                        fileName
+                    )
+                    .apply();
+
+                android.content.Intent saveIntent =
+                    new android.content.Intent(
+                        android.content.Intent.ACTION_CREATE_DOCUMENT
+                    );
+
+                saveIntent.addCategory(
+                    android.content.Intent.CATEGORY_OPENABLE
+                );
+
+                saveIntent.setType(
+                    "text/plain"
+                );
+
+                saveIntent.putExtra(
+                    android.content.Intent.EXTRA_TITLE,
+                    fileName
+                );
+
+                startActivityForResult(
+                    saveIntent,
+                    1001
+                );
+
+            } catch (Exception e) {
+
+                SketchwareUtil.showMessage(
+                    getApplicationContext(),
+                    "Export failed"
+                );
+            }
+        }
+    }
+);

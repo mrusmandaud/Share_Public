@@ -1,0 +1,244 @@
+android.webkit.WebView tableView = null;
+
+for (int i = 0; i < binding.recordsContainer.getChildCount(); i++) {
+
+    View child =
+        binding.recordsContainer.getChildAt(i);
+
+    if (child instanceof android.webkit.WebView) {
+        tableView =
+            (android.webkit.WebView) child;
+        break;
+    }
+}
+
+if (tableView == null) {
+    return;
+}
+
+String[] fields = {
+    "#",
+    "Name",
+    "Phone",
+    "Product"
+};
+
+String savedData = "";
+
+try {
+
+    FileInputStream fis =
+        openFileInput("saverecords.txt");
+
+    ByteArrayOutputStream buffer =
+        new ByteArrayOutputStream();
+
+    int data;
+
+    while ((data = fis.read()) != -1) {
+        buffer.write(data);
+    }
+
+    fis.close();
+
+    savedData =
+        buffer.toString("UTF-8");
+
+} catch (Exception e) {
+
+    SketchwareUtil.showMessage(
+        getApplicationContext(),
+        "Unable to read records"
+    );
+
+    return;
+}
+
+StringBuilder html =
+    new StringBuilder();
+
+html.append(
+    "<!DOCTYPE html>" +
+    "<html>" +
+    "<head>" +
+
+    "<meta name='viewport' " +
+    "content='width=device-width, initial-scale=1.0, " +
+    "maximum-scale=1.0, user-scalable=no'>" +
+
+    "<style>" +
+
+    "html, body {" +
+    "margin:0;" +
+    "padding:0;" +
+    "background:white;" +
+    "width:100%;" +
+    "max-width:100%;" +
+    "overflow-x:hidden;" +
+    "}" +
+
+    "* { box-sizing:border-box; }" +
+
+    "body {" +
+    "font-family:sans-serif;" +
+    "font-size:15px;" +
+    "}" +
+
+    ".tableWrapper {" +
+    "width:100%;" +
+    "min-width:0;" +
+    "max-width:100%;" +
+    "overflow-x:hidden;" +
+    "}" +
+
+    "table {" +
+    "border-collapse:collapse;" +
+    "width:100%;" +
+    "min-width:0;" +
+    "max-width:100%;" +
+    "table-layout:fixed;" +
+    "}" +
+
+    "th:first-child, td.number {" +
+    "width:40px;" +
+    "min-width:40px;" +
+    "max-width:40px;" +
+    "padding-left:3px;" +
+    "padding-right:3px;" +
+    "text-align:center;" +
+    "}" +
+
+    "th, td {" +
+    "border:1px solid #808080;" +
+    "padding:12px 8px;" +
+    "height:24px;" +
+    "overflow-wrap:anywhere;" +
+    "word-break:break-word;" +
+    "}" +
+
+    "th {" +
+    "background:rgb(21,101,192);" +
+    "color:white;" +
+    "font-size:16px;" +
+    "font-weight:bold;" +
+    "text-align:center;" +
+    "}" +
+
+    "td {" +
+    "background:white;" +
+    "color:black;" +
+    "font-size:15px;" +
+    "}" +
+
+    ".number {" +
+    "text-align:center;" +
+    "-webkit-user-select:none;" +
+    "user-select:none;" +
+    "}" +
+
+    ".data {" +
+    "text-align:left;" +
+    "-webkit-user-select:text;" +
+    "user-select:text;" +
+    "}" +
+
+    "</style>" +
+
+    "</head>" +
+
+    "<body>" +
+
+    "<div class='tableWrapper'>" +
+
+    "<table>" +
+
+    "<thead><tr>"
+);
+
+for (int i = 0; i < fields.length; i++) {
+
+    html.append("<th>");
+
+    html.append(
+        android.text.TextUtils.htmlEncode(
+            fields[i]
+        )
+    );
+
+    html.append("</th>");
+}
+
+html.append("</tr></thead><tbody>");
+
+String[] records =
+    savedData.split("\\r?\\n");
+
+int number = 1;
+
+for (String record : records) {
+
+    if (!record.trim().equals("")) {
+
+        String[] parts =
+            record.split(
+                "\\s*\\|\\s*",
+                -1
+            );
+
+        html.append("<tr>");
+
+        for (int i = 0; i < fields.length; i++) {
+
+            if (i == 0) {
+
+                html.append(
+                    "<td class='number'>"
+                );
+
+                html.append(
+                    String.valueOf(number)
+                );
+
+                html.append("</td>");
+
+            } else {
+
+                html.append(
+                    "<td class='data'>"
+                );
+
+                if (parts.length >= i) {
+
+                    html.append(
+                        android.text.TextUtils
+                            .htmlEncode(
+                                parts[i - 1]
+                            )
+                    );
+                }
+
+                html.append("</td>");
+            }
+        }
+
+        html.append("</tr>");
+
+        number++;
+    }
+}
+
+html.append(
+    "</tbody>" +
+    "</table>" +
+    "</div>" +
+    "</body>" +
+    "</html>"
+);
+
+tableView.loadDataWithBaseURL(
+    null,
+    html.toString(),
+    "text/html",
+    "UTF-8",
+    null
+);

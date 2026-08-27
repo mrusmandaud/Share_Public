@@ -1,0 +1,7 @@
+Intent intent =
+    new Intent(
+        MainActivity.this,
+        SaverecordsActivity.class
+    );
+
+startActivity(intent);

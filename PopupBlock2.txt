@@ -1,0 +1,184 @@
+// ==========================================================
+// Popup()
+// Long press table -> show popup menu
+// ==========================================================
+
+final android.webkit.WebView tableView =
+    (android.webkit.WebView)
+    binding.recordsContainer.getChildAt(0);
+
+if (tableView == null) {
+    return;
+}
+
+
+// ==========================================================
+// LONG PRESS TABLE
+// ==========================================================
+
+tableView.setOnLongClickListener(
+    new android.view.View.OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(android.view.View v) {
+
+            // --------------------------------------------------
+            // Create popup layout
+            // --------------------------------------------------
+
+            final android.view.View popupView =
+                getLayoutInflater().inflate(
+                    R.layout.popup_menu,
+                    null
+                );
+
+
+            // ==================================================
+            // POPUP COLOR
+            // ==================================================
+
+            final int popupColor =
+                android.graphics.Color.parseColor("#2196F3");
+
+
+            // ==================================================
+            // SET ROOT POPUP BACKGROUND
+            // ==================================================
+
+            popupView.setBackgroundColor(
+                popupColor
+            );
+
+
+            // ==================================================
+            // SET ALL BUTTON BACKGROUNDS FROM JAVA
+            // ==================================================
+
+            android.view.View copyButton =
+                popupView.findViewById(
+                    R.id.copyButton
+                );
+
+            if (copyButton != null) {
+                copyButton.setBackgroundColor(
+                    popupColor
+                );
+            }
+
+
+            android.view.View shareButton =
+                popupView.findViewById(
+                    R.id.shareButton
+                );
+
+            if (shareButton != null) {
+                shareButton.setBackgroundColor(
+                    popupColor
+                );
+            }
+
+
+            android.view.View exportButton =
+                popupView.findViewById(
+                    R.id.ExportButton
+                );
+
+            if (exportButton != null) {
+                exportButton.setBackgroundColor(
+                    popupColor
+                );
+            }
+
+
+            android.view.View selectAllButton =
+                popupView.findViewById(
+                    R.id.selectAllButton
+                );
+
+            if (selectAllButton != null) {
+                selectAllButton.setBackgroundColor(
+                    popupColor
+                );
+            }
+
+
+            android.view.View deselectAllButton =
+                popupView.findViewById(
+                    R.id.deselectAllButton
+                );
+
+            if (deselectAllButton != null) {
+                deselectAllButton.setBackgroundColor(
+                    popupColor
+                );
+            }
+
+
+            // --------------------------------------------------
+            // Create PopupWindow
+            // --------------------------------------------------
+
+            final android.widget.PopupWindow popupWindow =
+                new android.widget.PopupWindow(
+                    popupView,
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                    true
+                );
+
+
+            // ==================================================
+            // POPUP WINDOW BACKGROUND
+            // ==================================================
+
+            popupWindow.setBackgroundDrawable(
+                new android.graphics.drawable.ColorDrawable(
+                    popupColor
+                )
+            );
+
+            popupWindow.setOutsideTouchable(true);
+            popupWindow.setFocusable(true);
+
+
+            // --------------------------------------------------
+            // Store popup objects together
+            // --------------------------------------------------
+
+            binding.recordsContainer.setTag(
+                new Object[] {
+                    tableView,
+                    popupView,
+                    popupWindow
+                }
+            );
+
+
+            // --------------------------------------------------
+            // Connect popup buttons
+            // --------------------------------------------------
+
+            _Buttons();
+
+
+            // --------------------------------------------------
+            // SHOW POPUP
+            // --------------------------------------------------
+
+            popupWindow.showAtLocation(
+                binding.recordsContainer,
+                android.view.Gravity.TOP |
+                android.view.Gravity.RIGHT,
+                20,
+                282
+            );
+
+
+            // --------------------------------------------------
+            // Long press handled
+            // --------------------------------------------------
+
+            return true;
+        }
+    }
+);
