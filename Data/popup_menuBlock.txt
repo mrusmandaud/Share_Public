@@ -1,0 +1,113 @@
+// ==========================================================
+// POPUP BUTTONS
+// CALL/LINK ONLY
+// ==========================================================
+
+android.view.View copyButton =
+    popupView.findViewById(
+        R.id.copyButton
+    );
+
+if (copyButton != null) {
+
+    copyButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.copy(
+                    MyrecordsActivity.this
+                );
+            }
+        }
+    );
+}
+
+
+android.view.View shareButton =
+    popupView.findViewById(
+        R.id.shareButton
+    );
+
+if (shareButton != null) {
+
+    shareButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.share(
+                    MyrecordsActivity.this
+                );
+            }
+        }
+    );
+}
+
+
+android.view.View exportButton =
+    popupView.findViewById(
+        R.id.ExportButton
+    );
+
+if (exportButton != null) {
+
+    exportButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.export(
+                    MyrecordsActivity.this
+                );
+            }
+        }
+    );
+}
+
+
+android.view.View selectAllButton =
+    popupView.findViewById(
+        R.id.selectAllButton
+    );
+
+if (selectAllButton != null) {
+
+    selectAllButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.selectAll(
+                    MyrecordsActivity.this
+                );
+            }
+        }
+    );
+}
+
+
+android.view.View deselectAllButton =
+    popupView.findViewById(
+        R.id.deselectAllButton
+    );
+
+if (deselectAllButton != null) {
+
+    deselectAllButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.deselectAll(
+                    MyrecordsActivity.this
+                );
+            }
+        }
+    );
+}
