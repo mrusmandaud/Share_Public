@@ -1,0 +1,1905 @@
+package com.myrecords.onenewexperience.one;
+
+import android.animation.*;
+import android.app.*;
+import android.content.*;
+import android.content.res.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
+import android.media.*;
+import android.net.*;
+import android.os.*;
+import android.text.*;
+import android.text.style.*;
+import android.util.*;
+import android.view.*;
+import android.view.View;
+import android.view.View.*;
+import android.view.animation.*;
+import android.webkit.*;
+import android.widget.*;
+import androidx.annotation.*;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import java.io.*;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+import org.json.*;
+
+public class SettingsActivity extends AppCompatActivity {
+	
+	private SettingsBinding binding;
+	
+	@Override
+	protected void onCreate(Bundle _savedInstanceState) {
+		super.onCreate(_savedInstanceState);
+		binding = SettingsBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
+		initialize(_savedInstanceState);
+		initializeLogic();
+	}
+	
+	private void initialize(Bundle _savedInstanceState) {
+		
+		binding.settingsBackupCard.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				
+			}
+		});
+		
+		binding.settingsRestoreCard.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				
+			}
+		});
+		
+		binding.settingsExportCard.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				
+			}
+		});
+	}
+	
+	private void initializeLogic() {
+		// =====================================================
+		// SETTINGS ACTIVITY - ONCREATE
+		// =====================================================
+		
+		setContentView(R.layout.settings);
+		
+		
+		// =====================================================
+		// 1. BACK
+		// =====================================================
+		
+		View settingsBack =
+		findViewById(R.id.settingsBack);
+		
+		if (settingsBack != null) {
+			
+			settingsBack.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					ButtonsController.back(
+					SettingsActivity.this
+					);
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 2. APPEARANCE
+		// =====================================================
+		
+		View appearance =
+		findViewById(R.id.settingsAppearanceCard);
+		
+		if (appearance != null) {
+			
+			appearance.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					startActivity(
+					new Intent(
+					SettingsActivity.this,
+					AppearanceActivity.class
+					)
+					);
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 3. THEME
+		// =====================================================
+		
+		View theme =
+		findViewById(R.id.settingsThemeCard);
+		
+		if (theme != null) {
+			
+			theme.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					startActivity(
+					new Intent(
+					SettingsActivity.this,
+					ThemeActivity.class
+					)
+					);
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 4. PRODUCTS
+		// =====================================================
+		
+		View products =
+		findViewById(R.id.settingsProductsCard);
+		
+		if (products != null) {
+			
+			products.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					startActivity(
+					new Intent(
+					SettingsActivity.this,
+					ProductManagement.class
+					)
+					);
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 5. BACKUP
+		// =====================================================
+		
+		View backup =
+		findViewById(R.id.settingsBackupCard);
+		
+		if (backup != null) {
+			
+			backup.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					backupAction = "backup";
+					
+					BACKUP();
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 6. RESTORE
+		// =====================================================
+		
+		View restore =
+		findViewById(R.id.settingsRestoreCard);
+		
+		if (restore != null) {
+			
+			restore.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					backupAction = "restore";
+					
+					BACKUP();
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 7. EXPORT
+		// =====================================================
+		
+		View export =
+		findViewById(R.id.settingsExportCard);
+		
+		if (export != null) {
+			
+			export.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					EXPORT();
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 8. CONTACT US
+		// =====================================================
+		
+		View contactUs =
+		findViewById(R.id.settingsContactCard);
+		
+		if (contactUs != null) {
+			
+			contactUs.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					setContentView(R.layout.contactus);
+				}
+			});
+		}
+		
+		
+		// =====================================================
+		// 9. ABOUT
+		// =====================================================
+		
+		View about =
+		findViewById(R.id.settingsAboutCard);
+		
+		if (about != null) {
+			
+			about.setOnClickListener(
+			new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					setContentView(R.layout.about);
+				}
+			});
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int _requestCode, int _resultCode, Intent _data) {
+		super.onActivityResult(_requestCode, _resultCode, _data);
+		@Override
+		protected void onActivityResult(
+		int requestCode,
+		int resultCode,
+		Intent data
+		) {
+			
+			super.onActivityResult(
+			requestCode,
+			resultCode,
+			data
+			);
+			
+			
+			// ========================================================
+			// BACKUP / RESTORE
+			//
+			// 7001 = Backup
+			// 7002 = Restore
+			// ========================================================
+			
+			if (
+			requestCode == 7001
+			|| requestCode == 7002
+			) {
+				
+				backupResultCode =
+				requestCode;
+				
+				
+				if (
+				resultCode == RESULT_OK
+				&& data != null
+				&& data.getData() != null
+				) {
+					
+					backupResultUri =
+					data.getData();
+					
+				} else {
+					
+					backupResultUri =
+					null;
+				}
+				
+				
+				backupResultReady =
+				true;
+				
+				
+				// Send result to BACKUP More Block
+				BACKUP();
+				
+				
+				return;
+			}
+			
+			
+			// ========================================================
+			// EXPORT
+			//
+			// 1001 = Export
+			// ========================================================
+			
+			if (requestCode == 1001) {
+				
+				if (
+				resultCode == RESULT_OK
+				&& data != null
+				&& data.getData() != null
+				) {
+					
+					exportResultUri =
+					data.getData();
+					
+				} else {
+					
+					exportResultUri =
+					null;
+				}
+				
+				
+				exportResultReady =
+				true;
+				
+				
+				// Send result to EXPORT More Block
+				EXPORT();
+				
+				
+				return;
+			}
+		}
+		switch (_requestCode) {
+			
+			default:
+			break;
+		}
+	}
+	
+	public void _BACKUP() {
+		// =====================================================
+		// BACKUP MORE BLOCK
+		//
+		// Handles:
+		// 7001 = BACKUP
+		// 7002 = RESTORE
+		// =====================================================
+		
+		
+		// =====================================================
+		// 1. PROCESS PICKER RESULT
+		// =====================================================
+		
+		if (backupResultReady) {
+			
+			backupResultReady = false;
+			
+			
+			// =================================================
+			// BACKUP RESULT
+			// =================================================
+			
+			if (backupResultCode == 7001) {
+				
+				if (backupResultUri == null) {
+					
+					Toast.makeText(
+					SettingsActivity.this,
+					"Backup cancelled",
+					Toast.LENGTH_SHORT
+					).show();
+					
+					backupResultCode = 0;
+					backupResultUri = null;
+					backupAction = "";
+					
+					return;
+				}
+				
+				
+				java.io.InputStream input = null;
+				java.io.OutputStream output = null;
+				
+				try {
+					
+					java.io.File sourceFile =
+					new java.io.File(
+					getFilesDir(),
+					"saverecords.txt"
+					);
+					
+					
+					if (!sourceFile.exists()) {
+						
+						Toast.makeText(
+						SettingsActivity.this,
+						"No saved records found",
+						Toast.LENGTH_SHORT
+						).show();
+						
+						backupResultCode = 0;
+						backupResultUri = null;
+						backupAction = "";
+						
+						return;
+					}
+					
+					
+					input =
+					new java.io.FileInputStream(
+					sourceFile
+					);
+					
+					
+					output =
+					getContentResolver()
+					.openOutputStream(
+					backupResultUri
+					);
+					
+					
+					if (output == null) {
+						
+						throw new java.io.IOException(
+						"Unable to create backup file"
+						);
+					}
+					
+					
+					byte[] buffer =
+					new byte[8192];
+					
+					int length;
+					
+					
+					while (
+					(length = input.read(buffer)) != -1
+					) {
+						
+						output.write(
+						buffer,
+						0,
+						length
+						);
+					}
+					
+					
+					output.flush();
+					
+					
+					Toast.makeText(
+					SettingsActivity.this,
+					"Backup saved successfully",
+					Toast.LENGTH_SHORT
+					).show();
+					
+					
+				} catch (Exception e) {
+					
+					Toast.makeText(
+					SettingsActivity.this,
+					"Backup failed",
+					Toast.LENGTH_SHORT
+					).show();
+					
+					
+				} finally {
+					
+					try {
+						
+						if (input != null) {
+							input.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+					
+					
+					try {
+						
+						if (output != null) {
+							output.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+				}
+				
+				
+				backupResultCode = 0;
+				backupResultUri = null;
+				backupAction = "";
+				
+				return;
+			}
+			
+			
+			// =================================================
+			// RESTORE RESULT
+			// =================================================
+			
+			if (backupResultCode == 7002) {
+				
+				if (backupResultUri == null) {
+					
+					Toast.makeText(
+					SettingsActivity.this,
+					"Restore cancelled",
+					Toast.LENGTH_SHORT
+					).show();
+					
+					backupResultCode = 0;
+					backupResultUri = null;
+					backupAction = "";
+					
+					return;
+				}
+				
+				
+				java.io.InputStream input = null;
+				java.io.FileOutputStream output = null;
+				
+				try {
+					
+					input =
+					getContentResolver()
+					.openInputStream(
+					backupResultUri
+					);
+					
+					
+					if (input == null) {
+						
+						throw new java.io.IOException(
+						"Unable to open backup file"
+						);
+					}
+					
+					
+					output =
+					openFileOutput(
+					"saverecords.txt",
+					MODE_PRIVATE
+					);
+					
+					
+					byte[] buffer =
+					new byte[8192];
+					
+					int length;
+					
+					
+					while (
+					(length = input.read(buffer)) != -1
+					) {
+						
+						output.write(
+						buffer,
+						0,
+						length
+						);
+					}
+					
+					
+					output.flush();
+					
+					
+					Toast.makeText(
+					SettingsActivity.this,
+					"Restore completed successfully",
+					Toast.LENGTH_SHORT
+					).show();
+					
+					
+				} catch (Exception e) {
+					
+					Toast.makeText(
+					SettingsActivity.this,
+					"Restore failed",
+					Toast.LENGTH_SHORT
+					).show();
+					
+					
+				} finally {
+					
+					try {
+						
+						if (input != null) {
+							input.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+					
+					
+					try {
+						
+						if (output != null) {
+							output.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+				}
+				
+				
+				backupResultCode = 0;
+				backupResultUri = null;
+				backupAction = "";
+				
+				return;
+			}
+		}
+		
+		
+		// =====================================================
+		// 2. START BACKUP PICKER
+		// =====================================================
+		
+		if ("backup".equals(backupAction)) {
+			
+			Intent saveIntent =
+			new Intent(
+			Intent.ACTION_CREATE_DOCUMENT
+			);
+			
+			
+			saveIntent.addCategory(
+			Intent.CATEGORY_OPENABLE
+			);
+			
+			
+			saveIntent.setType(
+			"text/plain"
+			);
+			
+			
+			saveIntent.putExtra(
+			Intent.EXTRA_TITLE,
+			"DataCollection_Backup.txt"
+			);
+			
+			
+			startActivityForResult(
+			saveIntent,
+			7001
+			);
+			
+			
+			return;
+		}
+		
+		
+		// =====================================================
+		// 3. START RESTORE PICKER
+		// =====================================================
+		
+		if ("restore".equals(backupAction)) {
+			
+			Intent openIntent =
+			new Intent(
+			Intent.ACTION_OPEN_DOCUMENT
+			);
+			
+			
+			openIntent.addCategory(
+			Intent.CATEGORY_OPENABLE
+			);
+			
+			
+			openIntent.setType(
+			"text/plain"
+			);
+			
+			
+			openIntent.putExtra(
+			Intent.EXTRA_MIME_TYPES,
+			new String[] {
+				"text/plain",
+				"text/*"
+			}
+			);
+			
+			
+			startActivityForResult(
+			openIntent,
+			7002
+			);
+			
+			
+			return;
+		}
+	}
+	
+	
+	public void _EXPORT() {
+		// =====================================================
+		// EXPORT MORE BLOCK
+		//
+		// 1001 = EXPORT
+		//
+		// Supports:
+		// 1. All Records
+		// 2. Selected Data
+		// 3. TXT
+		// 4. CSV
+		// 5. PDF
+		// 6. XLSX
+		// 7. Android Save Location Picker
+		// 8. SaveRecords_YYYYMMDD_SERIAL.extension
+		// 9. Serial increases ONLY after successful save
+		// =====================================================
+		
+		
+		// =====================================================
+		// 1. PROCESS EXPORT PICKER RESULT
+		// =====================================================
+		
+		if (exportResultReady) {
+			
+			exportResultReady = false;
+			
+			
+			// =================================================
+			// USER CANCELLED EXPORT
+			// =================================================
+			
+			if (exportResultUri == null) {
+				
+				Toast.makeText(
+				SettingsActivity.this,
+				"Export cancelled",
+				Toast.LENGTH_SHORT
+				).show();
+				
+				pendingExportData = "";
+				
+				return;
+			}
+			
+			
+			// =================================================
+			// CHECK DATA
+			// =================================================
+			
+			if (
+			pendingExportData == null
+			|| pendingExportData.trim().length() == 0
+			) {
+				
+				Toast.makeText(
+				SettingsActivity.this,
+				"No export data available",
+				Toast.LENGTH_SHORT
+				).show();
+				
+				exportResultUri = null;
+				pendingExportData = "";
+				
+				return;
+			}
+			
+			
+			// =================================================
+			// EXPORT SETTINGS
+			// =================================================
+			
+			android.content.SharedPreferences exportPrefs =
+			SettingsActivity.this.getSharedPreferences(
+			"export_settings",
+			MODE_PRIVATE
+			);
+			
+			
+			String format =
+			exportPrefs.getString(
+			"pending_export_format",
+			"TXT"
+			);
+			
+			
+			int pendingSerial =
+			exportPrefs.getInt(
+			"pending_export_serial",
+			1
+			);
+			
+			
+			boolean exportSuccess = false;
+			
+			
+			// =================================================
+			// TXT
+			// =================================================
+			
+			if ("TXT".equals(format)) {
+				
+				java.io.OutputStream output = null;
+				
+				try {
+					
+					output =
+					SettingsActivity.this
+					.getContentResolver()
+					.openOutputStream(
+					exportResultUri
+					);
+					
+					if (output == null) {
+						
+						throw new java.io.IOException(
+						"Output stream unavailable"
+						);
+					}
+					
+					
+					output.write(
+					pendingExportData.getBytes("UTF-8")
+					);
+					
+					output.flush();
+					
+					exportSuccess = true;
+					
+					
+				} catch (Exception e) {
+					
+					exportSuccess = false;
+					
+					
+				} finally {
+					
+					try {
+						
+						if (output != null) {
+							output.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			
+			
+			// =================================================
+			// CSV
+			// =================================================
+			
+			else if ("CSV".equals(format)) {
+				
+				java.io.OutputStream output = null;
+				
+				try {
+					
+					StringBuilder csv =
+					new StringBuilder();
+					
+					
+					String[] lines =
+					pendingExportData.split(
+					"\\r?\\n"
+					);
+					
+					
+					for (String line : lines) {
+						
+						if (
+						line == null
+						|| line.trim().length() == 0
+						) {
+							continue;
+						}
+						
+						
+						String[] parts =
+						line.split(
+						"\\s*\\|\\s*",
+						-1
+						);
+						
+						
+						for (
+						int i = 0;
+						i < parts.length;
+						i++
+						) {
+							
+							if (i > 0) {
+								csv.append(",");
+							}
+							
+							
+							String value =
+							parts[i]
+							.replace(
+							"\"",
+							"\"\""
+							);
+							
+							
+							csv.append("\"");
+							csv.append(value);
+							csv.append("\"");
+						}
+						
+						
+						csv.append("\n");
+					}
+					
+					
+					output =
+					SettingsActivity.this
+					.getContentResolver()
+					.openOutputStream(
+					exportResultUri
+					);
+					
+					
+					if (output == null) {
+						
+						throw new java.io.IOException(
+						"Output stream unavailable"
+						);
+					}
+					
+					
+					output.write(
+					csv.toString().getBytes("UTF-8")
+					);
+					
+					output.flush();
+					
+					exportSuccess = true;
+					
+					
+				} catch (Exception e) {
+					
+					exportSuccess = false;
+					
+					
+				} finally {
+					
+					try {
+						
+						if (output != null) {
+							output.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			
+			
+			// =================================================
+			// PDF
+			// =================================================
+			
+			else if ("PDF".equals(format)) {
+				
+				android.graphics.pdf.PdfDocument document =
+				new android.graphics.pdf.PdfDocument();
+				
+				java.io.OutputStream output = null;
+				
+				android.graphics.pdf.PdfDocument.Page page =
+				null;
+				
+				try {
+					
+					int pageNumber = 1;
+					
+					int y = 40;
+					
+					
+					android.graphics.Paint paint =
+					new android.graphics.Paint();
+					
+					paint.setTextSize(11);
+					
+					
+					page =
+					document.startPage(
+					new android.graphics.pdf.PdfDocument.PageInfo.Builder(
+					595,
+					842,
+					pageNumber
+					).create()
+					);
+					
+					
+					android.graphics.Canvas canvas =
+					page.getCanvas();
+					
+					
+					String[] lines =
+					pendingExportData.split(
+					"\\r?\\n"
+					);
+					
+					
+					for (String line : lines) {
+						
+						if (
+						line == null
+						|| line.length() == 0
+						) {
+							
+							y += 18;
+							
+							continue;
+						}
+						
+						
+						String remaining =
+						line;
+						
+						
+						while (
+						remaining.length() > 0
+						) {
+							
+							if (y > 800) {
+								
+								document.finishPage(page);
+								
+								
+								pageNumber++;
+								
+								
+								page =
+								document.startPage(
+								new android.graphics.pdf.PdfDocument.PageInfo.Builder(
+								595,
+								842,
+								pageNumber
+								).create()
+								);
+								
+								
+								canvas =
+								page.getCanvas();
+								
+								
+								y = 40;
+							}
+							
+							
+							int maxCharacters = 85;
+							
+							String part;
+							
+							
+							if (
+							remaining.length()
+							> maxCharacters
+							) {
+								
+								part =
+								remaining.substring(
+								0,
+								maxCharacters
+								);
+								
+								remaining =
+								remaining.substring(
+								maxCharacters
+								);
+								
+							} else {
+								
+								part =
+								remaining;
+								
+								remaining =
+								"";
+							}
+							
+							
+							canvas.drawText(
+							part,
+							30,
+							y,
+							paint
+							);
+							
+							
+							y += 18;
+						}
+					}
+					
+					
+					if (page != null) {
+						
+						document.finishPage(page);
+						
+						page = null;
+					}
+					
+					
+					output =
+					SettingsActivity.this
+					.getContentResolver()
+					.openOutputStream(
+					exportResultUri
+					);
+					
+					
+					if (output == null) {
+						
+						throw new java.io.IOException(
+						"PDF output unavailable"
+						);
+					}
+					
+					
+					document.writeTo(output);
+					
+					output.flush();
+					
+					exportSuccess = true;
+					
+					
+				} catch (Exception e) {
+					
+					exportSuccess = false;
+					
+					
+				} finally {
+					
+					try {
+						
+						if (page != null) {
+							document.finishPage(page);
+						}
+						
+					} catch (Exception ignored) {
+					}
+					
+					
+					try {
+						
+						if (output != null) {
+							output.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+					
+					
+					document.close();
+				}
+			}
+			
+			
+			// =================================================
+			// XLSX
+			//
+			// Real XLSX ZIP/XML workbook
+			// =================================================
+			
+			else if ("XLSX".equals(format)) {
+				
+				java.io.OutputStream output = null;
+				java.util.zip.ZipOutputStream zip = null;
+				
+				try {
+					
+					output =
+					SettingsActivity.this
+					.getContentResolver()
+					.openOutputStream(
+					exportResultUri
+					);
+					
+					
+					if (output == null) {
+						
+						throw new java.io.IOException(
+						"XLSX output unavailable"
+						);
+					}
+					
+					
+					zip =
+					new java.util.zip.ZipOutputStream(
+					output
+					);
+					
+					
+					// =================================================
+					// [Content_Types].xml
+					// =================================================
+					
+					java.util.zip.ZipEntry entry1 =
+					new java.util.zip.ZipEntry(
+					"[Content_Types].xml"
+					);
+					
+					zip.putNextEntry(entry1);
+					
+					
+					String contentTypes =
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+					+ "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"
+					+ "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>"
+					+ "<Default Extension=\"xml\" ContentType=\"application/xml\"/>"
+					+ "<Override PartName=\"/xl/workbook.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\"/>"
+					+ "<Override PartName=\"/xl/worksheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>"
+					+ "</Types>";
+					
+					
+					zip.write(
+					contentTypes.getBytes("UTF-8")
+					);
+					
+					zip.closeEntry();
+					
+					
+					// =================================================
+					// _rels/.rels
+					// =================================================
+					
+					java.util.zip.ZipEntry entry2 =
+					new java.util.zip.ZipEntry(
+					"_rels/.rels"
+					);
+					
+					zip.putNextEntry(entry2);
+					
+					
+					String rels =
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+					+ "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+					+ "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"xl/workbook.xml\"/>"
+					+ "</Relationships>";
+					
+					
+					zip.write(
+					rels.getBytes("UTF-8")
+					);
+					
+					zip.closeEntry();
+					
+					
+					// =================================================
+					// xl/workbook.xml
+					// =================================================
+					
+					java.util.zip.ZipEntry entry3 =
+					new java.util.zip.ZipEntry(
+					"xl/workbook.xml"
+					);
+					
+					zip.putNextEntry(entry3);
+					
+					
+					String workbook =
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+					+ "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" "
+					+ "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"
+					+ "<sheets>"
+					+ "<sheet name=\"Records\" sheetId=\"1\" r:id=\"rId1\"/>"
+					+ "</sheets>"
+					+ "</workbook>";
+					
+					
+					zip.write(
+					workbook.getBytes("UTF-8")
+					);
+					
+					zip.closeEntry();
+					
+					
+					// =================================================
+					// xl/_rels/workbook.xml.rels
+					// =================================================
+					
+					java.util.zip.ZipEntry entry4 =
+					new java.util.zip.ZipEntry(
+					"xl/_rels/workbook.xml.rels"
+					);
+					
+					zip.putNextEntry(entry4);
+					
+					
+					String workbookRels =
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+					+ "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+					+ "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/>"
+					+ "</Relationships>";
+					
+					
+					zip.write(
+					workbookRels.getBytes("UTF-8")
+					);
+					
+					zip.closeEntry();
+					
+					
+					// =================================================
+					// xl/worksheets/sheet1.xml
+					// =================================================
+					
+					StringBuilder sheet =
+					new StringBuilder();
+					
+					
+					sheet.append(
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+					);
+					
+					
+					sheet.append(
+					"<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"
+					);
+					
+					
+					sheet.append("<sheetData>");
+					
+					
+					String[] lines =
+					pendingExportData.split(
+					"\\r?\\n"
+					);
+					
+					
+					int rowNumber = 1;
+					
+					
+					for (String line : lines) {
+						
+						if (
+						line == null
+						|| line.trim().length() == 0
+						) {
+							continue;
+						}
+						
+						
+						sheet.append(
+						"<row r=\""
+						);
+						
+						sheet.append(rowNumber);
+						
+						sheet.append("\">");
+						
+						
+						String[] parts =
+						line.split(
+						"\\s*\\|\\s*",
+						-1
+						);
+						
+						
+						for (
+						int i = 0;
+						i < parts.length;
+						i++
+						) {
+							
+							int column =
+							i + 1;
+							
+							
+							StringBuilder columnName =
+							new StringBuilder();
+							
+							
+							while (column > 0) {
+								
+								int remainder =
+								(column - 1) % 26;
+								
+								
+								columnName.insert(
+								0,
+								(char)(
+								'A'
+								+ remainder
+								)
+								);
+								
+								
+								column =
+								(column - 1) / 26;
+							}
+							
+							
+							String value =
+							parts[i] == null
+							? ""
+							: parts[i];
+							
+							
+							value =
+							value
+							.replace(
+							"&",
+							"&amp;"
+							)
+							.replace(
+							"<",
+							"&lt;"
+							)
+							.replace(
+							">",
+							"&gt;"
+							)
+							.replace(
+							"\"",
+							"&quot;"
+							)
+							.replace(
+							"'",
+							"&apos;"
+							);
+							
+							
+							sheet.append(
+							"<c r=\""
+							);
+							
+							sheet.append(
+							columnName.toString()
+							);
+							
+							sheet.append(
+							rowNumber
+							);
+							
+							sheet.append(
+							"\" t=\"inlineStr\"><is><t>"
+							);
+							
+							sheet.append(value);
+							
+							sheet.append(
+							"</t></is></c>"
+							);
+						}
+						
+						
+						sheet.append("</row>");
+						
+						
+						rowNumber++;
+					}
+					
+					
+					sheet.append("</sheetData>");
+					
+					sheet.append("</worksheet>");
+					
+					
+					java.util.zip.ZipEntry entry5 =
+					new java.util.zip.ZipEntry(
+					"xl/worksheets/sheet1.xml"
+					);
+					
+					zip.putNextEntry(entry5);
+					
+					
+					zip.write(
+					sheet.toString().getBytes("UTF-8")
+					);
+					
+					zip.closeEntry();
+					
+					
+					zip.finish();
+					
+					output.flush();
+					
+					exportSuccess = true;
+					
+					
+				} catch (Exception e) {
+					
+					exportSuccess = false;
+					
+					
+				} finally {
+					
+					try {
+						
+						if (zip != null) {
+							zip.close();
+						} else if (output != null) {
+							output.close();
+						}
+						
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			
+			
+			// =================================================
+			// SUCCESS
+			// =================================================
+			
+			if (exportSuccess) {
+				
+				exportPrefs.edit()
+				.putInt(
+				"export_serial",
+				pendingSerial + 1
+				)
+				.remove(
+				"pending_export_serial"
+				)
+				.remove(
+				"pending_export_format"
+				)
+				.remove(
+				"pending_export_filename"
+				)
+				.apply();
+				
+				
+				Toast.makeText(
+				SettingsActivity.this,
+				"Export saved successfully",
+				Toast.LENGTH_SHORT
+				).show();
+				
+				
+			} else {
+				
+				Toast.makeText(
+				SettingsActivity.this,
+				"Export failed",
+				Toast.LENGTH_SHORT
+				).show();
+			}
+			
+			
+			// =================================================
+			// CLEAR TEMPORARY EXPORT STATE
+			// =================================================
+			
+			exportResultUri = null;
+			
+			pendingExportData = "";
+			
+			return;
+		}
+		
+		
+		// =====================================================
+		// 2. READ SOURCE FILE
+		// =====================================================
+		
+		java.io.File sourceFile =
+		new java.io.File(
+		SettingsActivity.this.getFilesDir(),
+		"saverecords.txt"
+		);
+		
+		
+		if (!sourceFile.exists()) {
+			
+			Toast.makeText(
+			SettingsActivity.this,
+			"No saved records found",
+			Toast.LENGTH_SHORT
+			).show();
+			
+			return;
+		}
+		
+		
+		// =====================================================
+		// 3. READ ALL RECORDS
+		// =====================================================
+		
+		StringBuilder allRecords =
+		new StringBuilder();
+		
+		
+		try {
+			
+			java.io.BufferedReader reader =
+			new java.io.BufferedReader(
+			new java.io.FileReader(
+			sourceFile
+			)
+			);
+			
+			
+			String line;
+			
+			
+			while (
+			(line = reader.readLine()) != null
+			) {
+				
+				allRecords.append(line);
+				allRecords.append("\n");
+			}
+			
+			
+			reader.close();
+			
+			
+		} catch (Exception e) {
+			
+			Toast.makeText(
+			SettingsActivity.this,
+			"Unable to read records",
+			Toast.LENGTH_SHORT
+			).show();
+			
+			return;
+		}
+		
+		
+		// =====================================================
+		// 4. SELECT EXPORT DATA
+		// =====================================================
+		
+		String dataToExport;
+		
+		
+		if ("selected".equals(exportMode)) {
+			
+			android.content.SharedPreferences selectionPrefs =
+			SettingsActivity.this.getSharedPreferences(
+			"selection_settings",
+			MODE_PRIVATE
+			);
+			
+			
+			dataToExport =
+			selectionPrefs.getString(
+			"selected_export_data",
+			""
+			);
+			
+			
+			if (
+			dataToExport == null
+			|| dataToExport.trim().length() == 0
+			) {
+				
+				Toast.makeText(
+				SettingsActivity.this,
+				"No selected data available",
+				Toast.LENGTH_SHORT
+				).show();
+				
+				return;
+			}
+			
+			
+		} else {
+			
+			dataToExport =
+			allRecords.toString();
+		}
+		
+		
+		// =====================================================
+		// 5. CHECK EMPTY DATA
+		// =====================================================
+		
+		if (
+		dataToExport == null
+		|| dataToExport.trim().length() == 0
+		) {
+			
+			Toast.makeText(
+			SettingsActivity.this,
+			"No data available to export",
+			Toast.LENGTH_SHORT
+			).show();
+			
+			return;
+		}
+		
+		
+		// =====================================================
+		// 6. STORE DATA UNTIL PICKER RETURNS
+		// =====================================================
+		
+		pendingExportData =
+		dataToExport;
+		
+		
+		// =====================================================
+		// 7. FORMAT
+		// =====================================================
+		
+		if (
+		exportFormat == null
+		|| exportFormat.length() == 0
+		) {
+			
+			exportFormat =
+			"TXT";
+		}
+		
+		
+		// =====================================================
+		// 8. DATE
+		// =====================================================
+		
+		String exportDate =
+		new java.text.SimpleDateFormat(
+		"yyyyMMdd",
+		java.util.Locale.getDefault()
+		).format(
+		new java.util.Date()
+		);
+		
+		
+		// =====================================================
+		// 9. SERIAL
+		// =====================================================
+		
+		android.content.SharedPreferences exportPrefs =
+		SettingsActivity.this.getSharedPreferences(
+		"export_settings",
+		MODE_PRIVATE
+		);
+		
+		
+		int serial =
+		exportPrefs.getInt(
+		"export_serial",
+		1
+		);
+		
+		
+		// =====================================================
+		// 10. EXTENSION
+		// =====================================================
+		
+		String extension;
+		
+		
+		if ("CSV".equals(exportFormat)) {
+			
+			extension = ".csv";
+			
+		} else if ("PDF".equals(exportFormat)) {
+			
+			extension = ".pdf";
+			
+		} else if ("XLSX".equals(exportFormat)) {
+			
+			extension = ".xlsx";
+			
+		} else {
+			
+			extension = ".txt";
+		}
+		
+		
+		// =====================================================
+		// 11. FILENAME
+		// =====================================================
+		
+		String exportFileName =
+		"SaveRecords_"
+		+ exportDate
+		+ "_"
+		+ serial
+		+ extension;
+		
+		
+		// =====================================================
+		// 12. MIME TYPE
+		// =====================================================
+		
+		String mimeType;
+		
+		
+		if ("CSV".equals(exportFormat)) {
+			
+			mimeType =
+			"text/csv";
+			
+		} else if ("PDF".equals(exportFormat)) {
+			
+			mimeType =
+			"application/pdf";
+			
+		} else if ("XLSX".equals(exportFormat)) {
+			
+			mimeType =
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			
+		} else {
+			
+			mimeType =
+			"text/plain";
+		}
+		
+		
+		// =====================================================
+		// 13. SAVE PENDING INFORMATION
+		// =====================================================
+		
+		exportPrefs.edit()
+		.putInt(
+		"pending_export_serial",
+		serial
+		)
+		.putString(
+		"pending_export_format",
+		exportFormat
+		)
+		.putString(
+		"pending_export_filename",
+		exportFileName
+		)
+		.apply();
+		
+		
+		// =====================================================
+		// 14. OPEN ANDROID SAVE LOCATION PICKER
+		// =====================================================
+		
+		Intent exportIntent =
+		new Intent(
+		Intent.ACTION_CREATE_DOCUMENT
+		);
+		
+		
+		exportIntent.addCategory(
+		Intent.CATEGORY_OPENABLE
+		);
+		
+		
+		exportIntent.setType(
+		mimeType
+		);
+		
+		
+		exportIntent.putExtra(
+		Intent.EXTRA_TITLE,
+		exportFileName
+		);
+		
+		
+		startActivityForResult(
+		exportIntent,
+		1001
+		);
+	}
+	
+}

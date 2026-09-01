@@ -1,0 +1,352 @@
+// =====================================================
+// BACKUP MORE BLOCK
+//
+// Handles:
+// 7001 = BACKUP
+// 7002 = RESTORE
+// =====================================================
+
+
+// =====================================================
+// 1. PROCESS PICKER RESULT
+// =====================================================
+
+if (backupResultReady) {
+
+    backupResultReady = false;
+
+
+    // =================================================
+    // BACKUP RESULT
+    // =================================================
+
+    if (backupResultCode == 7001) {
+
+        if (backupResultUri == null) {
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Backup cancelled",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            backupResultCode = 0;
+            backupResultUri = null;
+            backupAction = "";
+
+            return;
+        }
+
+
+        java.io.InputStream input = null;
+        java.io.OutputStream output = null;
+
+        try {
+
+            java.io.File sourceFile =
+                    new java.io.File(
+                            getFilesDir(),
+                            "saverecords.txt"
+                    );
+
+
+            if (!sourceFile.exists()) {
+
+                Toast.makeText(
+                        SettingsActivity.this,
+                        "No saved records found",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                backupResultCode = 0;
+                backupResultUri = null;
+                backupAction = "";
+
+                return;
+            }
+
+
+            input =
+                    new java.io.FileInputStream(
+                            sourceFile
+                    );
+
+
+            output =
+                    getContentResolver()
+                            .openOutputStream(
+                                    backupResultUri
+                            );
+
+
+            if (output == null) {
+
+                throw new java.io.IOException(
+                        "Unable to create backup file"
+                );
+            }
+
+
+            byte[] buffer =
+                    new byte[8192];
+
+            int length;
+
+
+            while (
+                    (length = input.read(buffer)) != -1
+            ) {
+
+                output.write(
+                        buffer,
+                        0,
+                        length
+                );
+            }
+
+
+            output.flush();
+
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Backup saved successfully",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Backup failed",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } finally {
+
+            try {
+
+                if (input != null) {
+                    input.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+
+            try {
+
+                if (output != null) {
+                    output.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+        }
+
+
+        backupResultCode = 0;
+        backupResultUri = null;
+        backupAction = "";
+
+        return;
+    }
+
+
+    // =================================================
+    // RESTORE RESULT
+    // =================================================
+
+    if (backupResultCode == 7002) {
+
+        if (backupResultUri == null) {
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Restore cancelled",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            backupResultCode = 0;
+            backupResultUri = null;
+            backupAction = "";
+
+            return;
+        }
+
+
+        java.io.InputStream input = null;
+        java.io.FileOutputStream output = null;
+
+        try {
+
+            input =
+                    getContentResolver()
+                            .openInputStream(
+                                    backupResultUri
+                            );
+
+
+            if (input == null) {
+
+                throw new java.io.IOException(
+                        "Unable to open backup file"
+                );
+            }
+
+
+            output =
+                    openFileOutput(
+                            "saverecords.txt",
+                            MODE_PRIVATE
+                    );
+
+
+            byte[] buffer =
+                    new byte[8192];
+
+            int length;
+
+
+            while (
+                    (length = input.read(buffer)) != -1
+            ) {
+
+                output.write(
+                        buffer,
+                        0,
+                        length
+                );
+            }
+
+
+            output.flush();
+
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Restore completed successfully",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Restore failed",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } finally {
+
+            try {
+
+                if (input != null) {
+                    input.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+
+            try {
+
+                if (output != null) {
+                    output.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+        }
+
+
+        backupResultCode = 0;
+        backupResultUri = null;
+        backupAction = "";
+
+        return;
+    }
+}
+
+
+// =====================================================
+// 2. START BACKUP PICKER
+// =====================================================
+
+if ("backup".equals(backupAction)) {
+
+    Intent saveIntent =
+            new Intent(
+                    Intent.ACTION_CREATE_DOCUMENT
+            );
+
+
+    saveIntent.addCategory(
+            Intent.CATEGORY_OPENABLE
+    );
+
+
+    saveIntent.setType(
+            "text/plain"
+    );
+
+
+    saveIntent.putExtra(
+            Intent.EXTRA_TITLE,
+            "DataCollection_Backup.txt"
+    );
+
+
+    startActivityForResult(
+            saveIntent,
+            7001
+    );
+
+
+    return;
+}
+
+
+// =====================================================
+// 3. START RESTORE PICKER
+// =====================================================
+
+if ("restore".equals(backupAction)) {
+
+    Intent openIntent =
+            new Intent(
+                    Intent.ACTION_OPEN_DOCUMENT
+            );
+
+
+    openIntent.addCategory(
+            Intent.CATEGORY_OPENABLE
+    );
+
+
+    openIntent.setType(
+            "text/plain"
+    );
+
+
+    openIntent.putExtra(
+            Intent.EXTRA_MIME_TYPES,
+            new String[] {
+                    "text/plain",
+                    "text/*"
+            }
+    );
+
+
+    startActivityForResult(
+            openIntent,
+            7002
+    );
+
+
+    return;
+}
