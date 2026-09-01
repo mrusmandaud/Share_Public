@@ -1,0 +1,90 @@
+// ========================================================
+// BACKUP / RESTORE
+// 7001 = Backup
+// 7002 = Restore
+// ========================================================
+
+if (
+    _requestCode == 7001
+    || _requestCode == 7002
+) {
+
+    android.content.SharedPreferences state =
+    SettingsActivity.this.getSharedPreferences(
+        "settings_state",
+        MODE_PRIVATE
+    );
+
+    String uriString = "";
+
+    if (
+        _resultCode == RESULT_OK
+        && _data != null
+        && _data.getData() != null
+    ) {
+
+        uriString =
+        _data.getData().toString();
+    }
+
+    state.edit()
+        .putInt(
+            "backup_result_code",
+            _requestCode
+        )
+        .putString(
+            "backup_result_uri",
+            uriString
+        )
+        .putBoolean(
+            "backup_result_ready",
+            true
+        )
+        .apply();
+
+    BACKUP();
+
+    return;
+}
+
+
+// ========================================================
+// EXPORT
+// 1001 = Export
+// ========================================================
+
+if (_requestCode == 1001) {
+
+    android.content.SharedPreferences state =
+    SettingsActivity.this.getSharedPreferences(
+        "settings_state",
+        MODE_PRIVATE
+    );
+
+    String uriString = "";
+
+    if (
+        _resultCode == RESULT_OK
+        && _data != null
+        && _data.getData() != null
+    ) {
+
+        uriString =
+        _data.getData().toString();
+    }
+
+    state.edit()
+        .putString(
+            "export_result_uri",
+            uriString
+        )
+        .putBoolean(
+            "export_result_ready",
+            true
+        )
+        .apply();
+
+    EXPORT();
+
+    return;
+}
