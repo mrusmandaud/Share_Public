@@ -1,0 +1,1454 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.ValueCallback;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.PopupWindow;
+import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+
+/**
+ * ==========================================================
+ * ButtonsController
+ * ==========================================================
+ *
+ * CENTRAL BUTTON LOGIC
+ *
+ * MainActivity
+ *     BACK
+ *     SAVE
+ *     SAVE RECORDS
+ *
+ * Popup Menu
+ *     COPY
+ *     SHARE
+ *     SELECT ALL
+ *     DESELECT ALL
+ *     SELECTED DATA EXPORT
+ *
+ * NewrecordActivity
+ *     SAVE RECORD
+ *     CLEAR
+ *
+ * REMOVED FROM THIS CONTROLLER
+ *
+ *     BACKUP
+ *     RESTORE
+ *     EXPORT (ALL RECORDS)
+ *     SELECTION
+ *     POPUP MENU
+ *     CONTACT US
+ *     ABOUT
+ *
+ * ==========================================================
+ */
+public final class ButtonsController {
+
+
+    // ==========================================================
+    // REQUEST CODES
+    // ==========================================================
+
+    public static final int EXPORT_REQUEST = 1001;
+
+
+    // ==========================================================
+    // FILE NAME
+    // ==========================================================
+
+    private static final String RECORD_FILE =
+            "saverecords.txt";
+
+
+    // ==========================================================
+    // EXPORT PREFERENCES
+    //
+    // Used ONLY for:
+    // SELECTED DATA EXPORT
+    // ==========================================================
+
+    private static final String EXPORT_PREFS =
+            "ExportData";
+
+    private static final String PENDING_EXPORT_TEXT =
+            "pending_export_text";
+
+    private static final String PENDING_EXPORT_NUMBER =
+            "pending_export_number";
+
+    private static final String PENDING_EXPORT_FILENAME =
+            "pending_export_filename";
+
+    private static final String NEXT_EXPORT_NUMBER =
+            "next_export_number";
+
+
+    // ==========================================================
+    // PRIVATE CONSTRUCTOR
+    // ==========================================================
+
+    private ButtonsController() {
+    }
+
+
+    // ==========================================================
+    // COMMON MESSAGE
+    // ==========================================================
+
+    private static void message(
+            Context context,
+            String text
+    ) {
+
+        if (context == null) {
+            return;
+        }
+
+        Toast.makeText(
+                context,
+                text,
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    // ==========================================================
+    // BACK
+    // ==========================================================
+
+    public static void back(
+            Activity activity
+    ) {
+
+        if (activity != null) {
+
+            activity.finish();
+        }
+    }
+
+
+    // ==========================================================
+    // MAIN ACTIVITY SAVE
+    // ==========================================================
+
+    public static void save(
+            MainActivity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        if (!activity.binding.checkbox1.isChecked()) {
+
+            message(
+                    activity,
+                    "Please confirm and save"
+            );
+
+            return;
+        }
+
+
+        String name =
+                activity.binding.nameInput
+                        .getText()
+                        .toString()
+                        .trim();
+
+
+        String phone =
+                activity.binding.phoneInput
+                        .getText()
+                        .toString()
+                        .trim();
+
+
+        String product =
+                activity.binding.productInput
+                        .getText()
+                        .toString()
+                        .trim();
+
+
+        if (name.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please enter Name"
+            );
+
+            activity.binding.nameInput.requestFocus();
+
+            return;
+        }
+
+
+        if (phone.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please enter Phone"
+            );
+
+            activity.binding.phoneInput.requestFocus();
+
+            return;
+        }
+
+
+        if (product.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please enter Product"
+            );
+
+            activity.binding.productInput.requestFocus();
+
+            return;
+        }
+
+
+        String record =
+                name +
+                " | " +
+                phone +
+                " | " +
+                product +
+                "\n";
+
+
+        if (!writeRecord(activity, record)) {
+
+            message(
+                    activity,
+                    "Save error"
+            );
+
+            return;
+        }
+
+
+        activity.binding.nameInput.setText("");
+
+        activity.binding.phoneInput.setText("");
+
+        activity.binding.productInput.setText("");
+
+        activity.binding.checkbox1.setChecked(false);
+
+
+        message(
+                activity,
+                "Saved"
+        );
+    }
+
+
+    // ==========================================================
+    // NEW RECORD ACTIVITY SAVE
+    //
+    // Format:
+    //
+    // Name | Phone | Address | Product
+    //
+    // Returns:
+    //
+    // true  = saved successfully
+    // false = failed
+    // ==========================================================
+
+    public static boolean saveRecord(
+            Activity activity,
+            String name,
+            String phone,
+            String address,
+            String product
+    ) {
+
+        if (activity == null) {
+            return false;
+        }
+
+
+        // ------------------------------------------------------
+        // SAFELY HANDLE NULL VALUES
+        // ------------------------------------------------------
+
+        if (name == null) {
+            name = "";
+        }
+
+        if (phone == null) {
+            phone = "";
+        }
+
+        if (address == null) {
+            address = "";
+        }
+
+        if (product == null) {
+            product = "";
+        }
+
+
+        // ------------------------------------------------------
+        // TRIM VALUES
+        // ------------------------------------------------------
+
+        name = name.trim();
+
+        phone = phone.trim();
+
+        address = address.trim();
+
+        product = product.trim();
+
+
+        // ------------------------------------------------------
+        // VALIDATION
+        // ------------------------------------------------------
+
+        if (name.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please enter Name"
+            );
+
+            return false;
+        }
+
+
+        if (phone.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please enter Phone"
+            );
+
+            return false;
+        }
+
+
+        if (address.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please enter Address"
+            );
+
+            return false;
+        }
+
+
+        if (product.isEmpty()) {
+
+            message(
+                    activity,
+                    "Please select Product"
+            );
+
+            return false;
+        }
+
+
+        // ------------------------------------------------------
+        // RECORD FORMAT
+        // ------------------------------------------------------
+
+        String record =
+                name +
+                " | " +
+                phone +
+                " | " +
+                address +
+                " | " +
+                product +
+                "\n";
+
+
+        // ------------------------------------------------------
+        // WRITE RECORD
+        // ------------------------------------------------------
+
+        boolean saved =
+                writeRecord(
+                        activity,
+                        record
+                );
+
+
+        if (!saved) {
+
+            message(
+                    activity,
+                    "Unable to save record"
+            );
+
+            return false;
+        }
+
+
+        // ------------------------------------------------------
+        // SUCCESS
+        // ------------------------------------------------------
+
+        message(
+                activity,
+                "Saved"
+        );
+
+
+        return true;
+    }
+
+
+    // ==========================================================
+    // WRITE RECORD
+    // ==========================================================
+
+    private static boolean writeRecord(
+            Activity activity,
+            String record
+    ) {
+
+        if (activity == null ||
+                record == null) {
+
+            return false;
+        }
+
+
+        FileOutputStream output = null;
+
+
+        try {
+
+            output =
+                    activity.openFileOutput(
+                            RECORD_FILE,
+                            Context.MODE_APPEND
+                    );
+
+
+            output.write(
+                    record.getBytes("UTF-8")
+            );
+
+
+            output.flush();
+
+            output.close();
+
+            output = null;
+
+
+            return true;
+
+
+        } catch (Exception e) {
+
+            try {
+
+                if (output != null) {
+                    output.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+
+            return false;
+        }
+    }
+
+
+    // ==========================================================
+    // SAVE RECORDS
+    //
+    // Opens MyrecordsActivity.
+    // ==========================================================
+
+    public static void saveRecords(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            MyrecordsActivity.class
+                    );
+
+
+            activity.startActivity(
+                    intent
+            );
+
+
+        } catch (Exception e) {
+
+            message(
+                    activity,
+                    "Unable to open My Records"
+            );
+        }
+    }
+
+
+    // ==========================================================
+    // READ RECORD FILE
+    //
+    // Used by other internal logic if required.
+    // ==========================================================
+
+    private static String readRecords(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return "";
+        }
+
+
+        FileInputStream input = null;
+
+
+        try {
+
+            input =
+                    activity.openFileInput(
+                            RECORD_FILE
+                    );
+
+
+            ByteArrayOutputStream buffer =
+                    new ByteArrayOutputStream();
+
+
+            byte[] data =
+                    new byte[8192];
+
+
+            int length;
+
+
+            while (
+                    (length =
+                            input.read(data)) != -1
+            ) {
+
+                buffer.write(
+                        data,
+                        0,
+                        length
+                );
+            }
+
+
+            input.close();
+
+            input = null;
+
+
+            return buffer.toString(
+                    "UTF-8"
+            );
+
+
+        } catch (Exception e) {
+
+            try {
+
+                if (input != null) {
+                    input.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+
+            return "";
+        }
+    }
+
+
+    // ==========================================================
+    // SELECT ALL
+    // ==========================================================
+
+    public static void selectAll(
+            WebView tableView
+    ) {
+
+        if (tableView == null) {
+            return;
+        }
+
+
+        tableView.evaluateJavascript(
+                "window._selectAllCells && " +
+                "window._selectAllCells();",
+                null
+        );
+    }
+
+
+    // ==========================================================
+    // DESELECT ALL
+    // ==========================================================
+
+    public static void deselectAll(
+            WebView tableView
+    ) {
+
+        if (tableView == null) {
+            return;
+        }
+
+
+        tableView.evaluateJavascript(
+                "window._deselectAllCells && " +
+                "window._deselectAllCells();",
+                null
+        );
+    }
+
+
+    // ==========================================================
+    // SELECTED DATA CALLBACK
+    // ==========================================================
+
+    private interface SelectedDataCallback {
+
+        void onResult(
+                String text
+        );
+    }
+
+
+    // ==========================================================
+    // GET SELECTED DATA
+    // ==========================================================
+
+    private static void getSelectedData(
+            final WebView tableView,
+            final SelectedDataCallback callback
+    ) {
+
+        if (tableView == null) {
+
+            callback.onResult(null);
+
+            return;
+        }
+
+
+        tableView.evaluateJavascript(
+
+                "(function(){" +
+
+                "var cells=" +
+                "document.querySelectorAll(" +
+                "'tbody td.data');" +
+
+                "var selected=[];" +
+
+                "for(var i=0;" +
+                "i<cells.length;i++){" +
+
+                "var bg=" +
+                "getComputedStyle(cells[i])." +
+                "backgroundColor;" +
+
+                "if(bg==='rgb(33, 150, 243)'||" +
+
+                "bg==='rgba(33, 150, 243, 1)'){" +
+
+                "selected.push(cells[i].innerText);" +
+
+                "}" +
+
+                "}" +
+
+                "return JSON.stringify(selected);" +
+
+                "})()",
+
+                new ValueCallback<String>() {
+
+                    @Override
+                    public void onReceiveValue(
+                            String value
+                    ) {
+
+                        try {
+
+                            if (value == null ||
+                                    value.equals("null")) {
+
+                                callback.onResult(null);
+
+                                return;
+                            }
+
+
+                            Object decoded =
+                                    new org.json.JSONTokener(
+                                            value
+                                    ).nextValue();
+
+
+                            if (!(decoded instanceof String)) {
+
+                                callback.onResult(null);
+
+                                return;
+                            }
+
+
+                            org.json.JSONArray array =
+                                    new org.json.JSONArray(
+                                            decoded.toString()
+                                    );
+
+
+                            if (array.length() == 0) {
+
+                                callback.onResult(null);
+
+                                return;
+                            }
+
+
+                            StringBuilder text =
+                                    new StringBuilder();
+
+
+                            for (
+                                    int i = 0;
+                                    i < array.length();
+                                    i++
+                            ) {
+
+                                if (i > 0) {
+                                    text.append("\t");
+                                }
+
+
+                                text.append(
+                                        array.getString(i)
+                                );
+                            }
+
+
+                            callback.onResult(
+                                    text.toString()
+                            );
+
+
+                        } catch (Exception e) {
+
+                            callback.onResult(null);
+                        }
+                    }
+                }
+        );
+    }
+
+
+    // ==========================================================
+    // COPY
+    // ==========================================================
+
+    public static void copy(
+            final Activity activity,
+            final WebView tableView,
+            final PopupWindow popupWindow
+    ) {
+
+        getSelectedData(
+                tableView,
+                new SelectedDataCallback() {
+
+                    @Override
+                    public void onResult(
+                            String text
+                    ) {
+
+                        if (text == null ||
+                                text.isEmpty()) {
+
+                            message(
+                                    activity,
+                                    "Nothing selected"
+                            );
+
+                            return;
+                        }
+
+
+                        ClipboardManager clipboard =
+                                (ClipboardManager)
+                                activity.getSystemService(
+                                        Context.CLIPBOARD_SERVICE
+                                );
+
+
+                        if (clipboard != null) {
+
+                            clipboard.setPrimaryClip(
+                                    ClipData.newPlainText(
+                                            "Selected Records",
+                                            text
+                                    )
+                            );
+
+
+                            message(
+                                    activity,
+                                    "Copied"
+                            );
+
+
+                            if (popupWindow != null) {
+                                popupWindow.dismiss();
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
+
+    // ==========================================================
+    // SHARE
+    // ==========================================================
+
+    public static void share(
+            final Activity activity,
+            final WebView tableView,
+            final PopupWindow popupWindow
+    ) {
+
+        getSelectedData(
+                tableView,
+                new SelectedDataCallback() {
+
+                    @Override
+                    public void onResult(
+                            String text
+                    ) {
+
+                        if (text == null ||
+                                text.isEmpty()) {
+
+                            message(
+                                    activity,
+                                    "Nothing selected"
+                            );
+
+                            return;
+                        }
+
+
+                        Intent intent =
+                                new Intent(
+                                        Intent.ACTION_SEND
+                                );
+
+
+                        intent.setType(
+                                "text/plain"
+                        );
+
+
+                        intent.putExtra(
+                                Intent.EXTRA_TEXT,
+                                text
+                        );
+
+
+                        try {
+
+                            activity.startActivity(
+                                    Intent.createChooser(
+                                            intent,
+                                            "Share Records"
+                                    )
+                            );
+
+
+                            if (popupWindow != null) {
+                                popupWindow.dismiss();
+                            }
+
+
+                        } catch (Exception e) {
+
+                            message(
+                                    activity,
+                                    "Unable to share"
+                            );
+                        }
+                    }
+                }
+        );
+    }
+
+
+    // ==========================================================
+    // SELECTED DATA EXPORT
+    //
+    // This is the ONLY EXPORT function remaining.
+    //
+    // Uses Android save-location picker.
+    //
+    // Filename:
+    //
+    // SaveRecords_YYYYMMDD_SERIAL.txt
+    //
+    // Serial increases ONLY after successful save.
+    // ==========================================================
+
+    public static void exportSelected(
+            final Activity activity,
+            final WebView tableView,
+            final PopupWindow popupWindow
+    ) {
+
+        if (activity == null ||
+                tableView == null) {
+
+            return;
+        }
+
+
+        getSelectedData(
+                tableView,
+                new SelectedDataCallback() {
+
+                    @Override
+                    public void onResult(
+                            String selectedText
+                    ) {
+
+                        if (selectedText == null ||
+                                selectedText.isEmpty()) {
+
+                            message(
+                                    activity,
+                                    "Nothing selected"
+                            );
+
+                            return;
+                        }
+
+
+                        android.content.SharedPreferences prefs =
+                                activity.getSharedPreferences(
+                                        EXPORT_PREFS,
+                                        Context.MODE_PRIVATE
+                                );
+
+
+                        int exportNumber =
+                                prefs.getInt(
+                                        NEXT_EXPORT_NUMBER,
+                                        1
+                                );
+
+
+                        if (exportNumber < 1) {
+                            exportNumber = 1;
+                        }
+
+
+                        SimpleDateFormat dateFormat =
+                                new SimpleDateFormat(
+                                        "yyyyMMdd",
+                                        Locale.US
+                                );
+
+
+                        String date =
+                                dateFormat.format(
+                                        new Date()
+                                );
+
+
+                        String serial =
+                                String.format(
+                                        Locale.US,
+                                        "%02d",
+                                        exportNumber
+                                );
+
+
+                        String fileName =
+                                "SaveRecords_" +
+                                date +
+                                "_" +
+                                serial +
+                                ".txt";
+
+
+                        prefs.edit()
+                                .putString(
+                                        PENDING_EXPORT_TEXT,
+                                        selectedText
+                                )
+                                .putInt(
+                                        PENDING_EXPORT_NUMBER,
+                                        exportNumber
+                                )
+                                .putString(
+                                        PENDING_EXPORT_FILENAME,
+                                        fileName
+                                )
+                                .apply();
+
+
+                        Intent intent =
+                                new Intent(
+                                        Intent.ACTION_CREATE_DOCUMENT
+                                );
+
+
+                        intent.addCategory(
+                                Intent.CATEGORY_OPENABLE
+                        );
+
+
+                        intent.setType(
+                                "text/plain"
+                        );
+
+
+                        intent.putExtra(
+                                Intent.EXTRA_TITLE,
+                                fileName
+                        );
+
+
+                        try {
+
+                            activity.startActivityForResult(
+                                    intent,
+                                    EXPORT_REQUEST
+                            );
+
+
+                            if (popupWindow != null) {
+                                popupWindow.dismiss();
+                            }
+
+
+                        } catch (Exception e) {
+
+                            message(
+                                    activity,
+                                    "Unable to open save location"
+                            );
+                        }
+                    }
+                }
+        );
+    }
+
+
+    // ==========================================================
+    // EXPORT RESULT
+    //
+    // Handles ONLY SELECTED DATA EXPORT.
+    // ==========================================================
+
+    public static void exportResult(
+            Activity activity,
+            int resultCode,
+            Intent data
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        if (resultCode != Activity.RESULT_OK ||
+                data == null ||
+                data.getData() == null) {
+
+            message(
+                    activity,
+                    "Save cancelled"
+            );
+
+            return;
+        }
+
+
+        Uri uri =
+                data.getData();
+
+
+        android.content.SharedPreferences prefs =
+                activity.getSharedPreferences(
+                        EXPORT_PREFS,
+                        Context.MODE_PRIVATE
+                );
+
+
+        String exportText =
+                prefs.getString(
+                        PENDING_EXPORT_TEXT,
+                        ""
+                );
+
+
+        int exportNumber =
+                prefs.getInt(
+                        PENDING_EXPORT_NUMBER,
+                        1
+                );
+
+
+        if (exportText == null ||
+                exportText.trim().isEmpty()) {
+
+            message(
+                    activity,
+                    "Export data is empty"
+            );
+
+            return;
+        }
+
+
+        OutputStream output = null;
+
+
+        try {
+
+            output =
+                    activity
+                            .getContentResolver()
+                            .openOutputStream(uri);
+
+
+            if (output == null) {
+                throw new Exception();
+            }
+
+
+            output.write(
+                    exportText.getBytes("UTF-8")
+            );
+
+
+            output.flush();
+
+            output.close();
+
+            output = null;
+
+
+            // --------------------------------------------------
+            // SERIAL INCREASES ONLY AFTER SUCCESS
+            // --------------------------------------------------
+
+            prefs.edit()
+                    .putInt(
+                            NEXT_EXPORT_NUMBER,
+                            exportNumber + 1
+                    )
+                    .remove(
+                            PENDING_EXPORT_TEXT
+                    )
+                    .remove(
+                            PENDING_EXPORT_NUMBER
+                    )
+                    .remove(
+                            PENDING_EXPORT_FILENAME
+                    )
+                    .apply();
+
+
+            message(
+                    activity,
+                    "File saved successfully"
+            );
+
+
+        } catch (Exception e) {
+
+            try {
+
+                if (output != null) {
+                    output.close();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+
+            message(
+                    activity,
+                    "Unable to save file"
+            );
+        }
+    }
+
+
+    // ==========================================================
+    // GET PRODUCTS
+    //
+    // Used by NewrecordActivity.
+    //
+    // Reads:
+    //
+    // products.txt
+    // product.txt
+    //
+    // First file containing products is used.
+    // ==========================================================
+
+    public static ArrayList<String> getProducts(
+            Activity activity
+    ) {
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+
+        if (activity == null) {
+            return products;
+        }
+
+
+        String[] possibleFiles = {
+                "products.txt",
+                "product.txt"
+        };
+
+
+        for (
+                int f = 0;
+                f < possibleFiles.length;
+                f++
+        ) {
+
+            String fileName =
+                    possibleFiles[f];
+
+
+            File file =
+                    new File(
+                            activity.getFilesDir(),
+                            fileName
+                    );
+
+
+            if (!file.exists()) {
+                continue;
+            }
+
+
+            FileInputStream input = null;
+
+
+            try {
+
+                input =
+                        new FileInputStream(
+                                file
+                        );
+
+
+                ByteArrayOutputStream buffer =
+                        new ByteArrayOutputStream();
+
+
+                byte[] data =
+                        new byte[4096];
+
+
+                int length;
+
+
+                while (
+                        (length =
+                                input.read(data)) != -1
+                ) {
+
+                    buffer.write(
+                            data,
+                            0,
+                            length
+                    );
+                }
+
+
+                input.close();
+
+                input = null;
+
+
+                String content =
+                        buffer.toString(
+                                "UTF-8"
+                        );
+
+
+                String[] lines =
+                        content.split(
+                                "\\r?\\n"
+                        );
+
+
+                for (
+                        int i = 0;
+                        i < lines.length;
+                        i++
+                ) {
+
+                    String product =
+                            lines[i].trim();
+
+
+                    if (!product.isEmpty() &&
+                            !products.contains(product)) {
+
+                        products.add(
+                                product
+                        );
+                    }
+                }
+
+
+            } catch (Exception e) {
+
+                try {
+
+                    if (input != null) {
+                        input.close();
+                    }
+
+                } catch (Exception ignored) {
+                }
+            }
+
+
+            if (!products.isEmpty()) {
+                break;
+            }
+        }
+
+
+        return products;
+    }
+
+
+    // ==========================================================
+    // NEW RECORD CLEAR
+    //
+    // Used by NewrecordActivity CLEAR button.
+    //
+    // Clears:
+    // Name
+    // Phone
+    // Address
+    // Product Spinner
+    // ==========================================================
+
+    public static void newRecordClear(
+            NewrecordActivity activity
+    ) {
+
+        if (activity == null ||
+                activity.binding == null) {
+
+            return;
+        }
+
+
+        // ------------------------------------------------------
+        // CLEAR NAME
+        // ------------------------------------------------------
+
+        activity.binding.nameInput.setText("");
+
+
+        // ------------------------------------------------------
+        // CLEAR PHONE
+        // ------------------------------------------------------
+
+        activity.binding.phoneInput.setText("");
+
+
+        // ------------------------------------------------------
+        // CLEAR ADDRESS
+        // ------------------------------------------------------
+
+        activity.binding.addressInput.setText("");
+
+
+        // ------------------------------------------------------
+        // RESET PRODUCT SPINNER
+        // ------------------------------------------------------
+
+        if (activity.binding.productSpinner != null &&
+                activity.binding.productSpinner.getAdapter() != null &&
+                activity.binding.productSpinner
+                        .getAdapter()
+                        .getCount() > 0) {
+
+            activity.binding.productSpinner.setSelection(
+                    0
+            );
+        }
+
+
+        // ------------------------------------------------------
+        // FOCUS NAME
+        // ------------------------------------------------------
+
+        activity.binding.nameInput.requestFocus();
+
+
+        // ------------------------------------------------------
+        // MESSAGE
+        // ------------------------------------------------------
+
+        message(
+                activity,
+                "Cleared"
+        );
+    }
+}
