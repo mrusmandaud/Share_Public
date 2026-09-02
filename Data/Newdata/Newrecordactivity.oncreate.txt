@@ -1,0 +1,115 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+
+public class NewrecordActivity extends Activity {
+
+    private EditText recordName;
+    private EditText recordPhone;
+    private EditText recordAddress;
+    private Spinner recordProduct;
+    private CheckBox recordConfirmCheckBox;
+
+    private Button saveRecordButton;
+    private Button clearRecordButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.newrecord);
+
+        // =========================================
+        // NEW RECORD XML VIEWS
+        // =========================================
+
+        recordName = findViewById(R.id.recordName);
+        recordPhone = findViewById(R.id.recordPhone);
+        recordAddress = findViewById(R.id.recordAddress);
+        recordProduct = findViewById(R.id.recordProduct);
+        recordConfirmCheckBox =
+                findViewById(R.id.recordConfirmCheckBox);
+
+        saveRecordButton =
+                findViewById(R.id.saveRecordButton);
+
+        clearRecordButton =
+                findViewById(R.id.clearRecordButton);
+
+
+        // =========================================
+        // PRODUCT SPINNER
+        // Products come from ButtonsController
+        // =========================================
+
+        ArrayList<String> productList =
+                ButtonsController.getProducts(
+                        NewrecordActivity.this
+                );
+
+        ArrayAdapter<String> productAdapter =
+                new ArrayAdapter<String>(
+                        NewrecordActivity.this,
+                        android.R.layout.simple_spinner_item,
+                        productList
+                );
+
+        productAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        recordProduct.setAdapter(productAdapter);
+
+
+        // =========================================
+        // SAVE RECORD BUTTON
+        // =========================================
+
+        saveRecordButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ButtonsController.saveRecord(
+                                NewrecordActivity.this,
+                                recordName,
+                                recordPhone,
+                                recordAddress,
+                                recordProduct,
+                                recordConfirmCheckBox
+                        );
+                    }
+                }
+        );
+
+
+        // =========================================
+        // CLEAR BUTTON
+        // =========================================
+
+        clearRecordButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ButtonsController.clearRecord(
+                                recordName,
+                                recordPhone,
+                                recordAddress,
+                                recordProduct,
+                                recordConfirmCheckBox
+                        );
+                    }
+                }
+        );
+    }
+}

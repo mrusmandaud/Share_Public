@@ -1,0 +1,424 @@
+// ==========================================================
+// MY RECORDS - ON CREATE
+// ==========================================================
+
+binding =
+        com.myrecords.onenewexperience.one.databinding.MyrecordsBinding.inflate(
+                getLayoutInflater()
+        );
+
+setContentView(binding.getRoot());
+
+
+// ==========================================================
+// BACK BUTTON
+// ==========================================================
+
+binding.myRecordsBackButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.back(
+                        MyrecordsActivity.this
+                );
+            }
+        }
+);
+
+
+// ==========================================================
+// CREATE RECORDS WEBVIEW
+// ==========================================================
+
+final android.webkit.WebView tableView =
+        new android.webkit.WebView(
+                MyrecordsActivity.this
+        );
+
+tableView.setBackgroundColor(
+        android.graphics.Color.WHITE
+);
+
+tableView.setLongClickable(true);
+
+tableView.getSettings().setJavaScriptEnabled(true);
+
+tableView.getSettings().setDomStorageEnabled(true);
+
+tableView.setHorizontalScrollBarEnabled(false);
+
+tableView.setVerticalScrollBarEnabled(true);
+
+tableView.setOverScrollMode(
+        android.view.View.OVER_SCROLL_NEVER
+);
+
+tableView.setLayoutParams(
+        new android.widget.LinearLayout.LayoutParams(
+                -1,
+                -1
+        )
+);
+
+
+// ==========================================================
+// NO WEBVIEW CONTEXT MENU
+// ==========================================================
+
+tableView.setOnCreateContextMenuListener(null);
+
+
+// ==========================================================
+// PUT WEBVIEW INSIDE RECORDS CONTAINER
+// ==========================================================
+
+binding.recordsContainer.removeAllViews();
+
+binding.recordsContainer.addView(
+        tableView
+);
+
+
+// ==========================================================
+// READ myrecords.txt
+// ==========================================================
+
+String savedData = "";
+
+try {
+
+    java.io.FileInputStream fis =
+            openFileInput(
+                    "myrecords.txt"
+            );
+
+    java.io.ByteArrayOutputStream buffer =
+            new java.io.ByteArrayOutputStream();
+
+    byte[] readBuffer =
+            new byte[8192];
+
+    int length;
+
+    while (
+            (length = fis.read(readBuffer)) != -1
+    ) {
+
+        buffer.write(
+                readBuffer,
+                0,
+                length
+        );
+    }
+
+    fis.close();
+
+    savedData =
+            buffer.toString("UTF-8");
+
+} catch (Exception e) {
+
+    savedData = "";
+}
+
+
+// ==========================================================
+// COUNT RECORDS
+// ==========================================================
+
+int recordCount = 0;
+
+String[] countRecords =
+        savedData.split(
+                "\\r?\\n"
+        );
+
+for (String record : countRecords) {
+
+    if (!record.trim().equals("")) {
+
+        recordCount++;
+    }
+}
+
+binding.recordsCount.setText(
+        String.valueOf(recordCount)
+);
+
+
+// ==========================================================
+// EMPTY STATE
+// ==========================================================
+
+if (recordCount == 0) {
+
+    binding.recordsEmptyState.setVisibility(
+            android.view.View.VISIBLE
+    );
+
+} else {
+
+    binding.recordsEmptyState.setVisibility(
+            android.view.View.GONE
+    );
+}
+
+
+// ==========================================================
+// TABLE COLUMNS
+//
+// # | Name | Phone | Address | Product
+// ==========================================================
+
+String[] fields = {
+        "#",
+        "Name",
+        "Phone",
+        "Address",
+        "Product"
+};
+
+
+// ==========================================================
+// BUILD HTML TABLE
+// ==========================================================
+
+final StringBuilder html =
+        new StringBuilder();
+
+html.append(
+        "<!DOCTYPE html>" +
+        "<html>" +
+        "<head>" +
+
+        "<meta name='viewport' " +
+        "content='width=device-width, initial-scale=1.0, " +
+        "maximum-scale=1.0, user-scalable=no'>" +
+
+        "<style>" +
+
+        "html,body{" +
+        "margin:0;" +
+        "padding:0;" +
+        "background:white;" +
+        "width:100%;" +
+        "overflow-x:hidden;" +
+        "}" +
+
+        "*{" +
+        "box-sizing:border-box;" +
+        "}" +
+
+        "body{" +
+        "font-family:sans-serif;" +
+        "font-size:15px;" +
+        "}" +
+
+        "table{" +
+        "border-collapse:collapse;" +
+        "width:100%;" +
+        "table-layout:fixed;" +
+        "}" +
+
+        "th:first-child," +
+        "td.number{" +
+        "width:40px;" +
+        "min-width:40px;" +
+        "max-width:40px;" +
+        "padding-left:3px;" +
+        "padding-right:3px;" +
+        "text-align:center;" +
+        "}" +
+
+        "th,td{" +
+        "border:1px solid #808080;" +
+        "padding:12px 8px;" +
+        "height:24px;" +
+        "overflow-wrap:anywhere;" +
+        "word-break:break-word;" +
+        "}" +
+
+        "th{" +
+        "background:rgb(21,101,192);" +
+        "color:white;" +
+        "font-size:16px;" +
+        "font-weight:bold;" +
+        "text-align:center;" +
+        "}" +
+
+        "td{" +
+        "background:white;" +
+        "color:black;" +
+        "font-size:15px;" +
+        "}" +
+
+        ".number{" +
+        "text-align:center;" +
+        "-webkit-user-select:none;" +
+        "user-select:none;" +
+        "}" +
+
+        ".data{" +
+        "text-align:left;" +
+        "-webkit-user-select:none;" +
+        "user-select:none;" +
+        "}" +
+
+        "</style>" +
+
+        "</head>" +
+        "<body>" +
+
+        "<table>" +
+        "<thead>" +
+        "<tr>"
+);
+
+
+// ==========================================================
+// TABLE HEADERS
+// ==========================================================
+
+for (int i = 0; i < fields.length; i++) {
+
+    html.append("<th>");
+
+    html.append(
+            android.text.TextUtils.htmlEncode(
+                    fields[i]
+            )
+    );
+
+    html.append("</th>");
+}
+
+html.append(
+        "</tr>" +
+        "</thead>" +
+        "<tbody>"
+);
+
+
+// ==========================================================
+// ADD RECORDS
+// ==========================================================
+
+String[] records =
+        savedData.split(
+                "\\r?\\n"
+        );
+
+int number = 1;
+
+for (String record : records) {
+
+    if (!record.trim().equals("")) {
+
+        String[] parts =
+                record.split(
+                        "\\s*\\|\\s*",
+                        -1
+                );
+
+        html.append("<tr>");
+
+
+        // ==================================================
+        // #
+        // ==================================================
+
+        html.append(
+                "<td class='number'>"
+        );
+
+        html.append(
+                String.valueOf(number)
+        );
+
+        html.append("</td>");
+
+
+        // ==================================================
+        // NAME
+        // PHONE
+        // ADDRESS
+        // PRODUCT
+        // ==================================================
+
+        for (int i = 0; i < 4; i++) {
+
+            html.append(
+                    "<td class='data'>"
+            );
+
+            if (parts.length > i) {
+
+                html.append(
+                        android.text.TextUtils.htmlEncode(
+                                parts[i]
+                        )
+                );
+            }
+
+            html.append("</td>");
+        }
+
+
+        html.append("</tr>");
+
+        number++;
+    }
+}
+
+
+// ==========================================================
+// CLOSE TABLE
+// ==========================================================
+
+html.append(
+        "</tbody>" +
+        "</table>" +
+        "</body>" +
+        "</html>"
+);
+
+
+// ==========================================================
+// LOAD TABLE
+// ==========================================================
+
+tableView.loadDataWithBaseURL(
+        null,
+        html.toString(),
+        "text/html",
+        "UTF-8",
+        null
+);
+
+
+// ==========================================================
+// LONG PRESS → popup_menu
+// ==========================================================
+
+tableView.setOnLongClickListener(
+        new android.view.View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(
+                    android.view.View v
+            ) {
+
+                popup_menu();
+
+                return true;
+            }
+        }
+);
+
+
+// ==========================================================
+// INSTALL SELECTION LOGIC
+// ==========================================================
+
+SELECTION();

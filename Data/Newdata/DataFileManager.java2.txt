@@ -1,0 +1,1931 @@
+package com.myrecords.onenewexperience.one;
+
+import android.content.Context;
+import android.net.Uri;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public class DataFileManager {
+
+    private static final String RECORDS_FILE =
+            "myrecords.txt";
+
+    private static final String PRODUCTS_FILE =
+            "products.txt";
+
+    private DataFileManager() {
+    }
+
+    public static ArrayList<String[]> readRecords(
+            Context context
+    ) throws IOException {
+
+        ArrayList<String[]> records =
+                new ArrayList<String[]>();
+
+        File file =
+                new File(
+                        context.getFilesDir(),
+                        RECORDS_FILE
+                );
+
+        if (!file.exists()) {
+            return records;
+        }
+
+        FileInputStream input =
+                new FileInputStream(file);
+
+        ByteArrayOutputStream data =
+                new ByteArrayOutputStream();
+
+        byte[] buffer =
+                new byte[8192];
+
+        int length;
+
+        while ((length =
+                input.read(buffer)) != -1) {
+
+            data.write(
+                    buffer,
+                    0,
+                    length
+            );
+        }
+
+        input.close();
+
+        String text =
+                new String(
+                        data.toByteArray(),
+                        StandardCharsets.UTF_8
+                );
+
+        String[] lines =
+                text.split(
+                        "\\r?\\n"
+                );
+
+        for (int i = 0;
+                i < lines.length;
+                i++) {
+
+            String line =
+                    lines[i].trim();
+
+            if (line.equals("")) {
+                continue;
+            }
+
+            String[] parts =
+                    line.split(
+                            "\\|",
+                            -1
+                    );
+
+            String[] record =
+                    new String[4];
+
+            for (int j = 0;
+                    j < 4;
+                    j++) {
+
+                if (j < parts.length) {
+                    record[j] =
+                            parts[j].trim();
+                } else {
+                    record[j] = "";
+                }
+            }
+
+            records.add(record);
+        }
+
+        return records;
+    }
+
+    public static void writeRecords(
+            Context context,
+            List<String[]> records
+    ) throws IOException {
+
+        FileOutputStream output =
+                context.openFileOutput(
+                        RECORDS_FILE,
+                        Context.MODE_PRIVATE
+                );
+
+        for (int i = 0;
+                i < records.size();
+                i++) {
+
+            String[] record =
+                    records.get(i);
+
+            for (int j = 0;
+                    j < 4;
+                    j++) {
+
+                if (j > 0) {
+                    output.write(
+                            " | ".getBytes(
+                                    StandardCharsets.UTF_8
+                            )
+                    );
+                }
+
+                String value =
+                        record != null
+                                && j < record.length
+                                && record[j] != null
+                                ? record[j]
+                                : "";
+
+                output.write(
+                        value.getBytes(
+                                StandardCharsets.UTF_8
+                        )
+                );
+            }
+
+            output.write(
+                    "\n".getBytes(
+                            StandardCharsets.UTF_8
+                    )
+            );
+        }
+
+        output.flush();
+        output.close();
+    }
+
+    public static ArrayList<String> loadProducts(
+            Context context
+    ) throws IOException {
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+        File file =
+                new File(
+                        context.getFilesDir(),
+                        PRODUCTS_FILE
+                );
+
+        if (!file.exists()) {
+            return products;
+        }
+
+        FileInputStream input =
+                new FileInputStream(file);
+
+        ByteArrayOutputStream data =
+                new ByteArrayOutputStream();
+
+        byte[] buffer =
+                new byte[8192];
+
+        int length;
+
+        while ((length =
+                input.read(buffer)) != -1) {
+
+            data.write(
+                    buffer,
+                    0,
+                    length
+            );
+        }
+
+        input.close();
+
+        String text =
+                new String(
+                        data.toByteArray(),
+                        StandardCharsets.UTF_8
+                );
+
+        String[] lines =
+                text.split(
+                        "\\r?\\n"
+                );
+
+        for (int i = 0;
+                i < lines.length;
+                i++) {
+
+            String product =
+                    lines[i].trim();
+
+            if (!product.equals("")
+                    && !products.contains(product)) {
+
+                products.add(product);
+            }
+        }
+
+        return products;
+    }
+
+    public static void saveProducts(
+            Context context,
+            List<String> products
+    ) throws IOException {
+
+        FileOutputStream output =
+                context.openFileOutput(
+                        PRODUCTS_FILE,
+                        Context.MODE_PRIVATE
+                );
+
+        Set<String> written =
+                new HashSet<String>();
+
+        for (int i = 0;
+                i < products.size();
+                i++) {
+
+            String product =
+                    products.get(i);
+
+            if (product == null) {
+                continue;
+            }
+
+            product =
+                    product.trim();
+
+            if (product.equals("")
+                    || written.contains(product)) {
+                continue;
+            }
+
+            written.add(product);
+
+            output.write(
+                    product.getBytes(
+                            StandardCharsets.UTF_8
+                    )
+            );
+
+            output.write(
+                    "\n".getBytes(
+                            StandardCharsets.UTF_8
+                    )
+            );
+        }
+
+        output.flush();
+        output.close();
+    }
+
+    public static void addProduct(
+            Context context,
+            String product
+    ) throws IOException {
+
+        String value =
+                product == null
+                        ? ""
+                        : product.trim();
+
+        if (value.equals("")) {
+            throw new IOException(
+                    "Product name is empty"
+            );
+        }
+
+        ArrayList<String> products =
+                loadProducts(context);
+
+        if (!products.contains(value)) {
+            products.add(value);
+            saveProducts(
+                    context,
+                    products
+            );
+        }
+    }
+
+    public static void removeProduct(
+            Context context,
+            String product
+    ) throws IOException {
+
+        ArrayList<String> products =
+                loadProducts(context);
+
+        products.remove(product);
+
+        saveProducts(
+                context,
+                products
+        );
+    }
+
+    public static int importProducts(
+            Context context,
+            Uri uri
+    ) throws Exception {
+
+        String name =
+                getDisplayName(
+                        context,
+                        uri
+                );
+
+        String lower =
+                name.toLowerCase(
+                        Locale.US
+                );
+
+        ArrayList<String> imported;
+
+        if (lower.endsWith(".xlsx")) {
+
+            imported =
+                    importProductsFromXlsx(
+                            context,
+                            uri
+                    );
+
+        } else if (lower.endsWith(".csv")) {
+
+            imported =
+                    importProductsFromCsv(
+                            context,
+                            uri
+                    );
+
+        } else if (lower.endsWith(".txt")) {
+
+            imported =
+                    importProductsFromTxt(
+                            context,
+                            uri
+                    );
+
+        } else {
+
+            throw new IOException(
+                    "Only TXT, CSV and XLSX files are supported"
+            );
+        }
+
+        ArrayList<String> existing =
+                loadProducts(context);
+
+        int count = 0;
+
+        for (int i = 0;
+                i < imported.size();
+                i++) {
+
+            String product =
+                    imported.get(i);
+
+            if (product == null) {
+                continue;
+            }
+
+            product =
+                    product.trim();
+
+            if (product.equals("")) {
+                continue;
+            }
+
+            if (!existing.contains(product)) {
+
+                existing.add(product);
+                count++;
+            }
+        }
+
+        saveProducts(
+                context,
+                existing
+        );
+
+        return count;
+    }
+
+    private static ArrayList<String>
+    importProductsFromTxt(
+            Context context,
+            Uri uri
+    ) throws Exception {
+
+        String text =
+                readUriText(
+                        context,
+                        uri
+                );
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+        String[] lines =
+                text.split(
+                        "\\r?\\n"
+                );
+
+        for (int i = 0;
+                i < lines.length;
+                i++) {
+
+            String value =
+                    lines[i].trim();
+
+            if (!value.equals("")) {
+                products.add(value);
+            }
+        }
+
+        return products;
+    }
+
+    private static ArrayList<String>
+    importProductsFromCsv(
+            Context context,
+            Uri uri
+    ) throws Exception {
+
+        String text =
+                readUriText(
+                        context,
+                        uri
+                );
+
+        ArrayList<String[]> rows =
+                parseCsv(text);
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+        int productColumn = 0;
+
+        if (!rows.isEmpty()) {
+
+            String[] header =
+                    rows.get(0);
+
+            for (int i = 0;
+                    i < header.length;
+                    i++) {
+
+                String h =
+                        header[i]
+                                .trim()
+                                .toLowerCase(
+                                        Locale.US
+                                );
+
+                if (h.equals("product")
+                        || h.equals("products")) {
+
+                    productColumn = i;
+                    break;
+                }
+            }
+
+            int start =
+                    headerContainsProduct(
+                            header
+                    )
+                            ? 1
+                            : 0;
+
+            for (int i = start;
+                    i < rows.size();
+                    i++) {
+
+                String[] row =
+                        rows.get(i);
+
+                if (productColumn
+                        < row.length) {
+
+                    String value =
+                            row[productColumn]
+                                    .trim();
+
+                    if (!value.equals("")) {
+                        products.add(value);
+                    }
+                }
+            }
+        }
+
+        return products;
+    }
+
+    private static ArrayList<String>
+    importProductsFromXlsx(
+            Context context,
+            Uri uri
+    ) throws Exception {
+
+        byte[] bytes =
+                readUriBytes(
+                        context,
+                        uri
+                );
+
+        HashMap<String, byte[]> entries =
+                readZipEntries(bytes);
+
+        byte[] workbookBytes =
+                entries.get(
+                        "xl/workbook.xml"
+                );
+
+        byte[] relsBytes =
+                entries.get(
+                        "xl/_rels/workbook.xml.rels"
+                );
+
+        if (workbookBytes == null
+                || relsBytes == null) {
+
+            throw new IOException(
+                    "Invalid XLSX workbook"
+            );
+        }
+
+        Document workbook =
+                parseXml(workbookBytes);
+
+        Document rels =
+                parseXml(relsBytes);
+
+        Element sheet =
+                findFirstElement(
+                        workbook,
+                        "sheet"
+                );
+
+        if (sheet == null) {
+            throw new IOException(
+                    "No worksheet found"
+            );
+        }
+
+        String relationshipId =
+                sheet.getAttribute(
+                        "r:id"
+                );
+
+        if (relationshipId.equals("")) {
+
+            relationshipId =
+                    sheet.getAttribute(
+                            "id"
+                    );
+        }
+
+        String target =
+                findRelationshipTarget(
+                        rels,
+                        relationshipId
+                );
+
+        if (target == null
+                || target.equals("")) {
+
+            throw new IOException(
+                    "Worksheet relationship not found"
+            );
+        }
+
+        String worksheetPath =
+                resolveXlsxPath(
+                        "xl/workbook.xml",
+                        target
+                );
+
+        byte[] worksheetBytes =
+                entries.get(
+                        worksheetPath
+                );
+
+        if (worksheetBytes == null) {
+
+            throw new IOException(
+                    "Worksheet not found"
+            );
+        }
+
+        ArrayList<String> sharedStrings =
+                readSharedStrings(
+                        entries.get(
+                                "xl/sharedStrings.xml"
+                        )
+                );
+
+        Document worksheet =
+                parseXml(
+                        worksheetBytes
+                );
+
+        NodeList cells =
+                worksheet.getElementsByTagName(
+                        "c"
+                );
+
+        ArrayList<ArrayList<String>> rows =
+                new ArrayList<ArrayList<String>>();
+
+        int maxRow = -1;
+
+        for (int i = 0;
+                i < cells.getLength();
+                i++) {
+
+            Element cell =
+                    (Element) cells.item(i);
+
+            String reference =
+                    cell.getAttribute(
+                            "r"
+                    );
+
+            int rowIndex =
+                    getRowIndex(
+                            reference
+                    );
+
+            if (rowIndex > maxRow) {
+                maxRow = rowIndex;
+            }
+        }
+
+        for (int i = 0;
+                i <= maxRow;
+                i++) {
+
+            rows.add(
+                    new ArrayList<String>()
+            );
+        }
+
+        for (int i = 0;
+                i < cells.getLength();
+                i++) {
+
+            Element cell =
+                    (Element) cells.item(i);
+
+            String reference =
+                    cell.getAttribute(
+                            "r"
+                    );
+
+            int rowIndex =
+                    getRowIndex(
+                            reference
+                    );
+
+            int columnIndex =
+                    getColumnIndex(
+                            reference
+                    );
+
+            while (
+                    rows.get(rowIndex).size()
+                            <= columnIndex
+            ) {
+
+                rows.get(rowIndex).add("");
+            }
+
+            String value =
+                    readXlsxCell(
+                            cell,
+                            sharedStrings
+                    );
+
+            rows.get(rowIndex)
+                    .set(
+                            columnIndex,
+                            value
+                    );
+        }
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+        if (rows.isEmpty()) {
+            return products;
+        }
+
+        ArrayList<String> firstRow =
+                rows.get(0);
+
+        int productColumn = -1;
+
+        for (int i = 0;
+                i < firstRow.size();
+                i++) {
+
+            String h =
+                    firstRow.get(i)
+                            .trim()
+                            .toLowerCase(
+                                    Locale.US
+                            );
+
+            if (h.equals("product")
+                    || h.equals("products")) {
+
+                productColumn = i;
+                break;
+            }
+        }
+
+        int startRow;
+
+        if (productColumn >= 0) {
+            startRow = 1;
+        } else {
+            productColumn = 0;
+            startRow = 0;
+        }
+
+        for (int i = startRow;
+                i < rows.size();
+                i++) {
+
+            ArrayList<String> row =
+                    rows.get(i);
+
+            if (productColumn
+                    < row.size()) {
+
+                String value =
+                        row.get(productColumn)
+                                .trim();
+
+                if (!value.equals("")) {
+                    products.add(value);
+                }
+            }
+        }
+
+        return products;
+    }
+
+    public static void exportRecords(
+            Context context,
+            Uri uri,
+            String format
+    ) throws Exception {
+
+        if (format == null) {
+            throw new IOException(
+                    "Export format is missing"
+            );
+        }
+
+        ArrayList<String[]> records =
+                readRecords(context);
+
+        if (records.isEmpty()) {
+            throw new IOException(
+                    "No records to export"
+            );
+        }
+
+        String selected =
+                format.trim()
+                        .toUpperCase(
+                                Locale.US
+                        );
+
+        if (selected.equals("TXT")) {
+
+            exportTxt(
+                    context,
+                    uri,
+                    records
+            );
+
+        } else if (selected.equals("CSV")) {
+
+            exportCsv(
+                    context,
+                    uri,
+                    records
+            );
+
+        } else if (selected.equals("XLSX")) {
+
+            exportXlsx(
+                    context,
+                    uri,
+                    records
+            );
+
+        } else {
+
+            throw new IOException(
+                    "Unsupported export format"
+            );
+        }
+    }
+
+    private static void exportTxt(
+            Context context,
+            Uri uri,
+            ArrayList<String[]> records
+    ) throws Exception {
+
+        OutputStream output =
+                context.getContentResolver()
+                        .openOutputStream(uri);
+
+        if (output == null) {
+            throw new IOException(
+                    "Unable to open export file"
+            );
+        }
+
+        writeUtf8(
+                output,
+                "# | Name | Phone | Address | Product\n"
+        );
+
+        for (int i = 0;
+                i < records.size();
+                i++) {
+
+            String[] record =
+                    records.get(i);
+
+            writeUtf8(
+                    output,
+                    String.valueOf(i + 1)
+                            + " | "
+                            + value(record, 0)
+                            + " | "
+                            + value(record, 1)
+                            + " | "
+                            + value(record, 2)
+                            + " | "
+                            + value(record, 3)
+                            + "\n"
+            );
+        }
+
+        output.flush();
+        output.close();
+    }
+
+    private static void exportCsv(
+            Context context,
+            Uri uri,
+            ArrayList<String[]> records
+    ) throws Exception {
+
+        OutputStream output =
+                context.getContentResolver()
+                        .openOutputStream(uri);
+
+        if (output == null) {
+            throw new IOException(
+                    "Unable to open export file"
+            );
+        }
+
+        output.write(
+                new byte[] {
+                        (byte)0xEF,
+                        (byte)0xBB,
+                        (byte)0xBF
+                }
+        );
+
+        writeUtf8(
+                output,
+                csv(" # ")
+                        .replace(" # ", "#")
+                        + ","
+                        + csv("Name")
+                        + ","
+                        + csv("Phone")
+                        + ","
+                        + csv("Address")
+                        + ","
+                        + csv("Product")
+                        + "\r\n"
+        );
+
+        for (int i = 0;
+                i < records.size();
+                i++) {
+
+            String[] record =
+                    records.get(i);
+
+            writeUtf8(
+                    output,
+                    csv(String.valueOf(i + 1))
+                            + ","
+                            + csv(value(record, 0))
+                            + ","
+                            + csv(value(record, 1))
+                            + ","
+                            + csv(value(record, 2))
+                            + ","
+                            + csv(value(record, 3))
+                            + "\r\n"
+            );
+        }
+
+        output.flush();
+        output.close();
+    }
+
+    private static void exportXlsx(
+            Context context,
+            Uri uri,
+            ArrayList<String[]> records
+    ) throws Exception {
+
+        OutputStream output =
+                context.getContentResolver()
+                        .openOutputStream(uri);
+
+        if (output == null) {
+            throw new IOException(
+                    "Unable to open XLSX file"
+            );
+        }
+
+        ZipOutputStream zip =
+                new ZipOutputStream(output);
+
+        putZipEntry(
+                zip,
+                "[Content_Types].xml",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"
+                        + "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>"
+                        + "<Default Extension=\"xml\" ContentType=\"application/xml\"/>"
+                        + "<Override PartName=\"/xl/workbook.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\"/>"
+                        + "<Override PartName=\"/xl/worksheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>"
+                        + "</Types>"
+        );
+
+        putZipEntry(
+                zip,
+                "_rels/.rels",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+                        + "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"xl/workbook.xml\"/>"
+                        + "</Relationships>"
+        );
+
+        putZipEntry(
+                zip,
+                "xl/workbook.xml",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"
+                        + "<sheets>"
+                        + "<sheet name=\"Records\" sheetId=\"1\" r:id=\"rId1\"/>"
+                        + "</sheets>"
+                        + "</workbook>"
+        );
+
+        putZipEntry(
+                zip,
+                "xl/_rels/workbook.xml.rels",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+                        + "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/>"
+                        + "</Relationships>"
+        );
+
+        StringBuilder sheet =
+                new StringBuilder();
+
+        sheet.append(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        );
+
+        sheet.append(
+                "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"
+        );
+
+        sheet.append("<sheetData>");
+
+        appendXlsxRow(
+                sheet,
+                1,
+                new String[] {
+                        "#",
+                        "Name",
+                        "Phone",
+                        "Address",
+                        "Product"
+                }
+        );
+
+        for (int i = 0;
+                i < records.size();
+                i++) {
+
+            String[] record =
+                    records.get(i);
+
+            appendXlsxRow(
+                    sheet,
+                    i + 2,
+                    new String[] {
+                            String.valueOf(i + 1),
+                            value(record, 0),
+                            value(record, 1),
+                            value(record, 2),
+                            value(record, 3)
+                    }
+            );
+        }
+
+        sheet.append("</sheetData>");
+        sheet.append("</worksheet>");
+
+        putZipEntry(
+                zip,
+                "xl/worksheets/sheet1.xml",
+                sheet.toString()
+        );
+
+        zip.finish();
+        zip.close();
+    }
+
+    private static void appendXlsxRow(
+            StringBuilder builder,
+            int rowNumber,
+            String[] values
+    ) {
+
+        builder.append(
+                "<row r=\""
+                        + rowNumber
+                        + "\">"
+        );
+
+        for (int i = 0;
+                i < values.length;
+                i++) {
+
+            String cell =
+                    columnName(i)
+                            + rowNumber;
+
+            builder.append(
+                    "<c r=\""
+                            + cell
+                            + "\" t=\"inlineStr\">"
+            );
+
+            builder.append(
+                    "<is><t>"
+                            + xmlEscape(
+                                    values[i]
+                            )
+                            + "</t></is>"
+            );
+
+            builder.append("</c>");
+        }
+
+        builder.append("</row>");
+    }
+
+    private static String readXlsxCell(
+            Element cell,
+            ArrayList<String> sharedStrings
+    ) {
+
+        String type =
+                cell.getAttribute(
+                        "t"
+                );
+
+        if (type.equals("inlineStr")) {
+
+            return concatenateTextNodes(
+                    cell,
+                    "t"
+            );
+        }
+
+        String value =
+                firstChildText(
+                        cell,
+                        "v"
+                );
+
+        if (value == null) {
+            value = "";
+        }
+
+        if (type.equals("s")) {
+
+            try {
+
+                int index =
+                        Integer.parseInt(
+                                value.trim()
+                        );
+
+                if (index >= 0
+                        && index < sharedStrings.size()) {
+
+                    return sharedStrings.get(
+                            index
+                    );
+                }
+
+            } catch (Exception ignored) {
+            }
+
+            return "";
+        }
+
+        if (type.equals("b")) {
+
+            return value.equals("1")
+                    ? "TRUE"
+                    : "FALSE";
+        }
+
+        return value;
+    }
+
+    private static ArrayList<String>
+    readSharedStrings(
+            byte[] bytes
+    ) throws Exception {
+
+        ArrayList<String> result =
+                new ArrayList<String>();
+
+        if (bytes == null) {
+            return result;
+        }
+
+        Document document =
+                parseXml(bytes);
+
+        NodeList items =
+                document.getElementsByTagName(
+                        "si"
+                );
+
+        for (int i = 0;
+                i < items.getLength();
+                i++) {
+
+            Element item =
+                    (Element) items.item(i);
+
+            result.add(
+                    concatenateTextNodes(
+                            item,
+                            "t"
+                    )
+            );
+        }
+
+        return result;
+    }
+
+    private static String
+    findRelationshipTarget(
+            Document document,
+            String relationshipId
+    ) {
+
+        NodeList nodes =
+                document.getElementsByTagName(
+                        "Relationship"
+                );
+
+        for (int i = 0;
+                i < nodes.getLength();
+                i++) {
+
+            Element element =
+                    (Element) nodes.item(i);
+
+            if (relationshipId.equals(
+                    element.getAttribute(
+                            "Id"
+                    )
+            )) {
+
+                return element.getAttribute(
+                        "Target"
+                );
+            }
+        }
+
+        return null;
+    }
+
+    private static String
+    resolveXlsxPath(
+            String base,
+            String target
+    ) {
+
+        if (target.startsWith("/")) {
+            return normalizePath(
+                    target.substring(1)
+            );
+        }
+
+        int slash =
+                base.lastIndexOf('/');
+
+        String directory =
+                slash >= 0
+                        ? base.substring(
+                                0,
+                                slash + 1
+                        )
+                        : "";
+
+        return normalizePath(
+                directory + target
+        );
+    }
+
+    private static String normalizePath(
+            String path
+    ) {
+
+        String[] parts =
+                path.split("/");
+
+        ArrayList<String> stack =
+                new ArrayList<String>();
+
+        for (int i = 0;
+                i < parts.length;
+                i++) {
+
+            String part =
+                    parts[i];
+
+            if (part.equals("")
+                    || part.equals(".")) {
+                continue;
+            }
+
+            if (part.equals("..")) {
+
+                if (!stack.isEmpty()) {
+                    stack.remove(
+                            stack.size() - 1
+                    );
+                }
+
+            } else {
+
+                stack.add(part);
+            }
+        }
+
+        StringBuilder result =
+                new StringBuilder();
+
+        for (int i = 0;
+                i < stack.size();
+                i++) {
+
+            if (i > 0) {
+                result.append("/");
+            }
+
+            result.append(
+                    stack.get(i)
+            );
+        }
+
+        return result.toString();
+    }
+
+    private static Document parseXml(
+            byte[] bytes
+    ) throws Exception {
+
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+
+        try {
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true
+            );
+        } catch (Exception ignored) {
+        }
+
+        try {
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false
+            );
+        } catch (Exception ignored) {
+        }
+
+        try {
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false
+            );
+        } catch (Exception ignored) {
+        }
+
+        factory.setExpandEntityReferences(
+                false
+        );
+
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
+
+        return builder.parse(
+                new ByteArrayInputStream(
+                        bytes
+                )
+        );
+    }
+
+    private static Element
+    findFirstElement(
+            Document document,
+            String name
+    ) {
+
+        NodeList nodes =
+                document.getElementsByTagName(
+                        name
+                );
+
+        if (nodes.getLength() == 0) {
+            return null;
+        }
+
+        return (Element) nodes.item(0);
+    }
+
+    private static String
+    firstChildText(
+            Element element,
+            String name
+    ) {
+
+        NodeList nodes =
+                element.getElementsByTagName(
+                        name
+                );
+
+        if (nodes.getLength() == 0) {
+            return null;
+        }
+
+        Node node =
+                nodes.item(0);
+
+        return node.getTextContent();
+    }
+
+    private static String
+    concatenateTextNodes(
+            Element element,
+            String name
+    ) {
+
+        NodeList nodes =
+                element.getElementsByTagName(
+                        name
+                );
+
+        StringBuilder result =
+                new StringBuilder();
+
+        for (int i = 0;
+                i < nodes.getLength();
+                i++) {
+
+            Node node =
+                    nodes.item(i);
+
+            result.append(
+                    node.getTextContent()
+            );
+        }
+
+        return result.toString();
+    }
+
+    private static int getRowIndex(
+            String reference
+    ) {
+
+        int row = 0;
+
+        for (int i = 0;
+                i < reference.length();
+                i++) {
+
+            char c =
+                    reference.charAt(i);
+
+            if (Character.isDigit(c)) {
+
+                row =
+                        row * 10
+                                + (
+                                        c - '0'
+                                );
+            }
+        }
+
+        return Math.max(
+                0,
+                row - 1
+        );
+    }
+
+    private static int getColumnIndex(
+            String reference
+    ) {
+
+        int column = 0;
+
+        for (int i = 0;
+                i < reference.length();
+                i++) {
+
+            char c =
+                    reference.charAt(i);
+
+            if (Character.isLetter(c)) {
+
+                column =
+                        column * 26
+                                + (
+                                        Character
+                                                .toUpperCase(c)
+                                                - 'A'
+                                        + 1
+                                );
+            } else {
+                break;
+            }
+        }
+
+        return Math.max(
+                0,
+                column - 1
+        );
+    }
+
+    private static String columnName(
+            int index
+    ) {
+
+        StringBuilder result =
+                new StringBuilder();
+
+        int value =
+                index + 1;
+
+        while (value > 0) {
+
+            int remainder =
+                    (value - 1) % 26;
+
+            result.insert(
+                    0,
+                    (char) (
+                            'A'
+                                    + remainder
+                    )
+            );
+
+            value =
+                    (value - 1) / 26;
+        }
+
+        return result.toString();
+    }
+
+    private static HashMap<String, byte[]>
+    readZipEntries(
+            byte[] bytes
+    ) throws Exception {
+
+        HashMap<String, byte[]> entries =
+                new HashMap<String, byte[]>();
+
+        ZipInputStream zip =
+                new ZipInputStream(
+                        new ByteArrayInputStream(
+                                bytes
+                        )
+                );
+
+        ZipEntry entry;
+
+        byte[] buffer =
+                new byte[8192];
+
+        while ((entry =
+                zip.getNextEntry()) != null) {
+
+            ByteArrayOutputStream data =
+                    new ByteArrayOutputStream();
+
+            int length;
+
+            while ((length =
+                    zip.read(buffer)) != -1) {
+
+                data.write(
+                        buffer,
+                        0,
+                        length
+                );
+            }
+
+            entries.put(
+                    entry.getName(),
+                    data.toByteArray()
+            );
+
+            zip.closeEntry();
+        }
+
+        zip.close();
+
+        return entries;
+    }
+
+    private static void putZipEntry(
+            ZipOutputStream zip,
+            String name,
+            String text
+    ) throws Exception {
+
+        ZipEntry entry =
+                new ZipEntry(name);
+
+        zip.putNextEntry(entry);
+
+        byte[] bytes =
+                text.getBytes(
+                        StandardCharsets.UTF_8
+                );
+
+        zip.write(bytes);
+        zip.closeEntry();
+    }
+
+    private static String readUriText(
+            Context context,
+            Uri uri
+    ) throws Exception {
+
+        return new String(
+                readUriBytes(
+                        context,
+                        uri
+                ),
+                StandardCharsets.UTF_8
+        );
+    }
+
+    private static byte[] readUriBytes(
+            Context context,
+            Uri uri
+    ) throws Exception {
+
+        InputStream input =
+                context.getContentResolver()
+                        .openInputStream(uri);
+
+        if (input == null) {
+            throw new IOException(
+                    "Unable to read file"
+            );
+        }
+
+        ByteArrayOutputStream data =
+                new ByteArrayOutputStream();
+
+        byte[] buffer =
+                new byte[8192];
+
+        int length;
+
+        while ((length =
+                input.read(buffer)) != -1) {
+
+            data.write(
+                    buffer,
+                    0,
+                    length
+            );
+        }
+
+        input.close();
+
+        return data.toByteArray();
+    }
+
+    private static String getDisplayName(
+            Context context,
+            Uri uri
+    ) {
+
+        String name = null;
+
+        android.database.Cursor cursor =
+                context.getContentResolver()
+                        .query(
+                                uri,
+                                new String[] {
+                                        "_display_name"
+                                },
+                                null,
+                                null,
+                                null
+                        );
+
+        if (cursor != null) {
+
+            try {
+
+                if (cursor.moveToFirst()) {
+
+                    int index =
+                            cursor.getColumnIndex(
+                                    "_display_name"
+                            );
+
+                    if (index >= 0) {
+                        name =
+                                cursor.getString(
+                                        index
+                                );
+                    }
+                }
+
+            } finally {
+
+                cursor.close();
+            }
+        }
+
+        if (name == null
+                || name.equals("")) {
+
+            name = "file.txt";
+        }
+
+        return name;
+    }
+
+    private static ArrayList<String[]>
+    parseCsv(
+            String text
+    ) {
+
+        ArrayList<String[]> rows =
+                new ArrayList<String[]>();
+
+        ArrayList<String> currentRow =
+                new ArrayList<String>();
+
+        StringBuilder current =
+                new StringBuilder();
+
+        boolean quoted = false;
+
+        for (int i = 0;
+                i < text.length();
+                i++) {
+
+            char c =
+                    text.charAt(i);
+
+            if (c == '"') {
+
+                if (quoted
+                        && i + 1 < text.length()
+                        && text.charAt(i + 1)
+                                == '"') {
+
+                    current.append('"');
+                    i++;
+
+                } else {
+
+                    quoted = !quoted;
+                }
+
+            } else if (c == ','
+                    && !quoted) {
+
+                currentRow.add(
+                        current.toString()
+                );
+
+                current.setLength(0);
+
+            } else if (
+                    (c == '\n'
+                            || c == '\r')
+                            && !quoted
+            ) {
+
+                if (c == '\r'
+                        && i + 1 < text.length()
+                        && text.charAt(i + 1)
+                                == '\n') {
+
+                    i++;
+                }
+
+                currentRow.add(
+                        current.toString()
+                );
+
+                current.setLength(0);
+
+                rows.add(
+                        currentRow.toArray(
+                                new String[0]
+                        )
+                );
+
+                currentRow =
+                        new ArrayList<String>();
+
+            } else {
+
+                current.append(c);
+            }
+        }
+
+        if (current.length() > 0
+                || !currentRow.isEmpty()) {
+
+            currentRow.add(
+                    current.toString()
+            );
+
+            rows.add(
+                    currentRow.toArray(
+                            new String[0]
+                    )
+            );
+        }
+
+        return rows;
+    }
+
+    private static boolean
+    headerContainsProduct(
+            String[] header
+    ) {
+
+        for (int i = 0;
+                i < header.length;
+                i++) {
+
+            String value =
+                    header[i]
+                            .trim()
+                            .toLowerCase(
+                                    Locale.US
+                            );
+
+            if (value.equals("product")
+                    || value.equals("products")) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String csv(
+            String value
+    ) {
+
+        if (value == null) {
+            value = "";
+        }
+
+        return "\""
+                + value.replace(
+                        "\"",
+                        "\"\""
+                )
+                + "\"";
+    }
+
+    private static String value(
+            String[] record,
+            int index
+    ) {
+
+        if (record == null
+                || index >= record.length
+                || record[index] == null) {
+
+            return "";
+        }
+
+        return record[index];
+    }
+
+    private static void writeUtf8(
+            OutputStream output,
+            String text
+    ) throws Exception {
+
+        output.write(
+                text.getBytes(
+                        StandardCharsets.UTF_8
+                )
+        );
+    }
+
+    private static String xmlEscape(
+            String value
+    ) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace(
+                        "&",
+                        "&amp;"
+                )
+                .replace(
+                        "<",
+                        "&lt;"
+                )
+                .replace(
+                        ">",
+                        "&gt;"
+                )
+                .replace(
+                        "\"",
+                        "&quot;"
+                )
+                .replace(
+                        "'",
+                        "&apos;"
+                );
+    }
+}

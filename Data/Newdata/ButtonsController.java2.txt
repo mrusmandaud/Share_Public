@@ -1,0 +1,716 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.net.Uri;
+import android.view.Gravity;
+import android.webkit.WebView;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class ButtonsController {
+
+    private static final String RECORDS_FILE = "myrecords.txt";
+    private static final String PRODUCTS_PREF = "products_state";
+    private static final String PRODUCTS_KEY = "products";
+
+    // =========================================================
+    // MAIN ACTIVITY
+    // =========================================================
+
+    public static void newRecord(Activity activity) {
+        Intent intent = new Intent(activity, NewrecordActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void myRecords(Activity activity) {
+        Intent intent = new Intent(activity, MyrecordsActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void export(Activity activity) {
+        /*
+         * Main Export button.
+         *
+         * The complete export implementation remains in the
+         * Settings EXPORT More Block / export workflow.
+         *
+         * This opens Settings so the existing export workflow
+         * can be used without duplicating it here.
+         */
+        try {
+            Intent intent = new Intent(activity, SettingsActivity.class);
+            intent.putExtra("open_export", true);
+            activity.startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(
+                    activity,
+                    "Export is not available",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+    // =========================================================
+    // BACK
+    // =========================================================
+
+    public static void back(Activity activity) {
+        activity.finish();
+    }
+
+    // =========================================================
+    // SAVE RECORD
+    // =========================================================
+
+    public static boolean saveRecord(
+            Activity activity,
+            EditText nameView,
+            EditText phoneView,
+            EditText addressView,
+            Spinner productSpinner,
+            CheckBox confirm
+    ) {
+
+        if (confirm == null || !confirm.isChecked()) {
+            Toast.makeText(
+                    activity,
+                    "Please confirm and agree to save",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+        String name = "";
+
+        if (nameView != null && nameView.getText() != null) {
+            name = nameView.getText().toString().trim();
+        }
+
+        String phone = "";
+
+        if (phoneView != null && phoneView.getText() != null) {
+            phone = phoneView.getText().toString().trim();
+        }
+
+        String address = "";
+
+        if (addressView != null && addressView.getText() != null) {
+            address = addressView.getText().toString().trim();
+        }
+
+        String product = "";
+
+        if (productSpinner != null
+                && productSpinner.getSelectedItem() != null) {
+
+            product = productSpinner
+                    .getSelectedItem()
+                    .toString()
+                    .trim();
+        }
+
+        if (name.length() == 0) {
+            Toast.makeText(
+                    activity,
+                    "Please enter Name",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+        if (phone.length() == 0) {
+            Toast.makeText(
+                    activity,
+                    "Please enter Phone",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+        if (address.length() == 0) {
+            Toast.makeText(
+                    activity,
+                    "Please enter Address",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+        if (product.length() == 0
+                || product.equalsIgnoreCase("Select Product")) {
+
+            Toast.makeText(
+                    activity,
+                    "Please select Product",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+        String record =
+                name
+                + " | "
+                + phone
+                + " | "
+                + address
+                + " | "
+                + product
+                + "\n";
+
+        FileOutputStream output = null;
+
+        try {
+
+            output = activity.openFileOutput(
+                    RECORDS_FILE,
+                    Context.MODE_APPEND
+            );
+
+            output.write(record.getBytes("UTF-8"));
+            output.flush();
+
+            Toast.makeText(
+                    activity,
+                    "Record saved successfully",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            clearRecord(
+                    nameView,
+                    phoneView,
+                    addressView,
+                    productSpinner,
+                    confirm
+            );
+
+            return true;
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to save record",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+
+        } finally {
+
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    // =========================================================
+    // CLEAR RECORD
+    // =========================================================
+
+    public static void clearRecord(
+            EditText nameView,
+            EditText phoneView,
+            EditText addressView,
+            Spinner productSpinner,
+            CheckBox confirm
+    ) {
+
+        if (nameView != null) {
+            nameView.setText("");
+        }
+
+        if (phoneView != null) {
+            phoneView.setText("");
+        }
+
+        if (addressView != null) {
+            addressView.setText("");
+        }
+
+        if (productSpinner != null
+                && productSpinner.getAdapter() != null
+                && productSpinner.getAdapter().getCount() > 0) {
+
+            productSpinner.setSelection(0);
+        }
+
+        if (confirm != null) {
+            confirm.setChecked(false);
+        }
+    }
+
+    // =========================================================
+    // READ RECORDS
+    // =========================================================
+
+    public static ArrayList<String> getRecords(Activity activity) {
+
+        ArrayList<String> records = new ArrayList<String>();
+
+        BufferedReader reader = null;
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(RECORDS_FILE);
+
+            reader = new BufferedReader(
+                    new InputStreamReader(input, "UTF-8")
+            );
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                line = line.trim();
+
+                if (line.length() > 0) {
+                    records.add(line);
+                }
+            }
+
+        } catch (Exception e) {
+
+            // File does not exist yet.
+            // Return an empty list.
+
+        } finally {
+
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        return records;
+    }
+
+    // =========================================================
+    // COPY SELECTED CELLS
+    // =========================================================
+
+    public static void copy(
+            Activity activity,
+            WebView webView,
+            android.widget.PopupWindow popupWindow
+    ) {
+
+        if (webView == null) {
+            return;
+        }
+
+        String javascript =
+                "(function(){"
+                + "var cells=document.querySelectorAll('tbody td.data');"
+                + "var selected=[];"
+                + "for(var i=0;i<cells.length;i++){"
+                + "if(cells[i].style.backgroundColor=='rgb(33, 150, 243)'"
+                + "||cells[i].style.backgroundColor=='#2196F3'){"
+                + "selected.push(cells[i].innerText);"
+                + "}"
+                + "}"
+                + "return selected.join('\\t');"
+                + "})()";
+
+        webView.evaluateJavascript(
+                javascript,
+                value -> {
+
+                    if (value == null
+                            || value.equals("null")
+                            || value.equals("\"\"")) {
+
+                        Toast.makeText(
+                                activity,
+                                "No cells selected",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        return;
+                    }
+
+                    String text = value;
+
+                    if (text.length() >= 2
+                            && text.startsWith("\"")
+                            && text.endsWith("\"")) {
+
+                        text = text.substring(
+                                1,
+                                text.length() - 1
+                        );
+                    }
+
+                    text = text
+                            .replace("\\n", "\n")
+                            .replace("\\t", "\t")
+                            .replace("\\\"", "\"")
+                            .replace("\\\\", "\\");
+
+                    android.content.ClipboardManager clipboard =
+                            (android.content.ClipboardManager)
+                                    activity.getSystemService(
+                                            Context.CLIPBOARD_SERVICE
+                                    );
+
+                    if (clipboard != null) {
+
+                        android.content.ClipData clip =
+                                android.content.ClipData.newPlainText(
+                                        "Selected Data",
+                                        text
+                                );
+
+                        clipboard.setPrimaryClip(clip);
+
+                        Toast.makeText(
+                                activity,
+                                "Copied",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+
+                    if (popupWindow != null) {
+                        popupWindow.dismiss();
+                    }
+                }
+        );
+    }
+
+    // =========================================================
+    // SHARE SELECTED CELLS
+    // =========================================================
+
+    public static void share(
+            Activity activity,
+            WebView webView,
+            android.widget.PopupWindow popupWindow
+    ) {
+
+        if (webView == null) {
+            return;
+        }
+
+        String javascript =
+                "(function(){"
+                + "var cells=document.querySelectorAll('tbody td.data');"
+                + "var selected=[];"
+                + "for(var i=0;i<cells.length;i++){"
+                + "if(cells[i].style.backgroundColor=='rgb(33, 150, 243)'"
+                + "||cells[i].style.backgroundColor=='#2196F3'){"
+                + "selected.push(cells[i].innerText);"
+                + "}"
+                + "}"
+                + "return selected.join('\\t');"
+                + "})()";
+
+        webView.evaluateJavascript(
+                javascript,
+                value -> {
+
+                    if (value == null
+                            || value.equals("null")
+                            || value.equals("\"\"")) {
+
+                        Toast.makeText(
+                                activity,
+                                "No cells selected",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        return;
+                    }
+
+                    String text = value;
+
+                    if (text.length() >= 2
+                            && text.startsWith("\"")
+                            && text.endsWith("\"")) {
+
+                        text = text.substring(
+                                1,
+                                text.length() - 1
+                        );
+                    }
+
+                    text = text
+                            .replace("\\n", "\n")
+                            .replace("\\t", "\t")
+                            .replace("\\\"", "\"")
+                            .replace("\\\\", "\\");
+
+                    Intent shareIntent =
+                            new Intent(Intent.ACTION_SEND);
+
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(
+                            Intent.EXTRA_TEXT,
+                            text
+                    );
+
+                    activity.startActivity(
+                            Intent.createChooser(
+                                    shareIntent,
+                                    "Share"
+                            )
+                    );
+
+                    if (popupWindow != null) {
+                        popupWindow.dismiss();
+                    }
+                }
+        );
+    }
+
+    // =========================================================
+    // SELECT ALL
+    // =========================================================
+
+    public static void selectAll(WebView webView) {
+
+        if (webView == null) {
+            return;
+        }
+
+        webView.evaluateJavascript(
+                "(function(){"
+                + "if(typeof window._selectAllCells==='function'){"
+                + "window._selectAllCells();"
+                + "}"
+                + "})()",
+                null
+        );
+    }
+
+    // =========================================================
+    // DESELECT ALL
+    // =========================================================
+
+    public static void deselectAll(WebView webView) {
+
+        if (webView == null) {
+            return;
+        }
+
+        webView.evaluateJavascript(
+                "(function(){"
+                + "if(typeof window._deselectAllCells==='function'){"
+                + "window._deselectAllCells();"
+                + "}"
+                + "})()",
+                null
+        );
+    }
+
+    // =========================================================
+    // PRODUCTS
+    // =========================================================
+
+    public static ArrayList<String> getProducts(Activity activity) {
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+        SharedPreferences preferences =
+                activity.getSharedPreferences(
+                        PRODUCTS_PREF,
+                        Context.MODE_PRIVATE
+                );
+
+        String saved =
+                preferences.getString(
+                        PRODUCTS_KEY,
+                        ""
+                );
+
+        if (saved != null && saved.trim().length() > 0) {
+
+            String[] values =
+                    saved.split("\\|", -1);
+
+            for (String value : values) {
+
+                value = value.trim();
+
+                if (value.length() > 0) {
+                    products.add(value);
+                }
+            }
+        }
+
+        /*
+         * Keep the Spinner usable when no products have yet
+         * been created from Settings → Data → Products.
+         */
+        if (products.size() == 0) {
+            products.add("Select Product");
+        }
+
+        return products;
+    }
+
+    public static void saveProducts(
+            Activity activity,
+            ArrayList<String> products
+    ) {
+
+        StringBuilder builder =
+                new StringBuilder();
+
+        if (products != null) {
+
+            for (String product : products) {
+
+                if (product == null) {
+                    continue;
+                }
+
+                product = product.trim();
+
+                if (product.length() == 0) {
+                    continue;
+                }
+
+                if (builder.length() > 0) {
+                    builder.append("|");
+                }
+
+                builder.append(product);
+            }
+        }
+
+        activity.getSharedPreferences(
+                PRODUCTS_PREF,
+                Context.MODE_PRIVATE
+        )
+        .edit()
+        .putString(
+                PRODUCTS_KEY,
+                builder.toString()
+        )
+        .apply();
+    }
+
+    public static void addProduct(
+            Activity activity,
+            String product
+    ) {
+
+        if (product == null) {
+            return;
+        }
+
+        product = product.trim();
+
+        if (product.length() == 0) {
+            return;
+        }
+
+        ArrayList<String> products =
+                getProducts(activity);
+
+        if (products.size() == 1
+                && products.get(0).equals("Select Product")) {
+
+            products.clear();
+        }
+
+        if (!products.contains(product)) {
+            products.add(product);
+        }
+
+        saveProducts(
+                activity,
+                products
+        );
+    }
+
+    public static void removeProduct(
+            Activity activity,
+            String product
+    ) {
+
+        if (product == null) {
+            return;
+        }
+
+        ArrayList<String> products =
+                getProducts(activity);
+
+        products.remove(product);
+
+        saveProducts(
+                activity,
+                products
+        );
+    }
+
+    // =========================================================
+    // FILE EXISTS
+    // =========================================================
+
+    public static boolean recordsFileExists(
+            Activity activity
+    ) {
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+            input.close();
+
+            return true;
+
+        } catch (Exception e) {
+
+            return false;
+        }
+    }
+
+    // =========================================================
+    // FILE URI HELPER
+    // =========================================================
+
+    public static Uri getFileUri(
+            Activity activity
+    ) {
+
+        try {
+
+            return Uri.parse(
+                    activity.getFilesDir()
+                            .getAbsolutePath()
+            );
+
+        } catch (Exception e) {
+
+            return null;
+        }
+    }
+}
