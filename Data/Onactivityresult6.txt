@@ -1,0 +1,68 @@
+@Override
+protected void onActivityResult(
+        int requestCode,
+        int resultCode,
+        Intent data) {
+
+    super.onActivityResult(
+            requestCode,
+            resultCode,
+            data
+    );
+
+    // =====================================================
+    // BACKUP / RESTORE
+    //
+    // 7001 = Backup
+    // 7002 = Restore
+    // =====================================================
+
+    if (requestCode == 7001 || requestCode == 7002) {
+
+        backupResultCode = requestCode;
+
+        if (resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null) {
+
+            backupResultUri = data.getData();
+
+        } else {
+
+            backupResultUri = null;
+        }
+
+        backupResultReady = true;
+
+        BACKUP();
+
+        return;
+    }
+
+
+    // =====================================================
+    // EXPORT
+    //
+    // 1001 = Export
+    // =====================================================
+
+    if (requestCode == 1001) {
+
+        if (resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null) {
+
+            exportResultUri = data.getData();
+
+        } else {
+
+            exportResultUri = null;
+        }
+
+        exportResultReady = true;
+
+        EXPORT();
+
+        return;
+    }
+}
