@@ -1,0 +1,154 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/aboutScroll"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fillViewport="true"
+	android:background="#F7FAF9"
+	android:scrollbars="none">
+
+	<LinearLayout
+		android:id="@+id/aboutRoot"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="24dp"
+		android:background="#F5F8F7"
+		android:orientation="vertical">
+
+		<FrameLayout
+			android:id="@+id/aboutHeader"
+			android:layout_width="match_parent"
+			android:layout_height="58dp"
+			android:background="#00796B"
+			android:elevation="3dp">
+
+			<TextView
+				android:id="@+id/aboutBack"
+				android:layout_width="46dp"
+				android:layout_height="46dp"
+				android:layout_gravity="start|center_vertical"
+				android:gravity="center"
+				android:text="‹"
+				android:textSize="32sp"
+				android:textColor="#FFFFFF"
+				android:fontFamily="sans" />
+
+			<TextView
+				android:id="@+id/aboutHeaderTitle"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center"
+				android:text="About"
+				android:textSize="20sp"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF" />
+
+		</FrameLayout>
+
+		<LinearLayout
+			android:id="@+id/aboutIntro"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="16dp"
+			android:layout_marginTop="30dp"
+			android:layout_marginRight="16dp"
+			android:gravity="center_horizontal"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/aboutAppIcon"
+				android:layout_width="76dp"
+				android:layout_height="76dp"
+				android:background="#E0F2F1"
+				android:gravity="center"
+				android:text="M"
+				android:textSize="32sp"
+				android:textStyle="bold"
+				android:textColor="#00796B" />
+
+			<TextView
+				android:id="@+id/aboutAppName"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="16dp"
+				android:gravity="center"
+				android:text="MyRecords"
+				android:textSize="24sp"
+				android:textStyle="bold"
+				android:textColor="#263238" />
+
+			<TextView
+				android:id="@+id/aboutAppSubtitle"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="4dp"
+				android:gravity="center"
+				android:text="Data Collection App"
+				android:textSize="12sp"
+				android:textColor="#78909C" />
+
+		</LinearLayout>
+
+		<androidx.cardview.widget.CardView
+			android:id="@+id/aboutInfoCard"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="12dp"
+			android:layout_marginTop="28dp"
+			android:layout_marginRight="12dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="12dp"
+			app:cardElevation="1dp">
+
+			<LinearLayout
+				android:id="@+id/aboutInfoLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="18dp"
+				android:orientation="vertical">
+
+				<TextView
+					android:id="@+id/aboutVersionLabel"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="VERSION"
+					android:textSize="11sp"
+					android:textStyle="bold"
+					android:textColor="#00796B" />
+
+				<TextView
+					android:id="@+id/aboutVersion"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="5dp"
+					android:text="1.0"
+					android:textSize="15sp"
+					android:textColor="#263238" />
+
+				<TextView
+					android:id="@+id/aboutDescription"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="18dp"
+					android:text="A simple application for managing records and exporting your data."
+					android:textSize="12sp"
+					android:textColor="#607D7B" />
+
+			</LinearLayout>
+
+		</androidx.cardview.widget.CardView>
+
+		<TextView
+			android:id="@+id/aboutCopyright"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="24dp"
+			android:gravity="center"
+			android:text="© 2026 MyRecords"
+			android:textSize="11sp"
+			android:textColor="#90A4AE" />
+
+	</LinearLayout>
+</ScrollView>
