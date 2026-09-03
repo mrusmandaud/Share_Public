@@ -1,0 +1,190 @@
+final androidx.drawerlayout.widget.DrawerLayout drawer =
+        findViewById(R.id.drawerMain);
+
+final View sidebar =
+        getLayoutInflater().inflate(
+                R.layout.sidebar,
+                drawer,
+                false
+        );
+
+androidx.drawerlayout.widget.DrawerLayout.LayoutParams p =
+        new androidx.drawerlayout.widget.DrawerLayout.LayoutParams(
+                (int) (300 * getResources().getDisplayMetrics().density),
+                -1
+        );
+
+p.gravity = android.view.Gravity.START;
+
+drawer.addView(sidebar, p);
+
+
+// =====================================================
+// MAIN PAGE → NEW RECORD
+// =====================================================
+
+findViewById(R.id.btnNewRecord).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                ButtonsController.newRecord(
+                        MainActivity.this
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// MAIN PAGE → MY RECORDS
+// =====================================================
+
+findViewById(R.id.btnMyRecords).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                ButtonsController.myRecords(
+                        MainActivity.this
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// MAIN PAGE → EXPORT
+// =====================================================
+
+findViewById(R.id.btnExport).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                ButtonsController.export(
+                        MainActivity.this
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// MENU BUTTON
+// =====================================================
+
+findViewById(R.id.btnMenu).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                drawer.openDrawer(
+                        android.view.Gravity.START
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// SIDEBAR → NEW RECORD
+// =====================================================
+
+sidebar.findViewById(
+        R.id.btnSidebarNewRecord
+).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                drawer.closeDrawer(
+                        android.view.Gravity.START
+                );
+
+                ButtonsController.newRecord(
+                        MainActivity.this
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// SIDEBAR → MY RECORDS
+// =====================================================
+
+sidebar.findViewById(
+        R.id.btnSidebarMyRecords
+).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                drawer.closeDrawer(
+                        android.view.Gravity.START
+                );
+
+                ButtonsController.myRecords(
+                        MainActivity.this
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// SIDEBAR → EXPORT
+// =====================================================
+
+sidebar.findViewById(
+        R.id.btnSidebarExport
+).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                drawer.closeDrawer(
+                        android.view.Gravity.START
+                );
+
+                ButtonsController.export(
+                        MainActivity.this
+                );
+            }
+        }
+);
+
+
+// =====================================================
+// SIDEBAR → SETTINGS
+// =====================================================
+
+sidebar.findViewById(
+        R.id.btnSidebarSettings
+).setOnClickListener(
+        new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                drawer.closeDrawer(
+                        android.view.Gravity.START
+                );
+
+                startActivity(
+                        new Intent(
+                                MainActivity.this,
+                                SettingsActivity.class
+                        )
+                );
+            }
+        }
+);
