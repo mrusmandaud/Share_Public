@@ -1,0 +1,239 @@
+android.content.SharedPreferences prefs =
+        getSharedPreferences(
+                "settings_state",
+                MODE_PRIVATE
+        );
+
+String action =
+        prefs.getString(
+                "backup_action",
+                ""
+        );
+
+boolean resultReady =
+        prefs.getBoolean(
+                "backup_result_ready",
+                false
+        );
+
+String resultUri =
+        prefs.getString(
+                "backup_result_uri",
+                ""
+        );
+
+if (resultReady
+        && resultUri != null
+        && !resultUri.equals("")) {
+
+    try {
+
+        android.net.Uri uri =
+                android.net.Uri.parse(resultUri);
+
+        if (action.equals("backup")) {
+
+            java.io.File recordsFile =
+                    new java.io.File(
+                            getFilesDir(),
+                            "myrecords.txt"
+                    );
+
+            if (!recordsFile.exists()) {
+                throw new java.io.IOException(
+                        "No records file found"
+                );
+            }
+
+            java.io.InputStream input =
+                    new java.io.FileInputStream(
+                            recordsFile
+                    );
+
+            java.io.OutputStream output =
+                    getContentResolver()
+                            .openOutputStream(uri);
+
+            if (output == null) {
+                input.close();
+
+                throw new java.io.IOException(
+                        "Unable to open destination"
+                );
+            }
+
+            byte[] buffer =
+                    new byte[8192];
+
+            int length;
+
+            while ((length =
+                    input.read(buffer)) != -1) {
+
+                output.write(
+                        buffer,
+                        0,
+                        length
+                );
+            }
+
+            output.flush();
+
+            input.close();
+            output.close();
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Backup completed",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+        } else if (action.equals("restore")) {
+
+            java.io.InputStream input =
+                    getContentResolver()
+                            .openInputStream(uri);
+
+            if (input == null) {
+                throw new java.io.IOException(
+                        "Unable to open restore file"
+                );
+            }
+
+            java.io.ByteArrayOutputStream data =
+                    new java.io.ByteArrayOutputStream();
+
+            byte[] buffer =
+                    new byte[8192];
+
+            int length;
+
+            while ((length =
+                    input.read(buffer)) != -1) {
+
+                data.write(
+                        buffer,
+                        0,
+                        length
+                );
+            }
+
+            input.close();
+
+            byte[] restoredData =
+                    data.toByteArray();
+
+            if (restoredData.length == 0) {
+                throw new java.io.IOException(
+                        "Restore file is empty"
+                );
+            }
+
+            java.io.FileOutputStream output =
+                    openFileOutput(
+                            "myrecords.txt",
+                            MODE_PRIVATE
+                    );
+
+            output.write(restoredData);
+            output.flush();
+            output.close();
+
+            Toast.makeText(
+                    SettingsActivity.this,
+                    "Restore completed",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+        } else {
+
+            throw new java.io.IOException(
+                    "Unknown backup action"
+            );
+        }
+
+        prefs.edit()
+                .remove("backup_action")
+                .remove("backup_result_uri")
+                .remove("backup_result_code")
+                .putBoolean(
+                        "backup_result_ready",
+                        false
+                )
+                .apply();
+
+        return;
+
+    } catch (Exception e) {
+
+        prefs.edit()
+                .remove("backup_action")
+                .remove("backup_result_uri")
+                .remove("backup_result_code")
+                .putBoolean(
+                        "backup_result_ready",
+                        false
+                )
+                .apply();
+
+        Toast.makeText(
+                SettingsActivity.this,
+                "Backup/Restore failed: "
+                        + e.getMessage(),
+                Toast.LENGTH_LONG
+        ).show();
+
+        return;
+    }
+}
+
+if (action.equals("backup")) {
+
+    android.content.Intent intent =
+            new android.content.Intent(
+                    android.content.Intent.ACTION_CREATE_DOCUMENT
+            );
+
+    intent.addCategory(
+            android.content.Intent.CATEGORY_OPENABLE
+    );
+
+    intent.setType("text/plain");
+
+    intent.putExtra(
+            android.content.Intent.EXTRA_TITLE,
+            "myrecords_backup.txt"
+    );
+
+    startActivityForResult(
+            intent,
+            7001
+    );
+
+    return;
+}
+
+if (action.equals("restore")) {
+
+    android.content.Intent intent =
+            new android.content.Intent(
+                    android.content.Intent.ACTION_OPEN_DOCUMENT
+            );
+
+    intent.addCategory(
+            android.content.Intent.CATEGORY_OPENABLE
+    );
+
+    intent.setType("text/plain");
+
+    intent.addFlags(
+            android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+    );
+
+    startActivityForResult(
+            intent,
+            7002
+    );
+
+    return;
+}

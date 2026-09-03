@@ -1,0 +1,201 @@
+final android.content.SharedPreferences prefs =
+        getSharedPreferences(
+                "settings_state",
+                MODE_PRIVATE
+        );
+
+boolean resultReady =
+        prefs.getBoolean(
+                "export_result_ready",
+                false
+        );
+
+String resultUri =
+        prefs.getString(
+                "export_result_uri",
+                ""
+        );
+
+String format =
+        prefs.getString(
+                "export_format",
+                ""
+        );
+
+if (resultReady
+        && resultUri != null
+        && !resultUri.equals("")
+        && format != null
+        && !format.equals("")) {
+
+    try {
+
+        android.net.Uri uri =
+                android.net.Uri.parse(resultUri);
+
+        DataFileManager.exportRecords(
+                SettingsActivity.this,
+                uri,
+                format
+        );
+
+        int serial =
+                prefs.getInt(
+                        "export_serial",
+                        1
+                );
+
+        prefs.edit()
+                .putInt(
+                        "export_serial",
+                        serial + 1
+                )
+                .remove("export_result_ready")
+                .remove("export_result_uri")
+                .remove("export_format")
+                .remove("export_filename")
+                .apply();
+
+        Toast.makeText(
+                SettingsActivity.this,
+                "Export completed successfully",
+                Toast.LENGTH_SHORT
+        ).show();
+
+    } catch (Exception e) {
+
+        prefs.edit()
+                .remove("export_result_ready")
+                .remove("export_result_uri")
+                .remove("export_format")
+                .remove("export_filename")
+                .apply();
+
+        Toast.makeText(
+                SettingsActivity.this,
+                "Export failed: "
+                        + e.getMessage(),
+                Toast.LENGTH_LONG
+        ).show();
+    }
+
+    return;
+}
+
+final String[] formats = {
+        "TXT",
+        "CSV",
+        "XLSX"
+};
+
+new android.app.AlertDialog.Builder(
+        SettingsActivity.this
+)
+.setTitle(
+        "Select Export Format"
+)
+.setItems(
+        formats,
+        new android.content.DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(
+                    android.content.DialogInterface dialog,
+                    int which
+            ) {
+
+                String selectedFormat =
+                        formats[which];
+
+                java.text.SimpleDateFormat dateFormat =
+                        new java.text.SimpleDateFormat(
+                                "yyyyMMdd",
+                                java.util.Locale.US
+                        );
+
+                String date =
+                        dateFormat.format(
+                                new java.util.Date()
+                        );
+
+                int serial =
+                        prefs.getInt(
+                                "export_serial",
+                                1
+                        );
+
+                String extension =
+                        selectedFormat.toLowerCase(
+                                java.util.Locale.US
+                        );
+
+                String filename =
+                        "SaveRecords_"
+                                + date
+                                + "_"
+                                + serial
+                                + "."
+                                + extension;
+
+                prefs.edit()
+                        .putString(
+                                "export_format",
+                                selectedFormat
+                        )
+                        .putString(
+                                "export_filename",
+                                filename
+                        )
+                        .putBoolean(
+                                "export_result_ready",
+                                false
+                        )
+                        .remove(
+                                "export_result_uri"
+                        )
+                        .apply();
+
+                android.content.Intent intent =
+                        new android.content.Intent(
+                                android.content.Intent.ACTION_CREATE_DOCUMENT
+                        );
+
+                intent.addCategory(
+                        android.content.Intent.CATEGORY_OPENABLE
+                );
+
+                if (selectedFormat.equals("TXT")) {
+
+                    intent.setType(
+                            "text/plain"
+                    );
+
+                } else if (selectedFormat.equals("CSV")) {
+
+                    intent.setType(
+                            "text/csv"
+                    );
+
+                } else {
+
+                    intent.setType(
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    );
+                }
+
+                intent.putExtra(
+                        android.content.Intent.EXTRA_TITLE,
+                        filename
+                );
+
+                startActivityForResult(
+                        intent,
+                        8001
+                );
+            }
+        }
+)
+.setNegativeButton(
+        "CANCEL",
+        null
+)
+.show();
