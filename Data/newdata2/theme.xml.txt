@@ -1,0 +1,189 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fillViewport="true"
+	android:background="#F4FBFA">
+	<LinearLayout
+		android:id="@+id/themeRoot"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="20dp"
+		android:background="#F4FBFA"
+		android:orientation="vertical">
+		<FrameLayout
+			android:id="@+id/frame_layout131"
+			android:layout_width="match_parent"
+			android:layout_height="56dp"
+			android:background="#00796B">
+			<Button
+				android:id="@+id/themeBackButton"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:background="#00796B"
+				android:text="←"
+				android:textSize="24sp"
+				android:textColor="#FFFFFF"
+				android:layout_gravity="start|center_vertical" />
+			<TextView
+				android:id="@+id/themeTitle"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="Theme"
+				android:textSize="20sp"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF" />
+		</FrameLayout>
+		<TextView
+			android:id="@+id/textview80"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="16dp"
+			android:paddingTop="18dp"
+			android:paddingBottom="7dp"
+			android:text="THEME MODE"
+			android:textSize="11sp"
+			android:textStyle="bold"
+			android:textColor="#00796B" />
+		<androidx.cardview.widget.CardView
+			android:id="@+id/themeLightCard"
+			android:layout_width="match_parent"
+			android:layout_height="52dp"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="6dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="8dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/themeLightRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="12dp"
+				android:paddingRight="8dp"
+				android:gravity="center_vertical">
+				<View
+					android:id="@+id/view132"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
+					android:layout_marginRight="10dp"
+					android:background="#E0F2F1" />
+				<TextView
+					android:id="@+id/themeLightText"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:text="Teal Light"
+					android:textSize="14sp"
+					android:textStyle="bold"
+					android:textColor="#263238"
+					android:layout_weight="1" />
+				<TextView
+					android:id="@+id/themeLightCheck"
+					android:layout_width="30dp"
+					android:layout_height="match_parent"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="✓"
+					android:textSize="18sp"
+					android:textColor="#00796B" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/themeDarkCard"
+			android:layout_width="match_parent"
+			android:layout_height="52dp"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="6dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="8dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/themeDarkRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="12dp"
+				android:paddingRight="8dp"
+				android:gravity="center_vertical">
+				<View
+					android:id="@+id/view133"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
+					android:layout_marginRight="10dp"
+					android:background="#263238" />
+				<TextView
+					android:id="@+id/themeDarkText"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:text="Teal Dark"
+					android:textSize="14sp"
+					android:textStyle="bold"
+					android:textColor="#263238"
+					android:layout_weight="1" />
+				<TextView
+					android:id="@+id/themeDarkArrow"
+					android:layout_width="30dp"
+					android:layout_height="match_parent"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#78909C" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/themeBlackCard"
+			android:layout_width="match_parent"
+			android:layout_height="52dp"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="10dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="8dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/themeBlackRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="12dp"
+				android:paddingRight="8dp"
+				android:gravity="center_vertical">
+				<View
+					android:id="@+id/view134"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
+					android:layout_marginRight="10dp"
+					android:background="#000000" />
+				<TextView
+					android:id="@+id/themeBlackText"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:text="Teal Black"
+					android:textSize="14sp"
+					android:textStyle="bold"
+					android:textColor="#263238"
+					android:layout_weight="1" />
+				<TextView
+					android:id="@+id/themeBlackArrow"
+					android:layout_width="30dp"
+					android:layout_height="match_parent"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#78909C" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<TextView
+			android:id="@+id/themeInformation"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="20dp"
+			android:paddingTop="16dp"
+			android:paddingRight="20dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="Choose how the application should appear."
+			android:textSize="11sp"
+			android:textColor="#607D7B" />
+	</LinearLayout>
+</ScrollView>
