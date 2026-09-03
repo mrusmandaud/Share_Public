@@ -1,0 +1,222 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.view.View;
+import android.widget.FrameLayout;
+
+public class SidebarActivity {
+
+    public static void setup(
+            final Activity activity,
+            final androidx.drawerlayout.widget.DrawerLayout drawer,
+            final View sidebar
+    ) {
+
+
+        // =====================================================
+        // SIDEBAR → NEW RECORD
+        // =====================================================
+
+        sidebar.findViewById(
+                R.id.btnSidebarNewRecord
+        ).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        drawer.closeDrawer(
+                                android.view.Gravity.START
+                        );
+
+                        ButtonsController.newRecord(
+                                activity
+                        );
+                    }
+                }
+        );
+
+
+        // =====================================================
+        // SIDEBAR → MY RECORDS
+        // =====================================================
+
+        sidebar.findViewById(
+                R.id.btnSidebarMyRecords
+        ).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        drawer.closeDrawer(
+                                android.view.Gravity.START
+                        );
+
+                        ButtonsController.myRecords(
+                                activity
+                        );
+                    }
+                }
+        );
+
+
+        // =====================================================
+        // SIDEBAR → EXPORT
+        // =====================================================
+
+        sidebar.findViewById(
+                R.id.btnSidebarExport
+        ).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        drawer.closeDrawer(
+                                android.view.Gravity.START
+                        );
+
+                        ButtonsController.export(
+                                activity
+                        );
+                    }
+                }
+        );
+
+
+        // =====================================================
+        // SIDEBAR → SETTINGS
+        // =====================================================
+
+        sidebar.findViewById(
+                R.id.btnSidebarSettings
+        ).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        drawer.closeDrawer(
+                                android.view.Gravity.START
+                        );
+
+                        ButtonsController.settings(
+                                activity
+                        );
+                    }
+                }
+        );
+
+
+        // =====================================================
+        // SIDEBAR → CONTACT US
+        // =====================================================
+
+        sidebar.findViewById(
+                R.id.btnSidebarContactUs
+        ).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        drawer.closeDrawer(
+                                android.view.Gravity.START
+                        );
+
+                        final View contactView =
+                                activity.getLayoutInflater().inflate(
+                                        R.layout.contactus,
+                                        null
+                                );
+
+                        final FrameLayout root =
+                                activity.findViewById(
+                                        android.R.id.content
+                                );
+
+                        root.addView(
+                                contactView,
+                                new FrameLayout.LayoutParams(
+                                        -1,
+                                        -1
+                                )
+                        );
+
+                        contactView.bringToFront();
+
+                        contactView.findViewById(
+                                R.id.contactBack
+                        ).setOnClickListener(
+                                new View.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(View v) {
+
+                                        root.removeView(
+                                                contactView
+                                        );
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
+
+
+        // =====================================================
+        // SIDEBAR → ABOUT
+        // =====================================================
+
+        sidebar.findViewById(
+                R.id.btnSidebarAbout
+        ).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        drawer.closeDrawer(
+                                android.view.Gravity.START
+                        );
+
+                        final View aboutView =
+                                activity.getLayoutInflater().inflate(
+                                        R.layout.about,
+                                        null
+                                );
+
+                        final FrameLayout root =
+                                activity.findViewById(
+                                        android.R.id.content
+                                );
+
+                        root.addView(
+                                aboutView,
+                                new FrameLayout.LayoutParams(
+                                        -1,
+                                        -1
+                                )
+                        );
+
+                        aboutView.bringToFront();
+
+                        aboutView.findViewById(
+                                R.id.aboutBack
+                        ).setOnClickListener(
+                                new View.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(View v) {
+                                        root.removeView(
+                                                aboutView
+                                        );
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
+    }
+}
