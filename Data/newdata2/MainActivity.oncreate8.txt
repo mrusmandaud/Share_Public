@@ -76,7 +76,7 @@ findViewById(R.id.btnMenu).setOnClickListener(
 // SIDEBAR CONTROLLER
 // =====================================================
 
-SidebarController.setup(
+SidebarActivity.setup(
         MainActivity.this,
         drawer,
         sidebar

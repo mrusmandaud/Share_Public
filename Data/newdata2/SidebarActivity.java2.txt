@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public class SidebarController {
+public class SidebarActivity {
 
     public static void setup(
             final Activity activity,
