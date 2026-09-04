@@ -1,0 +1,413 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class ProductManagement extends Activity {
+
+    private LinearLayout productContainer;
+    private EditText productInput;
+
+    private static final int IMPORT_REQUEST = 9001;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        LinearLayout root =
+                new LinearLayout(this);
+
+        root.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        root.setPadding(
+                24,
+                24,
+                24,
+                24
+        );
+
+        TextView title =
+                new TextView(this);
+
+        title.setText(
+                "Manage Products"
+        );
+
+        title.setTextSize(22);
+
+        root.addView(
+                title,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                )
+        );
+
+        productInput =
+                new EditText(this);
+
+        productInput.setHint(
+                "Product name"
+        );
+
+        root.addView(
+                productInput,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                )
+        );
+
+        Button addButton =
+                new Button(this);
+
+        addButton.setText(
+                "ADD PRODUCT"
+        );
+
+        root.addView(
+                addButton,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                )
+        );
+
+        Button importButton =
+                new Button(this);
+
+        importButton.setText(
+                "IMPORT PRODUCTS"
+        );
+
+        root.addView(
+                importButton,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                )
+        );
+
+        TextView productsTitle =
+                new TextView(this);
+
+        productsTitle.setText(
+                "Products"
+        );
+
+        productsTitle.setTextSize(18);
+
+        root.addView(
+                productsTitle,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                )
+        );
+
+        productContainer =
+                new LinearLayout(this);
+
+        productContainer.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        root.addView(
+                productContainer,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        0,
+                        1
+                )
+        );
+
+        Button backButton =
+                new Button(this);
+
+        backButton.setText(
+                "BACK"
+        );
+
+        root.addView(
+                backButton,
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                )
+        );
+
+        setContentView(root);
+
+        addButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        String product =
+                                productInput
+                                        .getText()
+                                        .toString()
+                                        .trim();
+
+                        if (product.equals("")) {
+
+                            Toast.makeText(
+                                    ProductManagement.this,
+                                    "Enter a product name",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            return;
+                        }
+
+                        try {
+
+                            DataFileManager.addProduct(
+                                    ProductManagement.this,
+                                    product
+                            );
+
+                            productInput
+                                    .setText("");
+
+                            loadProducts();
+
+                            Toast.makeText(
+                                    ProductManagement.this,
+                                    "Product added",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                        } catch (Exception e) {
+
+                            Toast.makeText(
+                                    ProductManagement.this,
+                                    "Unable to save product: "
+                                            + e.getMessage(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+                }
+        );
+
+        importButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent =
+                                new Intent(
+                                        Intent.ACTION_OPEN_DOCUMENT
+                                );
+
+                        intent.addCategory(
+                                Intent.CATEGORY_OPENABLE
+                        );
+
+                        intent.setType(
+                                "*/*"
+                        );
+
+                        intent.putExtra(
+                                Intent.EXTRA_MIME_TYPES,
+                                new String[] {
+                                        "text/plain",
+                                        "text/csv",
+                                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                }
+                        );
+
+                        intent.addFlags(
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        );
+
+                        startActivityForResult(
+                                intent,
+                                IMPORT_REQUEST
+                        );
+                    }
+                }
+        );
+
+        backButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
+                    }
+                }
+        );
+
+        loadProducts();
+    }
+
+    private void loadProducts() {
+
+        productContainer.removeAllViews();
+
+        try {
+
+            ArrayList<String> products =
+                    DataFileManager.loadProducts(
+                            ProductManagement.this
+                    );
+
+            for (int i = 0;
+                    i < products.size();
+                    i++) {
+
+                final String product =
+                        products.get(i);
+
+                LinearLayout row =
+                        new LinearLayout(this);
+
+                row.setOrientation(
+                        LinearLayout.HORIZONTAL
+                );
+
+                TextView name =
+                        new TextView(this);
+
+                name.setText(product);
+                name.setTextSize(16);
+
+                row.addView(
+                        name,
+                        new LinearLayout.LayoutParams(
+                                0,
+                                -2,
+                                1
+                        )
+                );
+
+                Button delete =
+                        new Button(this);
+
+                delete.setText(
+                        "DELETE"
+                );
+
+                row.addView(
+                        delete,
+                        new LinearLayout.LayoutParams(
+                                -2,
+                                -2
+                        )
+                );
+
+                delete.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                try {
+
+                                    DataFileManager.removeProduct(
+                                            ProductManagement.this,
+                                            product
+                                    );
+
+                                    loadProducts();
+
+                                    Toast.makeText(
+                                            ProductManagement.this,
+                                            "Product deleted",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+
+                                } catch (Exception e) {
+
+                                    Toast.makeText(
+                                            ProductManagement.this,
+                                            "Unable to delete product: "
+                                                    + e.getMessage(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                }
+                            }
+                        }
+                );
+
+                productContainer.addView(
+                        row,
+                        new LinearLayout.LayoutParams(
+                                -1,
+                                -2
+                        )
+                );
+            }
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    ProductManagement.this,
+                    "Unable to load products: "
+                            + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(
+            int requestCode,
+            int resultCode,
+            Intent data) {
+
+        super.onActivityResult(
+                requestCode,
+                resultCode,
+                data
+        );
+
+        if (requestCode != IMPORT_REQUEST) {
+            return;
+        }
+
+        if (resultCode != RESULT_OK
+                || data == null
+                || data.getData() == null) {
+            return;
+        }
+
+        try {
+
+            int count =
+                    DataFileManager.importProducts(
+                            ProductManagement.this,
+                            data.getData()
+                    );
+
+            loadProducts();
+
+            Toast.makeText(
+                    ProductManagement.this,
+                    count + " product(s) imported",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    ProductManagement.this,
+                    "Import failed: "
+                            + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+}
