@@ -1,0 +1,1022 @@
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ScrollView;
+
+/*
+ * ============================================================
+ * CUSTOM SCROLLBAR CONTROLLER
+ * ============================================================
+ *
+ * One file handles:
+ *
+ * 1. Main/full-page scrollbar
+ * 2. Main scrollbar custom color
+ * 3. Main scrollbar width
+ * 4. Main scrollbar radius
+ * 5. Android calculated thumb height
+ * 6. Main thumb finger dragging
+ * 7. Top scroll arrow
+ * 8. Bottom scroll arrow
+ * 9. Arrow custom color
+ * 10. Fade delay
+ * 11. Fade duration
+ * 12. Full-page scroll range
+ * 13. Portrait vertical scrolling
+ * 14. Rotation/layout recalculation
+ *
+ * Connection:
+ *
+ * CustomScrollbar.attach(this);
+ *
+ * ============================================================
+ */
+ 
+ final class custom_scrollbar {
+
+    // ========================================================
+    // CUSTOM SETTINGS
+    // ========================================================
+
+    // MAIN SCROLLBAR
+    private static final int MAIN_COLOR = Color.BLACK;
+    private static final int MAIN_WIDTH_DP = 10;
+    private static final int MAIN_RADIUS_DP = 8;
+
+    // ARROWS
+    private static final int ARROW_COLOR = Color.BLACK;
+    private static final int ARROW_SIZE_DP = 34;
+
+    // FADE
+    private static final long FADE_DELAY = 2000L;
+    private static final long FADE_DURATION = 700L;
+
+    // Scroll amount when arrow is pressed
+    private static final int ARROW_SCROLL_DP = 220;
+
+    // ========================================================
+    // INTERNAL OBJECTS
+    // ========================================================
+
+    private static ScrollView scrollView;
+    private static FrameLayout overlay;
+
+    private static View scrollbarTrack;
+    private static View scrollbarThumb;
+
+    private static ImageView topArrow;
+    private static ImageView bottomArrow;
+
+    private static Handler handler =
+            new Handler(Looper.getMainLooper());
+
+    private static Runnable fadeRunnable;
+
+    private static boolean dragging = false;
+
+    private static float dragStartY;
+    private static float thumbStartY;
+
+    private static int density;
+
+    // ========================================================
+    // ATTACH
+    // ========================================================
+
+    public static void attach(final Activity activity) {
+
+        if (activity == null) {
+            return;
+        }
+
+        density = (int)
+                (activity.getResources()
+                        .getDisplayMetrics().density + 0.5f);
+
+        scrollView =
+                activity.findViewById(
+                        activity.getResources()
+                                .getIdentifier(
+                                        "appearanceScroll",
+                                        "id",
+                                        activity.getPackageName()
+                                )
+                );
+
+        if (scrollView == null) {
+            return;
+        }
+
+        /*
+         * Make sure this is the full-page vertical ScrollView.
+         */
+        scrollView.setVerticalScrollBarEnabled(false);
+
+        /*
+         * Create the overlay dynamically.
+         */
+        createOverlay(activity);
+
+        /*
+         * Recalculate after the layout exists.
+         */
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                updateScrollbar();
+            }
+        });
+
+        /*
+         * Recalculate when the page scrolls.
+         */
+        scrollView.setOnScrollChangeListener(
+                new View.OnScrollChangeListener() {
+
+                    @Override
+                    public void onScrollChange(
+                            View v,
+                            int scrollX,
+                            int scrollY,
+                            int oldScrollX,
+                            int oldScrollY) {
+
+                        updateScrollbar();
+
+                        if (!dragging) {
+                            showControls();
+                        }
+                    }
+                }
+        );
+
+        /*
+         * Rotation/layout-size protection.
+         */
+        scrollView.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+
+                        if (right - left !=
+                                oldRight - oldLeft ||
+                            bottom - top !=
+                                oldBottom - oldTop) {
+
+                            /*
+                             * Screen rotation or size change.
+                             */
+                            scrollView.post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateScrollbar();
+                                            showControls();
+                                        }
+                                    }
+                            );
+                        }
+                    }
+                }
+        );
+
+        /*
+         * Initial appearance.
+         */
+        showControls();
+    }
+
+    // ========================================================
+    // CREATE OVERLAY
+    // ========================================================
+
+    private static void createOverlay(Context context) {
+
+        /*
+         * Remove previous controller if attach() was called
+         * more than once.
+         */
+        ViewGroup parent =
+                (ViewGroup) scrollView.getParent();
+
+        if (parent == null) {
+            return;
+        }
+
+        if (overlay != null) {
+            parent.removeView(overlay);
+        }
+
+        overlay = new FrameLayout(context);
+
+        overlay.setClickable(false);
+        overlay.setFocusable(false);
+
+        FrameLayout.LayoutParams overlayParams =
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                );
+
+        /*
+         * Put controller over the ScrollView.
+         */
+        if (parent instanceof FrameLayout) {
+
+            parent.addView(
+                    overlay,
+                    overlayParams
+            );
+
+        } else {
+
+            /*
+             * If the ScrollView is not already inside a
+             * FrameLayout, wrap it dynamically.
+             */
+            int index = parent.indexOfChild(scrollView);
+
+            parent.removeView(scrollView);
+
+            FrameLayout wrapper =
+                    new FrameLayout(context);
+
+            ViewGroup.LayoutParams oldParams =
+                    scrollView.getLayoutParams();
+
+            wrapper.setLayoutParams(oldParams);
+
+            parent.addView(wrapper, index);
+
+            wrapper.addView(
+                    scrollView,
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+            );
+
+            wrapper.addView(
+                    overlay,
+                    overlayParams
+            );
+        }
+
+        createMainScrollbar(context);
+        createArrows(context);
+    }
+
+    // ========================================================
+    // MAIN SCROLLBAR
+    // ========================================================
+
+    private static void createMainScrollbar(
+            Context context) {
+
+        /*
+         * Track.
+         */
+        scrollbarTrack = new View(context);
+
+        GradientDrawable trackDrawable =
+                new GradientDrawable();
+
+        trackDrawable.setColor(
+                Color.argb(35, 0, 0, 0)
+        );
+
+        trackDrawable.setCornerRadius(
+                dp(MAIN_RADIUS_DP)
+        );
+
+        scrollbarTrack.setBackground(
+                trackDrawable
+        );
+
+        FrameLayout.LayoutParams trackParams =
+                new FrameLayout.LayoutParams(
+                        dp(MAIN_WIDTH_DP),
+                        1
+                );
+
+        trackParams.gravity =
+                Gravity.RIGHT | Gravity.TOP;
+
+        trackParams.rightMargin = dp(2);
+
+        overlay.addView(
+                scrollbarTrack,
+                trackParams
+        );
+
+        /*
+         * Thumb.
+         */
+        scrollbarThumb = new View(context);
+
+        GradientDrawable thumbDrawable =
+                new GradientDrawable();
+
+        thumbDrawable.setColor(
+                MAIN_COLOR
+        );
+
+        thumbDrawable.setCornerRadius(
+                dp(MAIN_RADIUS_DP)
+        );
+
+        scrollbarThumb.setBackground(
+                thumbDrawable
+        );
+
+        scrollbarThumb.setClickable(true);
+        scrollbarThumb.setFocusable(false);
+
+        FrameLayout.LayoutParams thumbParams =
+                new FrameLayout.LayoutParams(
+                        dp(MAIN_WIDTH_DP),
+                        1
+                );
+
+        thumbParams.gravity =
+                Gravity.RIGHT | Gravity.TOP;
+
+        thumbParams.rightMargin = dp(2);
+
+        overlay.addView(
+                scrollbarThumb,
+                thumbParams
+        );
+
+        /*
+         * Finger hold/drag.
+         */
+        scrollbarThumb.setOnTouchListener(
+                new View.OnTouchListener() {
+
+                    @Override
+                    public boolean onTouch(
+                            View v,
+                            MotionEvent event) {
+
+                        switch (event.getActionMasked()) {
+
+                            case MotionEvent.ACTION_DOWN:
+
+                                dragging = true;
+
+                                dragStartY =
+                                        event.getRawY();
+
+                                thumbStartY =
+                                        scrollbarThumb.getY();
+
+                                showControls();
+
+                                return true;
+
+                            case MotionEvent.ACTION_MOVE:
+
+                                if (!dragging) {
+                                    return true;
+                                }
+
+                                float difference =
+                                        event.getRawY()
+                                                - dragStartY;
+
+                                float newY =
+                                        thumbStartY +
+                                                difference;
+
+                                moveThumbTo(newY);
+
+                                return true;
+
+                            case MotionEvent.ACTION_UP:
+                            case MotionEvent.ACTION_CANCEL:
+
+                                dragging = false;
+
+                                updateScrollbar();
+
+                                scheduleFade();
+
+                                return true;
+                        }
+
+                        return true;
+                    }
+                }
+        );
+    }
+
+    // ========================================================
+    // TOP / BOTTOM ARROWS
+    // ========================================================
+
+    private static void createArrows(
+            Context context) {
+
+        /*
+         * TOP ARROW
+         */
+        topArrow = createArrow(
+                context,
+                true
+        );
+
+        FrameLayout.LayoutParams topParams =
+                new FrameLayout.LayoutParams(
+                        dp(ARROW_SIZE_DP),
+                        dp(ARROW_SIZE_DP)
+                );
+
+        topParams.gravity =
+                Gravity.RIGHT | Gravity.TOP;
+
+        topParams.rightMargin =
+                dp(1);
+
+        topParams.topMargin =
+                dp(2);
+
+        overlay.addView(
+                topArrow,
+                topParams
+        );
+
+        /*
+         * BOTTOM ARROW
+         */
+        bottomArrow = createArrow(
+                context,
+                false
+        );
+
+        FrameLayout.LayoutParams bottomParams =
+                new FrameLayout.LayoutParams(
+                        dp(ARROW_SIZE_DP),
+                        dp(ARROW_SIZE_DP)
+                );
+
+        bottomParams.gravity =
+                Gravity.RIGHT | Gravity.BOTTOM;
+
+        bottomParams.rightMargin =
+                dp(1);
+
+        bottomParams.bottomMargin =
+                dp(2);
+
+        overlay.addView(
+                bottomArrow,
+                bottomParams
+        );
+
+        /*
+         * TOP BUTTON.
+         */
+        topArrow.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        scrollView.smoothScrollBy(
+                                0,
+                                -dp(ARROW_SCROLL_DP)
+                        );
+
+                        showControls();
+                    }
+                }
+        );
+
+        /*
+         * BOTTOM BUTTON.
+         */
+        bottomArrow.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        scrollView.smoothScrollBy(
+                                0,
+                                dp(ARROW_SCROLL_DP)
+                        );
+
+                        showControls();
+                    }
+                }
+        );
+    }
+
+    // ========================================================
+    // CREATE ARROW
+    // ========================================================
+
+    private static ImageView createArrow(
+            Context context,
+            boolean up) {
+
+        ImageView image =
+                new ImageView(context);
+
+        image.setColorFilter(
+                ARROW_COLOR
+        );
+
+        image.setPadding(
+                dp(7),
+                dp(7),
+                dp(7),
+                dp(7)
+        );
+
+        GradientDrawable background =
+                new GradientDrawable();
+
+        background.setColor(
+                Color.argb(
+                        35,
+                        Color.red(ARROW_COLOR),
+                        Color.green(ARROW_COLOR),
+                        Color.blue(ARROW_COLOR)
+                )
+        );
+
+        background.setCornerRadius(
+                dp(8)
+        );
+
+        image.setBackground(background);
+
+        /*
+         * Draw arrow ourselves so no drawable XML is needed.
+         */
+        image.setImageDrawable(
+                new ArrowDrawable(
+                        ARROW_COLOR,
+                        up
+                )
+        );
+
+        image.setClickable(true);
+
+        return image;
+    }
+
+    // ========================================================
+    // UPDATE MAIN SCROLLBAR
+    // ========================================================
+
+    private static void updateScrollbar() {
+
+        if (scrollView == null ||
+                scrollbarThumb == null ||
+                scrollbarTrack == null) {
+            return;
+        }
+
+        int viewport =
+                scrollView.getHeight();
+
+        int content =
+                scrollView.getChildCount() > 0
+                        ? scrollView.getChildAt(0).getHeight()
+                        : 0;
+
+        int range =
+                Math.max(
+                        0,
+                        content - viewport
+                );
+
+        if (viewport <= 0 ||
+                content <= viewport ||
+                range <= 0) {
+
+            scrollbarTrack.setVisibility(
+                    View.GONE
+            );
+
+            scrollbarThumb.setVisibility(
+                    View.GONE
+            );
+
+            return;
+        }
+
+        scrollbarTrack.setVisibility(
+                View.VISIBLE
+        );
+
+        scrollbarThumb.setVisibility(
+                View.VISIBLE
+        );
+
+        /*
+         * Android-style calculated thumb height.
+         */
+        int thumbHeight =
+                Math.max(
+                        dp(35),
+                        (int)(
+                                ((float) viewport /
+                                        (float) content)
+                                        * viewport
+                        )
+                );
+
+        thumbHeight =
+                Math.min(
+                        thumbHeight,
+                        viewport
+                );
+
+        /*
+         * Position of scrollbar track.
+         */
+        int topSpace =
+                0;
+
+        int bottomSpace =
+                viewport;
+
+        /*
+         * Track.
+         */
+        FrameLayout.LayoutParams trackParams =
+                (FrameLayout.LayoutParams)
+                        scrollbarTrack.getLayoutParams();
+
+        trackParams.height =
+                viewport;
+
+        trackParams.width =
+                dp(MAIN_WIDTH_DP);
+
+        scrollbarTrack.setLayoutParams(
+                trackParams
+        );
+
+        /*
+         * Thumb.
+         */
+        FrameLayout.LayoutParams thumbParams =
+                (FrameLayout.LayoutParams)
+                        scrollbarThumb.getLayoutParams();
+
+        thumbParams.height =
+                thumbHeight;
+
+        thumbParams.width =
+                dp(MAIN_WIDTH_DP);
+
+        scrollbarThumb.setLayoutParams(
+                thumbParams
+        );
+
+        /*
+         * Calculate thumb position from scroll range.
+         */
+        int available =
+                Math.max(
+                        0,
+                        bottomSpace -
+                                thumbHeight
+                );
+
+        int scrollY =
+                scrollView.getScrollY();
+
+        float fraction =
+                range == 0
+                        ? 0f
+                        : ((float) scrollY /
+                                (float) range);
+
+        float thumbY =
+                available * fraction;
+
+        scrollbarThumb.setY(
+                thumbY
+        );
+    }
+
+    // ========================================================
+    // MOVE THUMB BY FINGER
+    // ========================================================
+
+    private static void moveThumbTo(
+            float requestedY) {
+
+        if (scrollView == null ||
+                scrollbarThumb == null) {
+            return;
+        }
+
+        int viewport =
+                scrollView.getHeight();
+
+        int content =
+                scrollView.getChildCount() > 0
+                        ? scrollView.getChildAt(0).getHeight()
+                        : 0;
+
+        int range =
+                Math.max(
+                        0,
+                        content - viewport
+                );
+
+        if (range <= 0) {
+            return;
+        }
+
+        int thumbHeight =
+                scrollbarThumb.getHeight();
+
+        float maxY =
+                Math.max(
+                        0,
+                        viewport - thumbHeight
+                );
+
+        float newY =
+                Math.max(
+                        0,
+                        Math.min(
+                                requestedY,
+                                maxY
+                        )
+                );
+
+        scrollbarThumb.setY(
+                newY
+        );
+
+        float fraction =
+                maxY == 0
+                        ? 0f
+                        : newY / maxY;
+
+        int targetScroll =
+                (int)(
+                        fraction * range
+                );
+
+        scrollView.scrollTo(
+                0,
+                targetScroll
+        );
+    }
+
+    // ========================================================
+    // SHOW CONTROLS
+    // ========================================================
+
+    private static void showControls() {
+
+        if (scrollbarThumb == null) {
+            return;
+        }
+
+        scrollbarThumb.setAlpha(1f);
+
+        if (scrollbarTrack != null) {
+            scrollbarTrack.setAlpha(1f);
+        }
+
+        if (topArrow != null) {
+            topArrow.setAlpha(1f);
+        }
+
+        if (bottomArrow != null) {
+            bottomArrow.setAlpha(1f);
+        }
+
+        scheduleFade();
+    }
+
+    // ========================================================
+    // FADE
+    // ========================================================
+
+    private static void scheduleFade() {
+
+        if (handler == null) {
+            return;
+        }
+
+        if (fadeRunnable != null) {
+            handler.removeCallbacks(
+                    fadeRunnable
+            );
+        }
+
+        fadeRunnable =
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        if (dragging) {
+                            return;
+                        }
+
+                        fadeControls();
+                    }
+                };
+
+        handler.postDelayed(
+                fadeRunnable,
+                FADE_DELAY
+        );
+    }
+
+    private static void fadeControls() {
+
+        if (scrollbarThumb != null) {
+            scrollbarThumb.animate()
+                    .alpha(0f)
+                    .setDuration(
+                            FADE_DURATION
+                    )
+                    .start();
+        }
+
+        if (scrollbarTrack != null) {
+            scrollbarTrack.animate()
+                    .alpha(0f)
+                    .setDuration(
+                            FADE_DURATION
+                    )
+                    .start();
+        }
+
+        if (topArrow != null) {
+            topArrow.animate()
+                    .alpha(0f)
+                    .setDuration(
+                            FADE_DURATION
+                    )
+                    .start();
+        }
+
+        if (bottomArrow != null) {
+            bottomArrow.animate()
+                    .alpha(0f)
+                    .setDuration(
+                            FADE_DURATION
+                    )
+                    .start();
+        }
+    }
+
+    // ========================================================
+    // DP
+    // ========================================================
+
+    private static int dp(int value) {
+
+        if (density <= 0) {
+            density = 1;
+        }
+
+        return value * density;
+    }
+
+    // ========================================================
+    // ARROW DRAWABLE
+    // ========================================================
+
+    private static class ArrowDrawable
+            extends android.graphics.drawable.Drawable {
+
+        private final android.graphics.Paint paint;
+        private final boolean up;
+
+        ArrowDrawable(
+                int color,
+                boolean up) {
+
+            this.up = up;
+
+            paint =
+                    new android.graphics.Paint(
+                            android.graphics.Paint.ANTI_ALIAS_FLAG
+                    );
+
+            paint.setColor(color);
+            paint.setStyle(
+                    android.graphics.Paint.Style.FILL
+            );
+        }
+
+        @Override
+        public void draw(
+                android.graphics.Canvas canvas) {
+
+            float width =
+                    getBounds().width();
+
+            float height =
+                    getBounds().height();
+
+            android.graphics.Path path =
+                    new android.graphics.Path();
+
+            float centerX =
+                    width / 2f;
+
+            float centerY =
+                    height / 2f;
+
+            float size =
+                    Math.min(width, height) *
+                            0.32f;
+
+            if (up) {
+
+                path.moveTo(
+                        centerX,
+                        centerY - size
+                );
+
+                path.lineTo(
+                        centerX - size,
+                        centerY + size
+                );
+
+                path.lineTo(
+                        centerX + size,
+                        centerY + size
+                );
+
+            } else {
+
+                path.moveTo(
+                        centerX,
+                        centerY + size
+                );
+
+                path.lineTo(
+                        centerX - size,
+                        centerY - size
+                );
+
+                path.lineTo(
+                        centerX + size,
+                        centerY - size
+                );
+            }
+
+            path.close();
+
+            canvas.drawPath(
+                    path,
+                    paint
+            );
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            paint.setAlpha(alpha);
+        }
+
+        @Override
+        public void setColorFilter(
+                android.graphics.ColorFilter filter) {
+
+            paint.setColorFilter(filter);
+        }
+
+        @Override
+        public int getOpacity() {
+            return android.graphics.PixelFormat.TRANSLUCENT;
+        }
+    }
+}
