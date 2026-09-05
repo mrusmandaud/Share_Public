@@ -1,22 +1,21 @@
 // ============================================================
 // popup_menu
 //
-// BUTTONS:
+// FIVE BUTTONS:
 //
-// COPY
-// SHARE
-// EXPORT
-// SELECT ALL
-// DESELECT ALL
+// 1. Copy
+// 2. Share
+// 3. Export
+// 4. Select All
+// 5. Deselect All
 //
 // IMPORTANT:
 //
-// SELECT ALL and DESELECT ALL contain NO selection logic here.
+// Select All and Deselect All contain NO selection logic here.
 //
-// They only make ONE-LINE calls to the SELECTION block's
-// Runnable objects.
+// Their complete logic remains inside SELECTION.
 //
-// Actual selection logic remains inside SELECTION.
+// Popup only connects to the existing Runnable objects.
 // ============================================================
 
 
@@ -37,13 +36,22 @@ if (popupRecordsContainer == null) {
 
 // ============================================================
 // GET SELECTION BRIDGE
+//
+// THIS IS THE IMPORTANT PART.
+//
+// SELECTION stored:
+//
+// "records"
+// "selectAll"
+// "deselectAll"
+//
+// inside recordsContainer TAG.
 // ============================================================
 
 Object popupBridgeObject =
         popupRecordsContainer.getTag();
 
-if (!(popupBridgeObject instanceof
-        java.util.HashMap)) {
+if (!(popupBridgeObject instanceof java.util.HashMap)) {
     return;
 }
 
@@ -55,7 +63,7 @@ final java.util.HashMap<String, Object>
 
 
 // ============================================================
-// GET SHARED RECORDS
+// GET RECORDS
 // ============================================================
 
 Object popupRecordsObject =
@@ -63,9 +71,7 @@ Object popupRecordsObject =
                 "records"
         );
 
-
-if (!(popupRecordsObject instanceof
-        java.util.ArrayList)) {
+if (!(popupRecordsObject instanceof java.util.ArrayList)) {
     return;
 }
 
@@ -308,6 +314,9 @@ popupLayout.addView(
 
 // ============================================================
 // SELECT ALL BUTTON
+//
+// DISPLAY ONLY.
+// NO SELECT-ALL LOGIC HERE.
 // ============================================================
 
 final android.widget.Button selectAllButton =
@@ -348,6 +357,9 @@ popupLayout.addView(
 
 // ============================================================
 // DESELECT ALL BUTTON
+//
+// DISPLAY ONLY.
+// NO DESELECT-ALL LOGIC HERE.
 // ============================================================
 
 final android.widget.Button deselectAllButton =
@@ -422,11 +434,11 @@ popupWindow.setElevation(
 
 
 // ============================================================
-// SELECT ALL
+// SELECT ALL CLICK
 //
-// ONLY ONE-LINE CONNECTION.
+// ONLY CONNECTION.
 //
-// NO SELECT-ALL LOGIC HERE.
+// Actual Select All code is in SELECTION.
 // ============================================================
 
 selectAllButton.setOnClickListener(
@@ -437,11 +449,23 @@ selectAllButton.setOnClickListener(
                     android.view.View v
             ) {
 
-                ((java.lang.Runnable)
+                Object selectAllObject =
                         popupBridge.get(
                                 "selectAll"
-                        )
-                ).run();
+                        );
+
+                if (
+                        selectAllObject
+                                instanceof
+                                java.lang.Runnable
+                ) {
+
+                    ((java.lang.Runnable)
+                            selectAllObject
+                    ).run();
+
+                }
+
 
                 popupWindow.dismiss();
 
@@ -452,11 +476,11 @@ selectAllButton.setOnClickListener(
 
 
 // ============================================================
-// DESELECT ALL
+// DESELECT ALL CLICK
 //
-// ONLY ONE-LINE CONNECTION.
+// ONLY CONNECTION.
 //
-// NO DESELECT-ALL LOGIC HERE.
+// Actual Deselect All code is in SELECTION.
 // ============================================================
 
 deselectAllButton.setOnClickListener(
@@ -467,11 +491,23 @@ deselectAllButton.setOnClickListener(
                     android.view.View v
             ) {
 
-                ((java.lang.Runnable)
+                Object deselectAllObject =
                         popupBridge.get(
                                 "deselectAll"
-                        )
-                ).run();
+                        );
+
+                if (
+                        deselectAllObject
+                                instanceof
+                                java.lang.Runnable
+                ) {
+
+                    ((java.lang.Runnable)
+                            deselectAllObject
+                    ).run();
+
+                }
+
 
                 popupWindow.dismiss();
 
@@ -507,6 +543,11 @@ copyButton.setOnClickListener(
                             android.widget.TextView
                     > record =
                             popupSelectionRecords.get(r);
+
+
+                    if (record == null) {
+                        continue;
+                    }
 
 
                     StringBuilder recordText =
@@ -681,6 +722,11 @@ shareButton.setOnClickListener(
                             android.widget.TextView
                     > record =
                             popupSelectionRecords.get(r);
+
+
+                    if (record == null) {
+                        continue;
+                    }
 
 
                     StringBuilder recordText =

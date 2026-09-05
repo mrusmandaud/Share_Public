@@ -1,0 +1,545 @@
+// ============================================================
+// SELECTION
+//
+// SELECTABLE DATA:
+// Name
+// Phone
+// Address
+// Product
+//
+// NEVER SELECTABLE:
+// Serial number
+// Headers
+// Lines
+// Record container
+//
+// NORMAL TAP:
+// Single cell
+//
+// TAP A -> H:
+// Inclusive range
+//
+// TAP selected single cell again:
+// Deselect
+//
+// TAP inside selected range:
+// Deselect all current selection
+//
+// LONG PRESS:
+// Only opens popup menu
+//
+// IMPORTANT:
+// ALL Select All / Deselect All logic remains HERE.
+// popup_menu only calls the Runnable objects through the bridge.
+// ============================================================
+
+
+// ============================================================
+// GET RECORDS CONTAINER
+// ============================================================
+
+final android.widget.LinearLayout selectionContainer =
+        (android.widget.LinearLayout)
+                findViewById(
+                        R.id.recordsContainer
+                );
+
+if (selectionContainer == null) {
+    return;
+}
+
+
+// ============================================================
+// GET RECORD LIST
+// ============================================================
+
+Object selectionObject =
+        selectionContainer.getTag();
+
+if (!(selectionObject instanceof java.util.ArrayList)) {
+    return;
+}
+
+
+final java.util.ArrayList<
+        java.util.ArrayList<
+                android.widget.TextView
+        >
+> selectionRecords =
+        (java.util.ArrayList<
+                java.util.ArrayList<
+                        android.widget.TextView
+                >
+        >) selectionObject;
+
+
+if (selectionRecords.size() == 0) {
+    return;
+}
+
+
+// ============================================================
+// FLAT SELECTABLE CELL LIST
+//
+// ONLY:
+// Name
+// Phone
+// Address
+// Product
+// ============================================================
+
+final java.util.ArrayList<
+        android.widget.TextView
+> cells =
+        new java.util.ArrayList<
+                android.widget.TextView
+        >();
+
+
+for (
+        int r = 0;
+        r < selectionRecords.size();
+        r++
+) {
+
+    java.util.ArrayList<
+            android.widget.TextView
+    > record =
+            selectionRecords.get(r);
+
+    if (record == null) {
+        continue;
+    }
+
+
+    for (
+            int c = 0;
+            c < record.size();
+            c++
+    ) {
+
+        android.widget.TextView cell =
+                record.get(c);
+
+        if (cell != null) {
+            cells.add(cell);
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// COLORS
+// ============================================================
+
+final int BLUE =
+        android.graphics.Color.rgb(
+                33,
+                150,
+                243
+        );
+
+final int WHITE =
+        android.graphics.Color.WHITE;
+
+final int BLACK =
+        android.graphics.Color.BLACK;
+
+
+// ============================================================
+// CURRENT SELECTION RANGE
+// ============================================================
+
+final int[] firstIndex =
+        new int[] {
+                -1
+        };
+
+final int[] lastIndex =
+        new int[] {
+                -1
+        };
+
+
+// ============================================================
+// CLEAR ALL BLUE
+// ============================================================
+
+final Runnable clearBlue =
+        new Runnable() {
+
+            @Override
+            public void run() {
+
+                for (
+                        int i = 0;
+                        i < cells.size();
+                        i++
+                ) {
+
+                    android.widget.TextView cell =
+                            cells.get(i);
+
+                    if (cell != null) {
+
+                        cell.setBackgroundColor(
+                                WHITE
+                        );
+
+                        cell.setTextColor(
+                                BLACK
+                        );
+
+                    }
+
+                }
+
+            }
+
+        };
+
+
+// ============================================================
+// DESELECT ALL
+//
+// THIS IS THE COMPLETE DESELECT-ALL LOGIC.
+// ============================================================
+
+final Runnable deselectAll =
+        new Runnable() {
+
+            @Override
+            public void run() {
+
+                clearBlue.run();
+
+                firstIndex[0] =
+                        -1;
+
+                lastIndex[0] =
+                        -1;
+
+            }
+
+        };
+
+
+// ============================================================
+// SELECT ALL
+//
+// THIS IS THE COMPLETE SELECT-ALL LOGIC.
+// ============================================================
+
+final Runnable selectAll =
+        new Runnable() {
+
+            @Override
+            public void run() {
+
+                if (cells.size() == 0) {
+                    return;
+                }
+
+
+                for (
+                        int i = 0;
+                        i < cells.size();
+                        i++
+                ) {
+
+                    android.widget.TextView cell =
+                            cells.get(i);
+
+                    if (cell != null) {
+
+                        cell.setBackgroundColor(
+                                BLUE
+                        );
+
+                        cell.setTextColor(
+                                WHITE
+                        );
+
+                    }
+
+                }
+
+
+                firstIndex[0] =
+                        0;
+
+                lastIndex[0] =
+                        cells.size() - 1;
+
+            }
+
+        };
+
+
+// ============================================================
+// CONNECTION BRIDGE
+//
+// IMPORTANT:
+//
+// The Popup does NOT contain Select All logic.
+//
+// It only retrieves these existing Runnable objects:
+//
+// selectAll
+// deselectAll
+//
+// The actual logic above remains completely inside SELECTION.
+// ============================================================
+
+final java.util.HashMap<String, Object>
+        selectionBridge =
+        new java.util.HashMap<String, Object>();
+
+
+selectionBridge.put(
+        "records",
+        selectionRecords
+);
+
+
+selectionBridge.put(
+        "selectAll",
+        selectAll
+);
+
+
+selectionBridge.put(
+        "deselectAll",
+        deselectAll
+);
+
+
+// ============================================================
+// SAVE BRIDGE
+// ============================================================
+
+selectionContainer.setTag(
+        selectionBridge
+);
+
+
+// ============================================================
+// TAP HANDLERS
+// ============================================================
+
+for (
+        int i = 0;
+        i < cells.size();
+        i++
+) {
+
+    final android.widget.TextView cell =
+            cells.get(i);
+
+    final int index =
+            i;
+
+
+    cell.setClickable(true);
+
+
+    // ========================================================
+    // NORMAL TAP
+    // ========================================================
+
+    cell.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                        android.view.View v
+                ) {
+
+
+                    // ==========================================
+                    // FIRST CELL
+                    // ==========================================
+
+                    if (
+                            firstIndex[0] == -1
+                    ) {
+
+                        clearBlue.run();
+
+                        cell.setBackgroundColor(
+                                BLUE
+                        );
+
+                        cell.setTextColor(
+                                WHITE
+                        );
+
+
+                        firstIndex[0] =
+                                index;
+
+                        lastIndex[0] =
+                                index;
+
+                        return;
+                    }
+
+
+                    // ==========================================
+                    // SAME SINGLE CELL
+                    // ==========================================
+
+                    if (
+                            firstIndex[0] ==
+                                    lastIndex[0]
+                            &&
+                            index ==
+                                    firstIndex[0]
+                    ) {
+
+                        deselectAll.run();
+
+                        return;
+                    }
+
+
+                    // ==========================================
+                    // CURRENT RANGE
+                    // ==========================================
+
+                    int currentStart =
+                            firstIndex[0];
+
+                    int currentEnd =
+                            lastIndex[0];
+
+
+                    if (
+                            currentStart >
+                                    currentEnd
+                    ) {
+
+                        int temp =
+                                currentStart;
+
+                        currentStart =
+                                currentEnd;
+
+                        currentEnd =
+                                temp;
+                    }
+
+
+                    // ==========================================
+                    // TAP INSIDE CURRENT RANGE
+                    // ==========================================
+
+                    if (
+                            index >= currentStart
+                            &&
+                            index <= currentEnd
+                    ) {
+
+                        deselectAll.run();
+
+                        return;
+                    }
+
+
+                    // ==========================================
+                    // SECOND TAP
+                    // ==========================================
+
+                    int start =
+                            firstIndex[0];
+
+                    int end =
+                            index;
+
+
+                    if (
+                            start > end
+                    ) {
+
+                        int temp =
+                                start;
+
+                        start =
+                                end;
+
+                        end =
+                                temp;
+                    }
+
+
+                    clearBlue.run();
+
+
+                    // ==========================================
+                    // INCLUSIVE RANGE
+                    // ==========================================
+
+                    for (
+                            int x = start;
+                            x <= end;
+                            x++
+                    ) {
+
+                        android.widget.TextView
+                                selected =
+                                cells.get(x);
+
+
+                        if (selected != null) {
+
+                            selected.setBackgroundColor(
+                                    BLUE
+                            );
+
+                            selected.setTextColor(
+                                    WHITE
+                            );
+
+                        }
+
+                    }
+
+
+                    firstIndex[0] =
+                            start;
+
+                    lastIndex[0] =
+                            end;
+
+                }
+
+            }
+    );
+
+
+    // ========================================================
+    // LONG PRESS
+    //
+    // LONG PRESS DOES NOT CHANGE SELECTION.
+    // ONLY OPENS POPUP.
+    // ========================================================
+
+    cell.setOnLongClickListener(
+            new android.view.View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(
+                        android.view.View v
+                ) {
+
+                    _popup_menu();
+
+                    return true;
+                }
+
+            }
+    );
+
+}
