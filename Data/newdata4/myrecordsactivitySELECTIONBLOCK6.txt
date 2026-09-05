@@ -1,24 +1,37 @@
 // ============================================================
 // SELECTION
 //
-// ONLY THESE CELLS ARE SELECTABLE:
+// SELECTABLE DATA:
 //
 // Name
 // Phone
 // Address
 // Product
 //
-// NEVER SELECT:
+// NEVER SELECTABLE:
 //
-// # / 1 / 2 / 3 / 4 / 5 / ...
-// headers
-// grid lines
-// record containers
+// # / serial number
+// Headers
+// Lines
+// Record container
+//
+// TAP:
+// Single cell
+//
+// TAP A -> H:
+// Inclusive range
+//
+// TAP H AGAIN:
+// Deselect whole current range
+//
+// LONG PRESS:
+// NO SELECTION
+// ONLY OPEN POPUP MENU
 // ============================================================
 
 
 // ============================================================
-// GET SHARED SELECTION RECORDS
+// GET SHARED RECORDS
 // ============================================================
 
 final android.widget.LinearLayout selectionContainer =
@@ -64,21 +77,14 @@ if (
 
 
 // ============================================================
-// FLAT CELL LIST
+// FLAT DATA CELL LIST
 //
-// Order:
+// ONLY:
 //
-// Record 1 Name
-// Record 1 Phone
-// Record 1 Address
-// Record 1 Product
-// Record 2 Name
-// Record 2 Phone
-// Record 2 Address
-// Record 2 Product
-// ...
-//
-// # IS NEVER HERE.
+// Name
+// Phone
+// Address
+// Product
 // ============================================================
 
 final java.util.ArrayList<
@@ -109,6 +115,7 @@ for (
 
         android.widget.TextView cell =
                 record.get(c);
+
 
         if (cell != null) {
 
@@ -145,7 +152,7 @@ final int BLACK =
 
 
 // ============================================================
-// SELECTION STATE
+// CURRENT RANGE
 // ============================================================
 
 final int[] firstIndex =
@@ -160,7 +167,7 @@ final int[] lastIndex =
 
 
 // ============================================================
-// CLEAR BLUE
+// CLEAR ALL BLUE CELLS
 // ============================================================
 
 final Runnable clearBlue =
@@ -178,6 +185,7 @@ final Runnable clearBlue =
                     android.widget.TextView cell =
                             cells.get(i);
 
+
                     cell.setBackgroundColor(
                             WHITE
                     );
@@ -194,7 +202,7 @@ final Runnable clearBlue =
 
 
 // ============================================================
-// DESELECT EVERYTHING
+// DESELECT ALL
 // ============================================================
 
 final Runnable deselectAll =
@@ -217,77 +225,7 @@ final Runnable deselectAll =
 
 
 // ============================================================
-// SELECT RANGE
-// ============================================================
-
-final Runnable applyCurrentRange =
-        new Runnable() {
-
-            @Override
-            public void run() {
-
-                if (
-                        firstIndex[0] < 0 ||
-                        lastIndex[0] < 0
-                ) {
-                    return;
-                }
-
-
-                int start =
-                        firstIndex[0];
-
-                int end =
-                        lastIndex[0];
-
-
-                if (start > end) {
-
-                    int temp =
-                            start;
-
-                    start =
-                            end;
-
-                    end =
-                            temp;
-
-                }
-
-
-                for (
-                        int i = start;
-                        i <= end;
-                        i++
-                ) {
-
-                    if (
-                            i >= 0 &&
-                            i < cells.size()
-                    ) {
-
-                        android.widget.TextView cell =
-                                cells.get(i);
-
-                        cell.setBackgroundColor(
-                                BLUE
-                        );
-
-                        cell.setTextColor(
-                                WHITE
-                        );
-
-                    }
-
-                }
-
-            }
-
-        };
-
-
-// ============================================================
-// INSTALL TOUCH HANDLERS
+// TAP HANDLERS
 // ============================================================
 
 for (
@@ -307,7 +245,7 @@ for (
 
 
     // ========================================================
-    // SINGLE TAP / RANGE TAP
+    // NORMAL TAP
     // ========================================================
 
     cell.setOnClickListener(
@@ -320,7 +258,7 @@ for (
 
 
                     // ==========================================
-                    // FIRST TAP
+                    // FIRST CELL
                     // ==========================================
 
                     if (
@@ -328,6 +266,7 @@ for (
                     ) {
 
                         clearBlue.run();
+
 
                         cell.setBackgroundColor(
                                 BLUE
@@ -337,11 +276,13 @@ for (
                                 WHITE
                         );
 
+
                         firstIndex[0] =
                                 index;
 
                         lastIndex[0] =
                                 index;
+
 
                         return;
 
@@ -350,9 +291,6 @@ for (
 
                     // ==========================================
                     // SAME SINGLE CELL
-                    //
-                    // Tap selected cell again:
-                    // deselect it.
                     // ==========================================
 
                     if (
@@ -372,9 +310,6 @@ for (
 
                     // ==========================================
                     // CURRENT RANGE
-                    //
-                    // Tapping any already-blue cell
-                    // clears the whole selection.
                     // ==========================================
 
                     int currentStart =
@@ -401,6 +336,10 @@ for (
                     }
 
 
+                    // ==========================================
+                    // TAP ANY ALREADY SELECTED CELL
+                    // ==========================================
+
                     if (
                             index >= currentStart &&
                             index <= currentEnd
@@ -415,10 +354,6 @@ for (
 
                     // ==========================================
                     // SECOND TAP
-                    //
-                    // Select inclusive range.
-                    //
-                    // Works:
                     //
                     // A -> H
                     // H -> A
@@ -448,6 +383,10 @@ for (
                     clearBlue.run();
 
 
+                    // ==========================================
+                    // INCLUSIVE RANGE
+                    // ==========================================
+
                     for (
                             int x = start;
                             x <= end;
@@ -456,6 +395,7 @@ for (
 
                         android.widget.TextView selected =
                                 cells.get(x);
+
 
                         selected.setBackgroundColor(
                                 BLUE
@@ -483,16 +423,14 @@ for (
     // ========================================================
     // LONG PRESS
     //
-    // SELECT COMPLETE RECORD.
+    // VERY IMPORTANT:
     //
-    // ONLY:
+    // DO NOT SELECT.
+    // DO NOT CLEAR.
+    // DO NOT CHANGE firstIndex.
+    // DO NOT CHANGE lastIndex.
     //
-    // Name
-    // Phone
-    // Address
-    // Product
-    //
-    // NEVER #.
+    // ONLY OPEN POPUP MENU.
     // ========================================================
 
     cell.setOnLongClickListener(
@@ -503,120 +441,7 @@ for (
                         android.view.View v
                 ) {
 
-                    java.util.ArrayList<
-                            android.widget.TextView
-                    > selectedRecord =
-                            null;
-
-
-                    // ==========================================
-                    // FIND RECORD CONTAINING THIS CELL
-                    // ==========================================
-
-                    for (
-                            int r = 0;
-                            r < selectionRecords.size();
-                            r++
-                    ) {
-
-                        java.util.ArrayList<
-                                android.widget.TextView
-                        > record =
-                                selectionRecords.get(r);
-
-
-                        if (
-                                record.contains(cell)
-                        ) {
-
-                            selectedRecord =
-                                    record;
-
-                            break;
-
-                        }
-
-                    }
-
-
-                    if (
-                            selectedRecord == null
-                    ) {
-
-                        return true;
-
-                    }
-
-
-                    // ==========================================
-                    // CLEAR OLD SELECTION
-                    // ==========================================
-
-                    clearBlue.run();
-
-
-                    // ==========================================
-                    // SELECT WHOLE RECORD
-                    // ==========================================
-
-                    for (
-                            int x = 0;
-                            x < selectedRecord.size();
-                            x++
-                    ) {
-
-                        android.widget.TextView selected =
-                                selectedRecord.get(x);
-
-
-                        selected.setBackgroundColor(
-                                BLUE
-                        );
-
-                        selected.setTextColor(
-                                WHITE
-                        );
-
-                    }
-
-
-                    // ==========================================
-                    // STORE RANGE
-                    // ==========================================
-
-                    int start =
-                            cells.indexOf(
-                                    selectedRecord.get(0)
-                            );
-
-                    int end =
-                            cells.indexOf(
-                                    selectedRecord.get(
-                                            selectedRecord.size() - 1
-                                    )
-                            );
-
-
-                    if (start > end) {
-
-                        int temp =
-                                start;
-
-                        start =
-                                end;
-
-                        end =
-                                temp;
-
-                    }
-
-
-                    firstIndex[0] =
-                            start;
-
-                    lastIndex[0] =
-                            end;
-
+                    _popup_menu();
 
                     return true;
 
