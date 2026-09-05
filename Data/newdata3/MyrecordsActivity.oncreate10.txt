@@ -1,0 +1,873 @@
+setContentView(R.layout.myrecords);
+
+
+// ============================================================
+// FIND VIEWS
+// ============================================================
+
+final android.widget.TextView backButton =
+        findViewById(R.id.myRecordsBackButton);
+
+final android.widget.TextView recordsCount =
+        findViewById(R.id.recordsCount);
+
+final android.widget.EditText searchInput =
+        findViewById(R.id.recordsSearchInput);
+
+final android.widget.TextView clearButton =
+        findViewById(R.id.recordsClearButton);
+
+final android.widget.LinearLayout recordsContainer =
+        findViewById(R.id.recordsContainer);
+
+final android.widget.LinearLayout emptyState =
+        findViewById(R.id.recordsEmptyState);
+
+final android.widget.TextView emptyTitle =
+        findViewById(R.id.recordsEmptyTitle);
+
+final android.widget.TextView emptyMessage =
+        findViewById(R.id.recordsEmptyMessage);
+
+
+// ============================================================
+// BACK BUTTON
+// ============================================================
+
+backButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.back(
+                        MyrecordsActivity.this
+                );
+
+            }
+
+        }
+);
+
+
+// ============================================================
+// CLEAR SEARCH
+// ============================================================
+
+clearButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                searchInput.setText("");
+
+            }
+
+        }
+);
+
+
+// ============================================================
+// READ SAVED RECORDS
+// ============================================================
+
+final java.util.ArrayList<String> allRecords =
+        new java.util.ArrayList<String>();
+
+try {
+
+    java.io.FileInputStream fileInputStream =
+            openFileInput("myrecords.txt");
+
+    java.io.BufferedReader reader =
+            new java.io.BufferedReader(
+                    new java.io.InputStreamReader(
+                            fileInputStream,
+                            "UTF-8"
+                    )
+            );
+
+    String line;
+
+    while (
+            (line = reader.readLine()) != null
+    ) {
+
+        line = line.trim();
+
+        if (line.length() > 0) {
+
+            allRecords.add(line);
+
+        }
+
+    }
+
+    reader.close();
+    fileInputStream.close();
+
+} catch (Exception e) {
+
+    allRecords.clear();
+
+}
+
+
+// ============================================================
+// TOTAL RECORD COUNT
+// ============================================================
+
+recordsCount.setText(
+        String.valueOf(
+                allRecords.size()
+        )
+);
+
+
+// ============================================================
+// DENSITY
+// ============================================================
+
+final float density =
+        getResources()
+                .getDisplayMetrics()
+                .density;
+
+
+// ============================================================
+// GRID DIMENSIONS
+// ============================================================
+
+final int oneDp =
+        Math.max(
+                1,
+                (int)(1.0f * density + 0.5f)
+        );
+
+final int numberWidth =
+        (int)(34.0f * density + 0.5f);
+
+
+// ============================================================
+// GRID COLOR
+//
+// BLACK
+// 40% OPACITY
+//
+// #66000000
+// ============================================================
+
+final int gridColor =
+        android.graphics.Color.argb(
+                102,
+                0,
+                0,
+                0
+        );
+
+
+// ============================================================
+// CLEAR OLD RECORD ROWS
+// ============================================================
+
+recordsContainer.removeAllViews();
+
+
+// ============================================================
+// TOP GRID LINE
+// ============================================================
+
+if (allRecords.size() > 0) {
+
+    android.view.View topLine =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    topLine.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    oneDp
+            )
+    );
+
+    topLine.setBackgroundColor(
+            gridColor
+    );
+
+    recordsContainer.addView(
+            topLine
+    );
+
+}
+
+
+// ============================================================
+// CREATE RECORD ROWS
+// ============================================================
+
+int recordNumber = 1;
+
+for (String record : allRecords) {
+
+
+    // ========================================================
+    // SPLIT RECORD
+    // ========================================================
+
+    String[] data =
+            record.split(
+                    "\\s*\\|\\s*",
+                    -1
+            );
+
+    String name = "";
+    String phone = "";
+    String address = "";
+    String product = "";
+
+
+    if (data.length > 0) {
+
+        name =
+                data[0].trim();
+
+    }
+
+    if (data.length > 1) {
+
+        phone =
+                data[1].trim();
+
+    }
+
+    if (data.length > 2) {
+
+        address =
+                data[2].trim();
+
+    }
+
+    if (data.length > 3) {
+
+        product =
+                data[3].trim();
+
+    }
+
+
+    // ========================================================
+    // OUTER RECORD CONTAINER
+    // ========================================================
+
+    android.widget.LinearLayout recordContainer =
+            new android.widget.LinearLayout(
+                    MyrecordsActivity.this
+            );
+
+    recordContainer.setOrientation(
+            android.widget.LinearLayout.VERTICAL
+    );
+
+    recordContainer.setBackgroundColor(
+            android.graphics.Color.WHITE
+    );
+
+
+    // SEARCH DATA
+
+    recordContainer.setTag(
+            name + " " +
+            phone + " " +
+            address + " " +
+            product
+    );
+
+
+    // ========================================================
+    // ACTUAL TABLE ROW
+    // ========================================================
+
+    android.widget.LinearLayout row =
+            new android.widget.LinearLayout(
+                    MyrecordsActivity.this
+            );
+
+    row.setOrientation(
+            android.widget.LinearLayout.HORIZONTAL
+    );
+
+    row.setGravity(
+            android.view.Gravity.CENTER_VERTICAL
+    );
+
+    row.setBackgroundColor(
+            android.graphics.Color.WHITE
+    );
+
+    row.setMinimumHeight(
+            (int)(52.0f * density + 0.5f)
+    );
+
+
+    // ========================================================
+    // LEFT OUTER GRID BORDER
+    // ========================================================
+
+    android.view.View leftBorder =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    leftBorder.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    oneDp,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    leftBorder.setBackgroundColor(
+            gridColor
+    );
+
+    row.addView(leftBorder);
+
+
+    // ========================================================
+    // NUMBER CELL
+    // ========================================================
+
+    android.widget.TextView numberCell =
+            new android.widget.TextView(
+                    MyrecordsActivity.this
+            );
+
+    numberCell.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    numberWidth,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    numberCell.setGravity(
+            android.view.Gravity.CENTER
+    );
+
+    numberCell.setText(
+            String.valueOf(recordNumber)
+    );
+
+    numberCell.setTextColor(
+            android.graphics.Color.BLACK
+    );
+
+    numberCell.setTextSize(12);
+
+    numberCell.setPadding(
+            (int)(3 * density),
+            0,
+            (int)(3 * density),
+            0
+    );
+
+    row.addView(numberCell);
+
+
+    // ========================================================
+    // VERTICAL GRID LINE
+    // ========================================================
+
+    android.view.View line1 =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    line1.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    oneDp,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    line1.setBackgroundColor(
+            gridColor
+    );
+
+    row.addView(line1);
+
+
+    // ========================================================
+    // NAME CELL
+    // ========================================================
+
+    android.widget.TextView nameCell =
+            new android.widget.TextView(
+                    MyrecordsActivity.this
+            );
+
+    nameCell.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    1.0f
+            )
+    );
+
+    nameCell.setGravity(
+            android.view.Gravity.CENTER_VERTICAL |
+            android.view.Gravity.START
+    );
+
+    nameCell.setText(name);
+
+    nameCell.setTextColor(
+            android.graphics.Color.BLACK
+    );
+
+    nameCell.setTextSize(13);
+
+    nameCell.setPadding(
+            (int)(7 * density),
+            (int)(4 * density),
+            (int)(5 * density),
+            (int)(4 * density)
+    );
+
+    nameCell.setSingleLine(false);
+
+    row.addView(nameCell);
+
+
+    // ========================================================
+    // VERTICAL GRID LINE
+    // ========================================================
+
+    android.view.View line2 =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    line2.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    oneDp,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    line2.setBackgroundColor(
+            gridColor
+    );
+
+    row.addView(line2);
+
+
+    // ========================================================
+    // PHONE CELL
+    // ========================================================
+
+    android.widget.TextView phoneCell =
+            new android.widget.TextView(
+                    MyrecordsActivity.this
+            );
+
+    phoneCell.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    1.0f
+            )
+    );
+
+    phoneCell.setGravity(
+            android.view.Gravity.CENTER_VERTICAL |
+            android.view.Gravity.START
+    );
+
+    phoneCell.setText(phone);
+
+    phoneCell.setTextColor(
+            android.graphics.Color.BLACK
+    );
+
+    phoneCell.setTextSize(13);
+
+    phoneCell.setPadding(
+            (int)(7 * density),
+            (int)(4 * density),
+            (int)(5 * density),
+            (int)(4 * density)
+    );
+
+    phoneCell.setSingleLine(false);
+
+    row.addView(phoneCell);
+
+
+    // ========================================================
+    // VERTICAL GRID LINE
+    // ========================================================
+
+    android.view.View line3 =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    line3.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    oneDp,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    line3.setBackgroundColor(
+            gridColor
+    );
+
+    row.addView(line3);
+
+
+    // ========================================================
+    // ADDRESS CELL
+    // ========================================================
+
+    android.widget.TextView addressCell =
+            new android.widget.TextView(
+                    MyrecordsActivity.this
+            );
+
+    addressCell.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    1.0f
+            )
+    );
+
+    addressCell.setGravity(
+            android.view.Gravity.CENTER_VERTICAL |
+            android.view.Gravity.START
+    );
+
+    addressCell.setText(address);
+
+    addressCell.setTextColor(
+            android.graphics.Color.BLACK
+    );
+
+    addressCell.setTextSize(13);
+
+    addressCell.setPadding(
+            (int)(7 * density),
+            (int)(4 * density),
+            (int)(5 * density),
+            (int)(4 * density)
+    );
+
+    addressCell.setSingleLine(false);
+
+    row.addView(addressCell);
+
+
+    // ========================================================
+    // VERTICAL GRID LINE
+    // ========================================================
+
+    android.view.View line4 =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    line4.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    oneDp,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    line4.setBackgroundColor(
+            gridColor
+    );
+
+    row.addView(line4);
+
+
+    // ========================================================
+    // PRODUCT CELL
+    // ========================================================
+
+    android.widget.TextView productCell =
+            new android.widget.TextView(
+                    MyrecordsActivity.this
+            );
+
+    productCell.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    1.0f
+            )
+    );
+
+    productCell.setGravity(
+            android.view.Gravity.CENTER_VERTICAL |
+            android.view.Gravity.START
+    );
+
+    productCell.setText(product);
+
+    productCell.setTextColor(
+            android.graphics.Color.BLACK
+    );
+
+    productCell.setTextSize(13);
+
+    productCell.setPadding(
+            (int)(7 * density),
+            (int)(4 * density),
+            (int)(5 * density),
+            (int)(4 * density)
+    );
+
+    productCell.setSingleLine(false);
+
+    row.addView(productCell);
+
+
+    // ========================================================
+    // RIGHT OUTER GRID BORDER
+    // ========================================================
+
+    android.view.View rightBorder =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    rightBorder.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    oneDp,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
+
+    rightBorder.setBackgroundColor(
+            gridColor
+    );
+
+    row.addView(rightBorder);
+
+
+    // ========================================================
+    // ADD ROW
+    // ========================================================
+
+    recordContainer.addView(
+            row
+    );
+
+
+    // ========================================================
+    // HORIZONTAL GRID LINE
+    // ========================================================
+
+    android.view.View bottomLine =
+            new android.view.View(
+                    MyrecordsActivity.this
+            );
+
+    bottomLine.setLayoutParams(
+            new android.widget.LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    oneDp
+            )
+    );
+
+    bottomLine.setBackgroundColor(
+            gridColor
+    );
+
+    recordContainer.addView(
+            bottomLine
+    );
+
+
+    // ========================================================
+    // ADD COMPLETE RECORD
+    // ========================================================
+
+    recordsContainer.addView(
+            recordContainer
+    );
+
+    recordNumber++;
+
+}
+
+
+// ============================================================
+// EMPTY STATE
+// ============================================================
+
+if (allRecords.size() == 0) {
+
+    emptyState.setVisibility(
+            android.view.View.VISIBLE
+    );
+
+} else {
+
+    emptyState.setVisibility(
+            android.view.View.GONE
+    );
+
+}
+
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+searchInput.addTextChangedListener(
+        new android.text.TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(
+                    CharSequence s,
+                    int start,
+                    int count,
+                    int after
+            ) {
+            }
+
+
+            @Override
+            public void onTextChanged(
+                    CharSequence s,
+                    int start,
+                    int before,
+                    int count
+            ) {
+
+                String query = "";
+
+                if (s != null) {
+
+                    query =
+                            s.toString()
+                                    .trim()
+                                    .toLowerCase(
+                                            java.util.Locale
+                                                    .getDefault()
+                                    );
+
+                }
+
+                int visibleCount = 0;
+
+
+                // ====================================================
+                // CHECK EVERY RECORD
+                // ====================================================
+
+                for (
+                        int i = 0;
+                        i < recordsContainer.getChildCount();
+                        i++
+                ) {
+
+                    android.view.View child =
+                            recordsContainer.getChildAt(i);
+
+
+                    // Top horizontal line has no tag.
+
+                    if (child.getTag() == null) {
+
+                        continue;
+
+                    }
+
+
+                    String text =
+                            child.getTag()
+                                    .toString()
+                                    .toLowerCase(
+                                            java.util.Locale
+                                                    .getDefault()
+                                    );
+
+
+                    if (
+                            query.length() == 0 ||
+                            text.contains(query)
+                    ) {
+
+                        child.setVisibility(
+                                android.view.View.VISIBLE
+                        );
+
+                        visibleCount++;
+
+                    } else {
+
+                        child.setVisibility(
+                                android.view.View.GONE
+                        );
+
+                    }
+
+                }
+
+
+                // ====================================================
+                // SEARCH EMPTY STATE
+                // ====================================================
+
+                if (visibleCount == 0) {
+
+                    emptyState.setVisibility(
+                            android.view.View.VISIBLE
+                    );
+
+
+                    if (query.length() == 0) {
+
+                        emptyTitle.setText(
+                                "No Records Yet"
+                        );
+
+                        emptyMessage.setText(
+                                "Your saved records will appear here."
+                        );
+
+                    } else {
+
+                        emptyTitle.setText(
+                                "No Matching Records"
+                        );
+
+                        emptyMessage.setText(
+                                "No saved record matches your search."
+                        );
+
+                    }
+
+                } else {
+
+                    emptyState.setVisibility(
+                            android.view.View.GONE
+                    );
+
+                }
+
+            }
+
+
+            @Override
+            public void afterTextChanged(
+                    android.text.Editable s
+            ) {
+            }
+
+        }
+);
