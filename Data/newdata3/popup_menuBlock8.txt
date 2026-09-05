@@ -1,0 +1,840 @@
+final android.widget.LinearLayout popupRecordsContainer =
+        (android.widget.LinearLayout)
+                findViewById(
+                        R.id.recordsContainer
+                );
+
+if (popupRecordsContainer == null) {
+    return;
+}
+
+
+final float popupDensity =
+        getResources()
+                .getDisplayMetrics()
+                .density;
+
+
+final int popupWidth =
+        (int)(220 * popupDensity);
+
+final int popupButtonHeight =
+        (int)(50 * popupDensity);
+
+
+final android.widget.LinearLayout popupLayout =
+        new android.widget.LinearLayout(
+                MyrecordsActivity.this
+        );
+
+popupLayout.setOrientation(
+        android.widget.LinearLayout.VERTICAL
+);
+
+popupLayout.setPadding(
+        (int)(16 * popupDensity),
+        (int)(8 * popupDensity),
+        (int)(16 * popupDensity),
+        (int)(8 * popupDensity)
+);
+
+
+final android.graphics.drawable.GradientDrawable popupBackground =
+        new android.graphics.drawable.GradientDrawable();
+
+popupBackground.setColor(
+        android.graphics.Color.WHITE
+);
+
+popupBackground.setCornerRadius(
+        12 * popupDensity
+);
+
+popupBackground.setStroke(
+        Math.max(
+                1,
+                (int)popupDensity
+        ),
+        android.graphics.Color.LTGRAY
+);
+
+popupLayout.setBackground(
+        popupBackground
+);
+
+
+// ============================================================
+// CREATE BUTTON
+// ============================================================
+
+final android.widget.Button copyButton =
+        new android.widget.Button(
+                MyrecordsActivity.this
+        );
+
+copyButton.setText("Copy");
+copyButton.setTextSize(15);
+copyButton.setAllCaps(false);
+copyButton.setTextColor(
+        android.graphics.Color.BLACK
+);
+copyButton.setBackgroundColor(
+        android.graphics.Color.TRANSPARENT
+);
+
+popupLayout.addView(
+        copyButton,
+        new android.widget.LinearLayout.LayoutParams(
+                -1,
+                popupButtonHeight
+        )
+);
+
+
+// ============================================================
+// SHARE BUTTON
+// ============================================================
+
+final android.widget.Button shareButton =
+        new android.widget.Button(
+                MyrecordsActivity.this
+        );
+
+shareButton.setText("Share");
+shareButton.setTextSize(15);
+shareButton.setAllCaps(false);
+shareButton.setTextColor(
+        android.graphics.Color.BLACK
+);
+shareButton.setBackgroundColor(
+        android.graphics.Color.TRANSPARENT
+);
+
+popupLayout.addView(
+        shareButton,
+        new android.widget.LinearLayout.LayoutParams(
+                -1,
+                popupButtonHeight
+        )
+);
+
+
+// ============================================================
+// EXPORT BUTTON
+// ============================================================
+
+final android.widget.Button exportButton =
+        new android.widget.Button(
+                MyrecordsActivity.this
+        );
+
+exportButton.setText("Export");
+exportButton.setTextSize(15);
+exportButton.setAllCaps(false);
+exportButton.setTextColor(
+        android.graphics.Color.BLACK
+);
+exportButton.setBackgroundColor(
+        android.graphics.Color.TRANSPARENT
+);
+
+popupLayout.addView(
+        exportButton,
+        new android.widget.LinearLayout.LayoutParams(
+                -1,
+                popupButtonHeight
+        )
+);
+
+
+// ============================================================
+// SELECT ALL
+// ============================================================
+
+final android.widget.Button selectAllButton =
+        new android.widget.Button(
+                MyrecordsActivity.this
+        );
+
+selectAllButton.setText("Select All");
+selectAllButton.setTextSize(15);
+selectAllButton.setAllCaps(false);
+selectAllButton.setTextColor(
+        android.graphics.Color.BLACK
+);
+selectAllButton.setBackgroundColor(
+        android.graphics.Color.TRANSPARENT
+);
+
+popupLayout.addView(
+        selectAllButton,
+        new android.widget.LinearLayout.LayoutParams(
+                -1,
+                popupButtonHeight
+        )
+);
+
+
+// ============================================================
+// DESELECT ALL
+// ============================================================
+
+final android.widget.Button deselectAllButton =
+        new android.widget.Button(
+                MyrecordsActivity.this
+        );
+
+deselectAllButton.setText("Deselect All");
+deselectAllButton.setTextSize(15);
+deselectAllButton.setAllCaps(false);
+deselectAllButton.setTextColor(
+        android.graphics.Color.BLACK
+);
+deselectAllButton.setBackgroundColor(
+        android.graphics.Color.TRANSPARENT
+);
+
+popupLayout.addView(
+        deselectAllButton,
+        new android.widget.LinearLayout.LayoutParams(
+                -1,
+                popupButtonHeight
+        )
+);
+
+
+// ============================================================
+// POPUP WINDOW
+// ============================================================
+
+final android.widget.PopupWindow popupWindow =
+        new android.widget.PopupWindow(
+                popupLayout,
+                popupWidth,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+
+popupWindow.setBackgroundDrawable(
+        new android.graphics.drawable.ColorDrawable(
+                android.graphics.Color.TRANSPARENT
+        )
+);
+
+popupWindow.setOutsideTouchable(true);
+popupWindow.setFocusable(true);
+popupWindow.setElevation(
+        (int)(8 * popupDensity)
+);
+
+
+// ============================================================
+// SELECT ALL
+// ============================================================
+
+selectAllButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(
+                    android.view.View v
+            ) {
+
+                final int BLUE =
+                        android.graphics.Color.rgb(
+                                33,
+                                150,
+                                243
+                        );
+
+                final int WHITE =
+                        android.graphics.Color.WHITE;
+
+
+                for (
+                        int i = 0;
+                        i < popupRecordsContainer.getChildCount();
+                        i++
+                ) {
+
+                    android.view.View recordView =
+                            popupRecordsContainer
+                                    .getChildAt(i);
+
+                    if (
+                            !(recordView instanceof
+                                    android.widget.LinearLayout)
+                    ) {
+                        continue;
+                    }
+
+                    android.widget.LinearLayout record =
+                            (android.widget.LinearLayout)
+                                    recordView;
+
+
+                    for (
+                            int j = 0;
+                            j < record.getChildCount();
+                            j++
+                    ) {
+
+                        android.view.View rowView =
+                                record.getChildAt(j);
+
+                        if (
+                                !(rowView instanceof
+                                        android.widget.LinearLayout)
+                        ) {
+                            continue;
+                        }
+
+                        android.widget.LinearLayout row =
+                                (android.widget.LinearLayout)
+                                        rowView;
+
+
+                        for (
+                                int k = 0;
+                                k < row.getChildCount();
+                                k++
+                        ) {
+
+                            android.view.View cellView =
+                                    row.getChildAt(k);
+
+                            if (
+                                    cellView instanceof
+                                            android.widget.TextView
+                            ) {
+
+                                android.widget.TextView cell =
+                                        (android.widget.TextView)
+                                                cellView;
+
+                                cell.setBackgroundColor(
+                                        BLUE
+                                );
+
+                                cell.setTextColor(
+                                        WHITE
+                                );
+                            }
+                        }
+                    }
+                }
+
+
+                popupWindow.dismiss();
+            }
+        }
+);
+
+
+// ============================================================
+// DESELECT ALL
+// ============================================================
+
+deselectAllButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(
+                    android.view.View v
+            ) {
+
+                final int WHITE =
+                        android.graphics.Color.WHITE;
+
+                final int BLACK =
+                        android.graphics.Color.BLACK;
+
+
+                for (
+                        int i = 0;
+                        i < popupRecordsContainer.getChildCount();
+                        i++
+                ) {
+
+                    android.view.View recordView =
+                            popupRecordsContainer
+                                    .getChildAt(i);
+
+                    if (
+                            !(recordView instanceof
+                                    android.widget.LinearLayout)
+                    ) {
+                        continue;
+                    }
+
+                    android.widget.LinearLayout record =
+                            (android.widget.LinearLayout)
+                                    recordView;
+
+
+                    for (
+                            int j = 0;
+                            j < record.getChildCount();
+                            j++
+                    ) {
+
+                        android.view.View rowView =
+                                record.getChildAt(j);
+
+                        if (
+                                !(rowView instanceof
+                                        android.widget.LinearLayout)
+                        ) {
+                            continue;
+                        }
+
+                        android.widget.LinearLayout row =
+                                (android.widget.LinearLayout)
+                                        rowView;
+
+
+                        for (
+                                int k = 0;
+                                k < row.getChildCount();
+                                k++
+                        ) {
+
+                            android.view.View cellView =
+                                    row.getChildAt(k);
+
+                            if (
+                                    cellView instanceof
+                                            android.widget.TextView
+                            ) {
+
+                                android.widget.TextView cell =
+                                        (android.widget.TextView)
+                                                cellView;
+
+                                cell.setBackgroundColor(
+                                        WHITE
+                                );
+
+                                cell.setTextColor(
+                                        BLACK
+                                );
+                            }
+                        }
+                    }
+                }
+
+
+                popupWindow.dismiss();
+            }
+        }
+);
+
+
+// ============================================================
+// COPY
+// ============================================================
+
+copyButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(
+                    android.view.View v
+            ) {
+
+                final int BLUE =
+                        android.graphics.Color.rgb(
+                                33,
+                                150,
+                                243
+                        );
+
+
+                StringBuilder selectedText =
+                        new StringBuilder();
+
+
+                for (
+                        int i = 0;
+                        i < popupRecordsContainer.getChildCount();
+                        i++
+                ) {
+
+                    android.view.View recordView =
+                            popupRecordsContainer
+                                    .getChildAt(i);
+
+                    if (
+                            !(recordView instanceof
+                                    android.widget.LinearLayout)
+                    ) {
+                        continue;
+                    }
+
+                    android.widget.LinearLayout record =
+                            (android.widget.LinearLayout)
+                                    recordView;
+
+
+                    StringBuilder recordText =
+                            new StringBuilder();
+
+
+                    for (
+                            int j = 0;
+                            j < record.getChildCount();
+                            j++
+                    ) {
+
+                        android.view.View rowView =
+                                record.getChildAt(j);
+
+                        if (
+                                !(rowView instanceof
+                                        android.widget.LinearLayout)
+                        ) {
+                            continue;
+                        }
+
+                        android.widget.LinearLayout row =
+                                (android.widget.LinearLayout)
+                                        rowView;
+
+
+                        for (
+                                int k = 0;
+                                k < row.getChildCount();
+                                k++
+                        ) {
+
+                            android.view.View cellView =
+                                    row.getChildAt(k);
+
+                            if (
+                                    !(cellView instanceof
+                                            android.widget.TextView)
+                            ) {
+                                continue;
+                            }
+
+
+                            android.widget.TextView cell =
+                                    (android.widget.TextView)
+                                            cellView;
+
+
+                            if (
+                                    cell.getBackground()
+                                            instanceof
+                                            android.graphics.drawable.ColorDrawable
+                            ) {
+
+                                android.graphics.drawable.ColorDrawable
+                                        bg =
+                                        (android.graphics.drawable.ColorDrawable)
+                                                cell.getBackground();
+
+
+                                if (
+                                        bg.getColor() == BLUE
+                                ) {
+
+                                    if (
+                                            recordText.length() > 0
+                                    ) {
+                                        recordText.append(
+                                                " | "
+                                        );
+                                    }
+
+                                    recordText.append(
+                                            cell.getText()
+                                                    .toString()
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+
+                    if (
+                            recordText.length() > 0
+                    ) {
+
+                        if (
+                                selectedText.length() > 0
+                        ) {
+                            selectedText.append(
+                                    "\n"
+                            );
+                        }
+
+                        selectedText.append(
+                                recordText.toString()
+                        );
+                    }
+                }
+
+
+                if (
+                        selectedText.length() == 0
+                ) {
+
+                    android.widget.Toast.makeText(
+                            MyrecordsActivity.this,
+                            "No data selected",
+                            android.widget.Toast.LENGTH_SHORT
+                    ).show();
+
+                } else {
+
+                    android.content.ClipboardManager
+                            clipboard =
+                            (android.content.ClipboardManager)
+                                    getSystemService(
+                                            android.content.Context
+                                                    .CLIPBOARD_SERVICE
+                                    );
+
+
+                    clipboard.setPrimaryClip(
+                            android.content.ClipData
+                                    .newPlainText(
+                                            "Selected Records",
+                                            selectedText.toString()
+                                    )
+                    );
+
+
+                    android.widget.Toast.makeText(
+                            MyrecordsActivity.this,
+                            "Copied",
+                            android.widget.Toast.LENGTH_SHORT
+                    ).show();
+                }
+
+
+                popupWindow.dismiss();
+            }
+        }
+);
+
+
+// ============================================================
+// SHARE
+// ============================================================
+
+shareButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(
+                    android.view.View v
+            ) {
+
+                final int BLUE =
+                        android.graphics.Color.rgb(
+                                33,
+                                150,
+                                243
+                        );
+
+
+                StringBuilder selectedText =
+                        new StringBuilder();
+
+
+                for (
+                        int i = 0;
+                        i < popupRecordsContainer.getChildCount();
+                        i++
+                ) {
+
+                    android.view.View recordView =
+                            popupRecordsContainer
+                                    .getChildAt(i);
+
+                    if (
+                            !(recordView instanceof
+                                    android.widget.LinearLayout)
+                    ) {
+                        continue;
+                    }
+
+                    android.widget.LinearLayout record =
+                            (android.widget.LinearLayout)
+                                    recordView;
+
+
+                    StringBuilder recordText =
+                            new StringBuilder();
+
+
+                    for (
+                            int j = 0;
+                            j < record.getChildCount();
+                            j++
+                    ) {
+
+                        android.view.View rowView =
+                                record.getChildAt(j);
+
+                        if (
+                                !(rowView instanceof
+                                        android.widget.LinearLayout)
+                        ) {
+                            continue;
+                        }
+
+                        android.widget.LinearLayout row =
+                                (android.widget.LinearLayout)
+                                        rowView;
+
+
+                        for (
+                                int k = 0;
+                                k < row.getChildCount();
+                                k++
+                        ) {
+
+                            android.view.View cellView =
+                                    row.getChildAt(k);
+
+
+                            if (
+                                    !(cellView instanceof
+                                            android.widget.TextView)
+                            ) {
+                                continue;
+                            }
+
+
+                            android.widget.TextView cell =
+                                    (android.widget.TextView)
+                                            cellView;
+
+
+                            if (
+                                    cell.getBackground()
+                                            instanceof
+                                            android.graphics.drawable.ColorDrawable
+                            ) {
+
+                                android.graphics.drawable.ColorDrawable
+                                        bg =
+                                        (android.graphics.drawable.ColorDrawable)
+                                                cell.getBackground();
+
+
+                                if (
+                                        bg.getColor() == BLUE
+                                ) {
+
+                                    if (
+                                            recordText.length() > 0
+                                    ) {
+                                        recordText.append(
+                                                " | "
+                                        );
+                                    }
+
+                                    recordText.append(
+                                            cell.getText()
+                                                    .toString()
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+
+                    if (
+                            recordText.length() > 0
+                    ) {
+
+                        if (
+                                selectedText.length() > 0
+                        ) {
+                            selectedText.append(
+                                    "\n"
+                            );
+                        }
+
+                        selectedText.append(
+                                recordText.toString()
+                        );
+                    }
+                }
+
+
+                if (
+                        selectedText.length() == 0
+                ) {
+
+                    android.widget.Toast.makeText(
+                            MyrecordsActivity.this,
+                            "No data selected",
+                            android.widget.Toast.LENGTH_SHORT
+                    ).show();
+
+                } else {
+
+                    android.content.Intent shareIntent =
+                            new android.content.Intent(
+                                    android.content.Intent.ACTION_SEND
+                            );
+
+                    shareIntent.setType(
+                            "text/plain"
+                    );
+
+                    shareIntent.putExtra(
+                            android.content.Intent.EXTRA_TEXT,
+                            selectedText.toString()
+                    );
+
+
+                    startActivity(
+                            android.content.Intent.createChooser(
+                                    shareIntent,
+                                    "Share"
+                            )
+                    );
+                }
+
+
+                popupWindow.dismiss();
+            }
+        }
+);
+
+
+// ============================================================
+// EXPORT
+// ============================================================
+
+exportButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(
+                    android.view.View v
+            ) {
+
+                ButtonsController.export(
+                        MyrecordsActivity.this
+                );
+
+                popupWindow.dismiss();
+            }
+        }
+);
+
+
+// ============================================================
+// SHOW POPUP
+// ============================================================
+
+popupWindow.showAsDropDown(
+        popupRecordsContainer
+);

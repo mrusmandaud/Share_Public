@@ -1,0 +1,329 @@
+final android.widget.LinearLayout selectionContainer =
+        (android.widget.LinearLayout)
+                findViewById(
+                        R.id.recordsContainer
+                );
+
+if (selectionContainer == null) {
+    return;
+}
+
+
+final java.util.ArrayList<
+        android.widget.TextView
+> cells =
+        new java.util.ArrayList<
+                android.widget.TextView
+        >();
+
+
+final java.util.ArrayList<
+        java.util.ArrayList<
+                android.widget.TextView
+        >
+> records =
+        new java.util.ArrayList<
+                java.util.ArrayList<
+                        android.widget.TextView
+                >
+        >();
+
+
+for (
+        int i = 0;
+        i < selectionContainer.getChildCount();
+        i++
+) {
+
+    android.view.View recordView =
+            selectionContainer.getChildAt(i);
+
+    if (
+            !(recordView instanceof
+                    android.widget.LinearLayout)
+    ) {
+        continue;
+    }
+
+    android.widget.LinearLayout record =
+            (android.widget.LinearLayout)
+                    recordView;
+
+    java.util.ArrayList<
+            android.widget.TextView
+    > recordCells =
+            new java.util.ArrayList<
+                    android.widget.TextView
+            >();
+
+
+    for (
+            int j = 0;
+            j < record.getChildCount();
+            j++
+    ) {
+
+        android.view.View rowView =
+                record.getChildAt(j);
+
+        if (
+                !(rowView instanceof
+                        android.widget.LinearLayout)
+        ) {
+            continue;
+        }
+
+        android.widget.LinearLayout row =
+                (android.widget.LinearLayout)
+                        rowView;
+
+
+        for (
+                int k = 0;
+                k < row.getChildCount();
+                k++
+        ) {
+
+            android.view.View child =
+                    row.getChildAt(k);
+
+            if (
+                    child instanceof
+                            android.widget.TextView
+            ) {
+
+                android.widget.TextView cell =
+                        (android.widget.TextView)
+                                child;
+
+                recordCells.add(cell);
+                cells.add(cell);
+            }
+        }
+    }
+
+
+    if (recordCells.size() > 0) {
+
+        records.add(
+                recordCells
+        );
+    }
+}
+
+
+if (cells.size() == 0) {
+    return;
+}
+
+
+final int BLUE =
+        android.graphics.Color.rgb(
+                33,
+                150,
+                243
+        );
+
+final int WHITE =
+        android.graphics.Color.WHITE;
+
+final int BLACK =
+        android.graphics.Color.BLACK;
+
+
+final int[] first =
+        new int[] { -1 };
+
+
+final Runnable clearSelection =
+        new Runnable() {
+
+            @Override
+            public void run() {
+
+                for (
+                        int i = 0;
+                        i < cells.size();
+                        i++
+                ) {
+
+                    android.widget.TextView cell =
+                            cells.get(i);
+
+                    cell.setBackgroundColor(
+                            WHITE
+                    );
+
+                    cell.setTextColor(
+                            BLACK
+                    );
+                }
+
+                first[0] = -1;
+            }
+        };
+
+
+for (
+        int i = 0;
+        i < cells.size();
+        i++
+) {
+
+    final android.widget.TextView cell =
+            cells.get(i);
+
+    final int index =
+            i;
+
+
+    cell.setClickable(true);
+
+
+    cell.setOnClickListener(
+            new android.view.View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                        android.view.View v
+                ) {
+
+                    if (
+                            first[0] == index
+                    ) {
+
+                        clearSelection.run();
+                        return;
+                    }
+
+
+                    if (
+                            first[0] == -1
+                    ) {
+
+                        clearSelection.run();
+
+                        cell.setBackgroundColor(
+                                BLUE
+                        );
+
+                        cell.setTextColor(
+                                WHITE
+                        );
+
+                        first[0] = index;
+
+                        return;
+                    }
+
+
+                    int start =
+                            first[0];
+
+                    int end =
+                            index;
+
+
+                    if (start > end) {
+
+                        int temp =
+                                start;
+
+                        start = end;
+                        end = temp;
+                    }
+
+
+                    clearSelection.run();
+
+
+                    for (
+                            int x = start;
+                            x <= end;
+                            x++
+                    ) {
+
+                        android.widget.TextView selected =
+                                cells.get(x);
+
+                        selected.setBackgroundColor(
+                                BLUE
+                        );
+
+                        selected.setTextColor(
+                                WHITE
+                        );
+                    }
+
+
+                    first[0] = -1;
+                }
+            }
+    );
+}
+
+
+// ============================================================
+// LONG PRESS = WHOLE RECORD
+// ============================================================
+
+for (
+        int r = 0;
+        r < records.size();
+        r++
+) {
+
+    final java.util.ArrayList<
+            android.widget.TextView
+    > record =
+            records.get(r);
+
+
+    for (
+            int c = 0;
+            c < record.size();
+            c++
+    ) {
+
+        android.widget.TextView cell =
+                record.get(c);
+
+
+        cell.setOnLongClickListener(
+                new android.view.View.OnLongClickListener() {
+
+                    @Override
+                    public boolean onLongClick(
+                            android.view.View v
+                    ) {
+
+                        clearSelection.run();
+
+
+                        for (
+                                int x = 0;
+                                x < record.size();
+                                x++
+                        ) {
+
+                            android.widget.TextView selected =
+                                    record.get(x);
+
+                            selected.setBackgroundColor(
+                                    BLUE
+                            );
+
+                            selected.setTextColor(
+                                    WHITE
+                            );
+                        }
+
+
+                        first[0] = -1;
+
+                        return true;
+                    }
+                }
+        );
+    }
+}
