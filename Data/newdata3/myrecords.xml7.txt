@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/appearanceScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F5F8F7">
+
+    <LinearLayout
+        android:id="@+id/myRecordsRoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#F5F8F7">
+
+        <FrameLayout
+            android:id="@+id/myRecordsHeader"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:background="#008577"
+            android:elevation="3dp">
+
+            <TextView
+                android:id="@+id/myRecordsBackButton"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_gravity="center_vertical|start"
+                android:gravity="center"
+                android:text="‹"
+                android:textColor="#FFFFFF"
+                android:textSize="34sp"
+                android:includeFontPadding="false"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/myRecordsHeaderTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="My Records"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:includeFontPadding="false" />
+
+        </FrameLayout>
+
+        <!-- MAIN CONTENT: REDUCED LEFT/RIGHT PADDING 16dp -> 12dp -->
+
+        <LinearLayout
+            android:id="@+id/myRecordsPageContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="20dp">
+
+            <!-- SAVED RECORDS SUMMARY -->
+
+            <LinearLayout
+                android:id="@+id/recordsSummaryStrip"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/recordsSummaryIcon"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:gravity="center"
+                    android:text="▤"
+                    android:textColor="#008577"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    android:background="#DDF3EF"
+                    android:includeFontPadding="false" />
+
+                <LinearLayout
+                    android:id="@+id/recordsSummaryText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/recordsSummaryTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Saved Records"
+                        android:textColor="#263238"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsSummarySubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Your saved data appears here"
+                        android:textColor="#82918E"
+                        android:textSize="11sp"
+                        android:includeFontPadding="false" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/recordsCount"
+                    android:layout_width="50dp"
+                    android:layout_height="38dp"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="#008577"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:background="#E4F5F1"
+                    android:includeFontPadding="false" />
+
+            </LinearLayout>
+
+            <!-- SEARCH -->
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/recordsSearchCard"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="#FFFFFF"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:id="@+id/recordsSearchLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp">
+
+                    <TextView
+                        android:id="@+id/recordsSearchButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:gravity="center"
+                        android:text="⌕"
+                        android:textColor="#008577"
+                        android:textSize="24sp"
+                        android:background="#E7F2F0"
+                        android:includeFontPadding="false" />
+
+                    <EditText
+                        android:id="@+id/recordsSearchInput"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="6dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Search records"
+                        android:textColor="#263A36"
+                        android:textColorHint="#9AA9A6"
+                        android:textSize="14sp"
+                        android:singleLine="true"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsClearButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:gravity="center"
+                        android:text="×"
+                        android:textColor="#78909C"
+                        android:textSize="22sp"
+                        android:background="#F5F8F7"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:includeFontPadding="false" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- SECTION HEADER -->
+
+            <LinearLayout
+                android:id="@+id/recordsSectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/recordsSectionTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="YOUR RECORDS"
+                    android:textColor="#008577"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/recordsSectionHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Latest"
+                    android:textColor="#8A9A97"
+                    android:textSize="11sp"
+                    android:includeFontPadding="false" />
+
+            </LinearLayout>
+
+            <!-- FLAT TABLE -->
+
+            <LinearLayout
+                android:id="@+id/recordsTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#FFFFFF">
+
+                <!-- HEADER: NO GRID LINES -->
+
+                <LinearLayout
+                    android:id="@+id/recordsTableHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="#008577">
+
+                    <TextView
+                        android:id="@+id/recordsHeaderNumber"
+                        android:layout_width="34dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="#"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsHeaderName"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|start"
+                        android:paddingLeft="7dp"
+                        android:text="Name"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsHeaderPhone"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|start"
+                        android:paddingLeft="7dp"
+                        android:text="Phone"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsHeaderAddress"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|start"
+                        android:paddingLeft="7dp"
+                        android:text="Address"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsHeaderProduct"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|start"
+                        android:paddingLeft="7dp"
+                        android:text="Product"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                </LinearLayout>
+
+                <!-- DYNAMIC RECORDS -->
+
+                <LinearLayout
+                    android:id="@+id/recordsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#FFFFFF" />
+
+                <!-- EMPTY STATE -->
+
+                <LinearLayout
+                    android:id="@+id/recordsEmptyState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingTop="25dp"
+                    android:paddingBottom="25dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/recordsEmptyIcon"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:gravity="center"
+                        android:text="▤"
+                        android:textColor="#008577"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        android:background="#DDF3EF"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsEmptyTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="No Records Yet"
+                        android:textColor="#263A36"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/recordsEmptyMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Your saved records will appear here."
+                        android:textColor="#82918E"
+                        android:textSize="12sp"
+                        android:includeFontPadding="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/recordsBottomDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="#DCE5E3" />
+
+            <TextView
+                android:id="@+id/recordsBottomText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Your data stays organized here"
+                android:textColor="#9AA8A5"
+                android:textSize="10sp"
+                android:includeFontPadding="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
