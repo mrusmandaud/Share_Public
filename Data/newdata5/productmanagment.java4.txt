@@ -1,0 +1,2047 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
+public class ProductManagement {
+
+    /*
+     * This is a Java/Kotlin Manager helper.
+     *
+     * It is NOT an Activity.
+     *
+     * Open it from SettingsActivity:
+     *
+     * ProductManagement.show(SettingsActivity.this);
+     *
+     * Do NOT add ProductManagement to AndroidManifest.xml.
+     */
+
+    private static final String SELECT_PRODUCTS =
+            "Select Products";
+
+    /*
+     * Separate request codes.
+     */
+    public static final int IMPORT_TXT_REQUEST = 9001;
+    public static final int IMPORT_CSV_REQUEST = 9002;
+    public static final int IMPORT_XLSX_REQUEST = 9003;
+
+    private static AlertDialog dialog;
+
+    private static SettingsActivity settingsContext;
+
+    private static EditText productInput;
+
+    private static LinearLayout productContainer;
+
+
+    /*
+     * ============================================================
+     * SHOW PRODUCT MANAGEMENT
+     * ============================================================
+     */
+    public static void show(
+            final SettingsActivity context
+    ) {
+
+        if (context == null) {
+            return;
+        }
+
+        settingsContext = context;
+
+
+        /*
+         * ROOT
+         */
+        LinearLayout root =
+                new LinearLayout(context);
+
+        root.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        root.setPadding(
+                24,
+                24,
+                24,
+                24
+        );
+
+
+        /*
+         * TITLE
+         */
+        TextView title =
+                new TextView(context);
+
+        title.setText(
+                "Manage Products"
+        );
+
+        title.setTextSize(
+                22
+        );
+
+        title.setGravity(
+                Gravity.CENTER
+        );
+
+        title.setPadding(
+                0,
+                0,
+                0,
+                20
+        );
+
+        root.addView(
+                title,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * PRODUCT INPUT
+         */
+        productInput =
+                new EditText(context);
+
+        productInput.setHint(
+                "Enter product name"
+        );
+
+        productInput.setSingleLine(
+                true
+        );
+
+        root.addView(
+                productInput,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * ADD PRODUCT
+         */
+        Button addButton =
+                new Button(context);
+
+        addButton.setText(
+                "ADD PRODUCT"
+        );
+
+        root.addView(
+                addButton,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * IMPORT TXT
+         */
+        Button importTxtButton =
+                new Button(context);
+
+        importTxtButton.setText(
+                "IMPORT TXT"
+        );
+
+        root.addView(
+                importTxtButton,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * IMPORT CSV
+         */
+        Button importCsvButton =
+                new Button(context);
+
+        importCsvButton.setText(
+                "IMPORT CSV"
+        );
+
+        root.addView(
+                importCsvButton,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * IMPORT XLSX
+         */
+        Button importXlsxButton =
+                new Button(context);
+
+        importXlsxButton.setText(
+                "IMPORT XLSX"
+        );
+
+        root.addView(
+                importXlsxButton,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * PRODUCTS TITLE
+         */
+        TextView productsTitle =
+                new TextView(context);
+
+        productsTitle.setText(
+                "Products"
+        );
+
+        productsTitle.setTextSize(
+                18
+        );
+
+        productsTitle.setPadding(
+                0,
+                20,
+                0,
+                10
+        );
+
+        root.addView(
+                productsTitle,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * SCROLL VIEW
+         */
+        ScrollView scrollView =
+                new ScrollView(context);
+
+
+        /*
+         * PRODUCT CONTAINER
+         */
+        productContainer =
+                new LinearLayout(context);
+
+        productContainer.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        scrollView.addView(
+                productContainer
+        );
+
+
+        root.addView(
+                scrollView,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        0,
+                        1
+                )
+        );
+
+
+        /*
+         * BACK
+         */
+        Button backButton =
+                new Button(context);
+
+        backButton.setText(
+                "BACK"
+        );
+
+        root.addView(
+                backButton,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+        /*
+         * DIALOG
+         */
+        dialog =
+                new AlertDialog.Builder(context)
+                        .setView(root)
+                        .create();
+
+
+        /*
+         * ADD
+         */
+        addButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View v
+                    ) {
+
+                        addProduct(
+                                context
+                        );
+                    }
+                }
+        );
+
+
+        /*
+         * TXT
+         */
+        importTxtButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View v
+                    ) {
+
+                        openTxtPicker(
+                                context
+                        );
+                    }
+                }
+        );
+
+
+        /*
+         * CSV
+         */
+        importCsvButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View v
+                    ) {
+
+                        openCsvPicker(
+                                context
+                        );
+                    }
+                }
+        );
+
+
+        /*
+         * XLSX
+         */
+        importXlsxButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View v
+                    ) {
+
+                        openXlsxPicker(
+                                context
+                        );
+                    }
+                }
+        );
+
+
+        /*
+         * BACK
+         */
+        backButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View v
+                    ) {
+
+                        close();
+                    }
+                }
+        );
+
+
+        dialog.show();
+
+
+        /*
+         * LOAD PRODUCTS
+         */
+        refreshProducts(
+                context
+        );
+    }
+
+
+    /*
+     * ============================================================
+     * ADD PRODUCT
+     * ============================================================
+     */
+    private static void addProduct(
+            SettingsActivity context
+    ) {
+
+        if (productInput == null) {
+            return;
+        }
+
+
+        String product =
+                productInput
+                        .getText()
+                        .toString()
+                        .trim();
+
+
+        /*
+         * EMPTY
+         */
+        if (product.length() == 0) {
+
+            Toast.makeText(
+                    context,
+                    "Enter a product name",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        /*
+         * PLACEHOLDER IS NOT A PRODUCT
+         */
+        if (product.equalsIgnoreCase(
+                SELECT_PRODUCTS
+        )
+                || product.equalsIgnoreCase(
+                "Select Product"
+        )) {
+
+            Toast.makeText(
+                    context,
+                    "Select Products is not a product",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        /*
+         * DUPLICATE CHECK
+         */
+        if (productExists(
+                context,
+                product
+        )) {
+
+            Toast.makeText(
+                    context,
+                    "Product already exists",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        /*
+         * CENTRAL STORAGE
+         */
+        ButtonsController.addProduct(
+                context,
+                product
+        );
+
+
+        productInput.setText("");
+
+
+        refreshProducts(
+                context
+        );
+
+
+        Toast.makeText(
+                context,
+                "Product added",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    /*
+     * ============================================================
+     * CHECK DUPLICATE
+     * ============================================================
+     */
+    private static boolean productExists(
+            SettingsActivity context,
+            String product
+    ) {
+
+        ArrayList<String> products =
+                ButtonsController.getProducts(
+                        context
+                );
+
+
+        for (String existing :
+                products) {
+
+            if (existing == null) {
+                continue;
+            }
+
+
+            existing =
+                    existing.trim();
+
+
+            if (existing.length() == 0) {
+                continue;
+            }
+
+
+            if (existing.equalsIgnoreCase(
+                    SELECT_PRODUCTS
+            )
+                    || existing.equalsIgnoreCase(
+                    "Select Product"
+            )) {
+
+                continue;
+            }
+
+
+            if (existing.equalsIgnoreCase(
+                    product
+            )) {
+
+                return true;
+            }
+        }
+
+
+        return false;
+    }
+
+
+    /*
+     * ============================================================
+     * TXT PICKER
+     * ============================================================
+     */
+    private static void openTxtPicker(
+            SettingsActivity context
+    ) {
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            Intent.ACTION_OPEN_DOCUMENT
+                    );
+
+            intent.addCategory(
+                    Intent.CATEGORY_OPENABLE
+            );
+
+            intent.setType(
+                    "text/plain"
+            );
+
+            intent.addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+
+            context.startActivityForResult(
+                    intent,
+                    IMPORT_TXT_REQUEST
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    context,
+                    "Unable to open TXT picker",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    /*
+     * ============================================================
+     * CSV PICKER
+     * ============================================================
+     */
+    private static void openCsvPicker(
+            SettingsActivity context
+    ) {
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            Intent.ACTION_OPEN_DOCUMENT
+                    );
+
+            intent.addCategory(
+                    Intent.CATEGORY_OPENABLE
+            );
+
+            intent.setType(
+                    "text/csv"
+            );
+
+            intent.putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    new String[] {
+                            "text/csv",
+                            "application/csv",
+                            "text/comma-separated-values",
+                            "application/vnd.ms-excel"
+                    }
+            );
+
+            intent.addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+
+            context.startActivityForResult(
+                    intent,
+                    IMPORT_CSV_REQUEST
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    context,
+                    "Unable to open CSV picker",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    /*
+     * ============================================================
+     * XLSX PICKER
+     * ============================================================
+     */
+    private static void openXlsxPicker(
+            SettingsActivity context
+    ) {
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            Intent.ACTION_OPEN_DOCUMENT
+                    );
+
+            intent.addCategory(
+                    Intent.CATEGORY_OPENABLE
+            );
+
+            intent.setType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            );
+
+            intent.addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+
+            context.startActivityForResult(
+                    intent,
+                    IMPORT_XLSX_REQUEST
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    context,
+                    "Unable to open XLSX picker",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    /*
+     * ============================================================
+     * IMPORT RESULT
+     * ============================================================
+     */
+    public static boolean handleImportResult(
+            SettingsActivity context,
+            int requestCode,
+            int resultCode,
+            Intent data
+    ) {
+
+        if (requestCode != IMPORT_TXT_REQUEST
+                && requestCode != IMPORT_CSV_REQUEST
+                && requestCode != IMPORT_XLSX_REQUEST) {
+
+            return false;
+        }
+
+
+        if (resultCode !=
+                android.app.Activity.RESULT_OK) {
+
+            return true;
+        }
+
+
+        if (data == null
+                || data.getData() == null) {
+
+            Toast.makeText(
+                    context,
+                    "No file selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return true;
+        }
+
+
+        Uri uri =
+                data.getData();
+
+
+        try {
+
+            context.getContentResolver()
+                    .takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    );
+
+        } catch (Exception ignored) {
+        }
+
+
+        try {
+
+            int imported;
+
+
+            if (requestCode ==
+                    IMPORT_XLSX_REQUEST) {
+
+                imported =
+                        importXlsx(
+                                context,
+                                uri
+                        );
+
+            } else {
+
+                imported =
+                        importText(
+                                context,
+                                uri,
+                                requestCode ==
+                                        IMPORT_CSV_REQUEST
+                        );
+            }
+
+
+            refreshProducts(
+                    context
+            );
+
+
+            Toast.makeText(
+                    context,
+                    imported
+                            + " product(s) imported",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    context,
+                    "Import failed: "
+                            + errorMessage(e),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+
+
+        return true;
+    }
+
+
+    /*
+     * ============================================================
+     * TXT / CSV IMPORT
+     * ============================================================
+     */
+    private static int importText(
+            SettingsActivity context,
+            Uri uri,
+            boolean csv
+    ) throws Exception {
+
+        InputStream input =
+                context.getContentResolver()
+                        .openInputStream(uri);
+
+
+        if (input == null) {
+
+            throw new Exception(
+                    "Cannot open file"
+            );
+        }
+
+
+        BufferedReader reader =
+                new BufferedReader(
+                        new InputStreamReader(
+                                input,
+                                StandardCharsets.UTF_8
+                        )
+                );
+
+
+        int imported = 0;
+
+
+        try {
+
+            String line;
+
+
+            Set<String> importedNames =
+                    new HashSet<String>();
+
+
+            while (
+                    (line =
+                            reader.readLine())
+                            != null
+            ) {
+
+                line =
+                        line.trim();
+
+
+                if (line.length() == 0) {
+                    continue;
+                }
+
+
+                /*
+                 * Remove BOM.
+                 */
+                if (line.charAt(0) ==
+                        '\uFEFF') {
+
+                    line =
+                            line.substring(1)
+                                    .trim();
+                }
+
+
+                /*
+                 * TXT:
+                 *
+                 * One product per line.
+                 *
+                 * CSV:
+                 *
+                 * Product,Product,Product
+                 */
+                String[] values;
+
+
+                if (csv) {
+
+                    values =
+                            splitCsvLine(
+                                    line
+                            );
+
+                } else {
+
+                    values =
+                            new String[] {
+                                    line
+                            };
+                }
+
+
+                for (String value :
+                        values) {
+
+                    if (value == null) {
+                        continue;
+                    }
+
+
+                    String product =
+                            cleanProduct(
+                                    value
+                            );
+
+
+                    if (!validImportedProduct(
+                            product
+                    )) {
+
+                        continue;
+                    }
+
+
+                    String key =
+                            product.toLowerCase(
+                                    Locale.US
+                            );
+
+
+                    if (importedNames.contains(
+                            key
+                    )) {
+
+                        continue;
+                    }
+
+
+                    if (productExists(
+                            context,
+                            product
+                    )) {
+
+                        importedNames.add(
+                                key
+                        );
+
+                        continue;
+                    }
+
+
+                    ButtonsController.addProduct(
+                            context,
+                            product
+                    );
+
+
+                    importedNames.add(
+                            key
+                    );
+
+
+                    imported++;
+                }
+            }
+
+
+        } finally {
+
+            reader.close();
+        }
+
+
+        return imported;
+    }
+
+
+    /*
+     * ============================================================
+     * CSV SPLITTER
+     * ============================================================
+     *
+     * Handles:
+     *
+     * Product A,Product B
+     *
+     * "Product A","Product B"
+     */
+    private static String[] splitCsvLine(
+            String line
+    ) {
+
+        ArrayList<String> values =
+                new ArrayList<String>();
+
+
+        StringBuilder current =
+                new StringBuilder();
+
+
+        boolean quoted =
+                false;
+
+
+        for (int i = 0;
+             i < line.length();
+             i++) {
+
+            char c =
+                    line.charAt(i);
+
+
+            if (c == '"') {
+
+                if (quoted
+                        && i + 1 < line.length()
+                        && line.charAt(i + 1) == '"') {
+
+                    current.append('"');
+
+                    i++;
+
+                } else {
+
+                    quoted =
+                            !quoted;
+                }
+
+            } else if (c == ','
+                    && !quoted) {
+
+                values.add(
+                        current.toString()
+                );
+
+                current.setLength(0);
+
+            } else {
+
+                current.append(c);
+            }
+        }
+
+
+        values.add(
+                current.toString()
+        );
+
+
+        return values.toArray(
+                new String[values.size()]
+        );
+    }
+
+
+    /*
+     * ============================================================
+     * XLSX IMPORT
+     * ============================================================
+     *
+     * XLSX is a ZIP/XML file.
+     *
+     * This parser does not require Apache POI.
+     *
+     * It reads:
+     *
+     * sharedStrings.xml
+     * worksheet XML
+     * inline strings
+     * normal string cells
+     */
+    private static int importXlsx(
+            SettingsActivity context,
+            Uri uri
+    ) throws Exception {
+
+        /*
+         * ContentResolver URI cannot always be used
+         * directly with ZipFile, so copy it to memory.
+         */
+        InputStream input =
+                context.getContentResolver()
+                        .openInputStream(uri);
+
+
+        if (input == null) {
+
+            throw new Exception(
+                    "Cannot open XLSX file"
+            );
+        }
+
+
+        java.io.File temp =
+                java.io.File.createTempFile(
+                        "products_",
+                        ".xlsx",
+                        context.getCacheDir()
+                );
+
+
+        java.io.FileOutputStream output =
+                new java.io.FileOutputStream(
+                        temp
+                );
+
+
+        try {
+
+            byte[] buffer =
+                    new byte[8192];
+
+
+            int length;
+
+
+            while (
+                    (length =
+                            input.read(buffer))
+                            != -1
+            ) {
+
+                output.write(
+                        buffer,
+                        0,
+                        length
+                );
+            }
+
+
+        } finally {
+
+            try {
+                input.close();
+            } catch (Exception ignored) {
+            }
+
+
+            try {
+                output.close();
+            } catch (Exception ignored) {
+            }
+        }
+
+
+        int imported = 0;
+
+
+        ZipFile zip =
+                new ZipFile(
+                        temp
+                );
+
+
+        try {
+
+            ArrayList<String> sharedStrings =
+                    readSharedStrings(
+                            zip
+                    );
+
+
+            /*
+             * Find worksheet XML files.
+             */
+            java.util.Enumeration<? extends ZipEntry>
+                    entries =
+                    zip.entries();
+
+
+            while (
+                    entries.hasMoreElements()
+            ) {
+
+                ZipEntry entry =
+                        entries.nextElement();
+
+
+                String name =
+                        entry.getName();
+
+
+                if (!name.startsWith(
+                        "xl/worksheets/"
+                )) {
+
+                    continue;
+                }
+
+
+                if (!name.endsWith(
+                        ".xml"
+                )) {
+
+                    continue;
+                }
+
+
+                InputStream sheet =
+                        zip.getInputStream(
+                                entry
+                        );
+
+
+                try {
+
+                    imported +=
+                            readWorksheetProducts(
+                                    context,
+                                    sheet,
+                                    sharedStrings
+                            );
+
+                } finally {
+
+                    sheet.close();
+                }
+            }
+
+
+        } finally {
+
+            zip.close();
+
+
+            try {
+                temp.delete();
+            } catch (Exception ignored) {
+            }
+        }
+
+
+        return imported;
+    }
+
+
+    /*
+     * ============================================================
+     * READ XLSX SHARED STRINGS
+     * ============================================================
+     */
+    private static ArrayList<String>
+    readSharedStrings(
+            ZipFile zip
+    ) throws Exception {
+
+        ArrayList<String> strings =
+                new ArrayList<String>();
+
+
+        ZipEntry entry =
+                zip.getEntry(
+                        "xl/sharedStrings.xml"
+                );
+
+
+        if (entry == null) {
+            return strings;
+        }
+
+
+        InputStream input =
+                zip.getInputStream(
+                        entry
+                );
+
+
+        XmlPullParserFactory factory =
+                XmlPullParserFactory
+                        .newInstance();
+
+
+        XmlPullParser parser =
+                factory.newPullParser();
+
+
+        parser.setInput(
+                input,
+                "UTF-8"
+        );
+
+
+        StringBuilder current =
+                null;
+
+
+        int event;
+
+
+        while (
+                (event =
+                        parser.next())
+                        != XmlPullParser.END_DOCUMENT
+        ) {
+
+            if (event ==
+                    XmlPullParser.START_TAG) {
+
+                String tag =
+                        parser.getName();
+
+
+                if ("si".equals(tag)) {
+
+                    current =
+                            new StringBuilder();
+
+                } else if ("t".equals(tag)
+                        && current != null) {
+
+                    current.append(
+                            parser.nextText()
+                    );
+                }
+
+
+            } else if (
+                    event ==
+                            XmlPullParser.END_TAG
+            ) {
+
+                if ("si".equals(
+                        parser.getName()
+                )
+                        && current != null) {
+
+                    strings.add(
+                            current.toString()
+                    );
+
+                    current =
+                            null;
+                }
+            }
+        }
+
+
+        input.close();
+
+
+        return strings;
+    }
+
+
+    /*
+     * ============================================================
+     * READ XLSX WORKSHEET
+     * ============================================================
+     */
+    private static int readWorksheetProducts(
+            SettingsActivity context,
+            InputStream input,
+            ArrayList<String> sharedStrings
+    ) throws Exception {
+
+        XmlPullParserFactory factory =
+                XmlPullParserFactory
+                        .newInstance();
+
+
+        XmlPullParser parser =
+                factory.newPullParser();
+
+
+        parser.setInput(
+                input,
+                "UTF-8"
+        );
+
+
+        int imported = 0;
+
+
+        String cellType =
+                null;
+
+
+        String cellValue =
+                null;
+
+
+        boolean inValue =
+                false;
+
+
+        int event;
+
+
+        while (
+                (event =
+                        parser.next())
+                        != XmlPullParser.END_DOCUMENT
+        ) {
+
+
+            if (event ==
+                    XmlPullParser.START_TAG) {
+
+                String tag =
+                        parser.getName();
+
+
+                if ("c".equals(tag)) {
+
+                    cellType =
+                            parser.getAttributeValue(
+                                    null,
+                                    "t"
+                            );
+
+                    cellValue =
+                            null;
+                }
+
+
+                if ("v".equals(tag)) {
+
+                    inValue =
+                            true;
+                }
+
+
+                if ("t".equals(tag)
+                        && "inlineStr".equals(
+                        cellType
+                )) {
+
+                    cellValue =
+                            parser.nextText();
+
+                    addXlsxProductIfValid(
+                            context,
+                            cellValue
+                    );
+                }
+
+
+            } else if (
+                    event ==
+                            XmlPullParser.TEXT
+            ) {
+
+                if (inValue) {
+
+                    cellValue =
+                            parser.getText();
+                }
+
+
+            } else if (
+                    event ==
+                            XmlPullParser.END_TAG
+            ) {
+
+                String tag =
+                        parser.getName();
+
+
+                if ("v".equals(tag)) {
+
+                    inValue =
+                            false;
+
+
+                    if (cellValue != null) {
+
+                        String product =
+                                cellValue.trim();
+
+
+                        /*
+                         * Shared string index.
+                         */
+                        if ("s".equals(
+                                cellType
+                        )) {
+
+                            try {
+
+                                int index =
+                                        Integer.parseInt(
+                                                product
+                                        );
+
+
+                                if (index >= 0
+                                        && index <
+                                        sharedStrings.size()) {
+
+                                    product =
+                                            sharedStrings.get(
+                                                    index
+                                            );
+                                }
+
+                            } catch (
+                                    NumberFormatException ignored
+                            ) {
+                            }
+                        }
+
+
+                        /*
+                         * We cannot directly count
+                         * here because add method
+                         * returns boolean.
+                         */
+                        if (addXlsxProductIfValid(
+                                context,
+                                product
+                        )) {
+
+                            imported++;
+                        }
+                    }
+                }
+
+
+                if ("c".equals(tag)) {
+
+                    cellType =
+                            null;
+
+                    cellValue =
+                            null;
+                }
+            }
+        }
+
+
+        return imported;
+    }
+
+
+    /*
+     * ============================================================
+     * ADD XLSX PRODUCT
+     * ============================================================
+     */
+    private static boolean
+    addXlsxProductIfValid(
+            SettingsActivity context,
+            String value
+    ) {
+
+        String product =
+                cleanProduct(
+                        value
+                );
+
+
+        if (!validImportedProduct(
+                product
+        )) {
+
+            return false;
+        }
+
+
+        if (productExists(
+                context,
+                product
+        )) {
+
+            return false;
+        }
+
+
+        ButtonsController.addProduct(
+                context,
+                product
+        );
+
+
+        return true;
+    }
+
+
+    /*
+     * ============================================================
+     * CLEAN PRODUCT
+     * ============================================================
+     */
+    private static String cleanProduct(
+            String product
+    ) {
+
+        if (product == null) {
+            return "";
+        }
+
+
+        product =
+                product.trim();
+
+
+        if (product.length() >= 2
+                && product.startsWith("\"")
+                && product.endsWith("\"")) {
+
+            product =
+                    product.substring(
+                            1,
+                            product.length() - 1
+                    ).trim();
+        }
+
+
+        return product;
+    }
+
+
+    /*
+     * ============================================================
+     * VALIDATE IMPORTED PRODUCT
+     * ============================================================
+     */
+    private static boolean
+    validImportedProduct(
+            String product
+    ) {
+
+        if (product == null
+                || product.length() == 0) {
+
+            return false;
+        }
+
+
+        /*
+         * Never import placeholder.
+         */
+        if (product.equalsIgnoreCase(
+                SELECT_PRODUCTS
+        )
+                || product.equalsIgnoreCase(
+                "Select Product"
+        )) {
+
+            return false;
+        }
+
+
+        /*
+         * Ignore common column headers.
+         */
+        String lower =
+                product.toLowerCase(
+                        Locale.US
+                );
+
+
+        if (lower.equals("product")
+                || lower.equals("products")
+                || lower.equals("product name")
+                || lower.equals("productname")
+                || lower.equals("name")) {
+
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    /*
+     * ============================================================
+     * REFRESH PRODUCT LIST
+     * ============================================================
+     */
+    private static void refreshProducts(
+            final SettingsActivity context
+    ) {
+
+        if (productContainer == null) {
+            return;
+        }
+
+
+        productContainer.removeAllViews();
+
+
+        ArrayList<String> products =
+                ButtonsController.getProducts(
+                        context
+                );
+
+
+        ArrayList<String> realProducts =
+                new ArrayList<String>();
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Select Products is removed
+         * from the real product list.
+         */
+        for (String product :
+                products) {
+
+            if (product == null) {
+                continue;
+            }
+
+
+            product =
+                    product.trim();
+
+
+            if (product.length() == 0) {
+                continue;
+            }
+
+
+            if (product.equalsIgnoreCase(
+                    SELECT_PRODUCTS
+            )
+                    || product.equalsIgnoreCase(
+                    "Select Product"
+            )) {
+
+                continue;
+            }
+
+
+            boolean duplicate =
+                    false;
+
+
+            for (String existing :
+                    realProducts) {
+
+                if (existing.equalsIgnoreCase(
+                        product
+                )) {
+
+                    duplicate =
+                            true;
+
+                    break;
+                }
+            }
+
+
+            if (!duplicate) {
+
+                realProducts.add(
+                        product
+                );
+            }
+        }
+
+
+        /*
+         * NO PRODUCTS
+         */
+        if (realProducts.size() == 0) {
+
+            TextView empty =
+                    new TextView(context);
+
+            empty.setText(
+                    "No products added"
+            );
+
+            empty.setTextSize(
+                    16
+            );
+
+            empty.setGravity(
+                    Gravity.CENTER
+            );
+
+            empty.setPadding(
+                    0,
+                    30,
+                    0,
+                    30
+            );
+
+
+            productContainer.addView(
+                    empty
+            );
+
+
+            /*
+             * Save ONLY real products.
+             *
+             * Do NOT save Select Products.
+             */
+            ButtonsController.saveProducts(
+                    context,
+                    new ArrayList<String>()
+            );
+
+
+            return;
+        }
+
+
+        /*
+         * DISPLAY PRODUCTS
+         */
+        for (final String product :
+                realProducts) {
+
+            LinearLayout row =
+                    new LinearLayout(context);
+
+            row.setOrientation(
+                    LinearLayout.HORIZONTAL
+            );
+
+            row.setGravity(
+                    Gravity.CENTER_VERTICAL
+            );
+
+
+            /*
+             * PRODUCT NAME
+             */
+            TextView name =
+                    new TextView(context);
+
+            name.setText(
+                    product
+            );
+
+            name.setTextSize(
+                    16
+            );
+
+            name.setPadding(
+                    8,
+                    12,
+                    8,
+                    12
+            );
+
+
+            row.addView(
+                    name,
+                    new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            1
+                    )
+            );
+
+
+            /*
+             * DELETE
+             */
+            Button delete =
+                    new Button(context);
+
+            delete.setText(
+                    "DELETE"
+            );
+
+
+            row.addView(
+                    delete,
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+            );
+
+
+            delete.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            deleteProduct(
+                                    context,
+                                    product
+                            );
+                        }
+                    }
+            );
+
+
+            productContainer.addView(
+                    row,
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+            );
+        }
+    }
+
+
+    /*
+     * ============================================================
+     * DELETE
+     * ============================================================
+     */
+    private static void deleteProduct(
+            SettingsActivity context,
+            String product
+    ) {
+
+        if (product == null) {
+            return;
+        }
+
+
+        product =
+                product.trim();
+
+
+        if (product.length() == 0) {
+            return;
+        }
+
+
+        if (product.equalsIgnoreCase(
+                SELECT_PRODUCTS
+        )
+                || product.equalsIgnoreCase(
+                "Select Product"
+        )) {
+
+            Toast.makeText(
+                    context,
+                    "Select Products is not a product",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        ButtonsController.removeProduct(
+                context,
+                product
+        );
+
+
+        refreshProducts(
+                context
+        );
+
+
+        Toast.makeText(
+                context,
+                "Product deleted",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    /*
+     * ============================================================
+     * CLOSE
+     * ============================================================
+     */
+    public static void close() {
+
+        if (dialog != null
+                && dialog.isShowing()) {
+
+            dialog.dismiss();
+        }
+
+
+        dialog =
+                null;
+
+        productInput =
+                null;
+
+        productContainer =
+                null;
+
+        settingsContext =
+                null;
+    }
+
+
+    /*
+     * ============================================================
+     * ERROR MESSAGE
+     * ============================================================
+     */
+    private static String errorMessage(
+            Exception e
+    ) {
+
+        if (e == null) {
+            return "Unknown error";
+        }
+
+
+        String message =
+                e.getMessage();
+
+
+        if (message == null
+                || message.trim().length() == 0) {
+
+            return "Unknown error";
+        }
+
+
+        return message;
+    }
+}

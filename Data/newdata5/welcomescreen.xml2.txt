@@ -1,0 +1,229 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fillViewport="true"
+	android:background="#002B36">
+	<LinearLayout
+		android:id="@+id/linear154"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingLeft="24dp"
+		android:paddingTop="40dp"
+		android:paddingRight="24dp"
+		android:paddingBottom="32dp"
+		android:background="#002B36"
+		android:gravity="center_horizontal"
+		android:orientation="vertical">
+		<TextView
+			android:id="@+id/textview208"
+			android:layout_width="86dp"
+			android:layout_height="86dp"
+			android:background="#00BFA5"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="DC"
+			android:textSize="28sp"
+			android:textStyle="bold"
+			android:textColor="#FFFFFF" />
+		<TextView
+			android:id="@+id/textview209"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="26dp"
+			android:text="WELCOME"
+			android:textSize="13sp"
+			android:textStyle="bold"
+			android:textColor="#64FFDA"
+			android:letterSpacing="0.18" />
+		<TextView
+			android:id="@+id/textview210"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="5dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="Data Collection"
+			android:textSize="32sp"
+			android:textStyle="bold"
+			android:textColor="#FFFFFF" />
+		<TextView
+			android:id="@+id/textview211"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="12dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="Everything you need to create, organize and manage your records."
+			android:textSize="16sp"
+			android:textColor="#B2DFDB"
+			android:lineSpacingExtra="5dp" />
+		<LinearLayout
+			android:id="@+id/linear155"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="30dp"
+			android:padding="20dp"
+			android:background="#004D40"
+			android:orientation="vertical"
+			android:elevation="3dp">
+			<TextView
+				android:id="@+id/textview212"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Simple. Organized. Powerful."
+				android:textSize="18sp"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF" />
+			<LinearLayout
+				android:id="@+id/linear156"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="20dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<TextView
+					android:id="@+id/textview213"
+					android:layout_width="42dp"
+					android:layout_height="42dp"
+					android:background="#64FFDA"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="+"
+					android:textSize="25sp"
+					android:textStyle="bold"
+					android:textColor="#002B36" />
+				<LinearLayout
+					android:id="@+id/linear157"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="14dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/textview214"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Create Records"
+						android:textSize="16sp"
+						android:textStyle="bold"
+						android:textColor="#FFFFFF" />
+					<TextView
+						android:id="@+id/textview215"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="3dp"
+						android:text="Quickly add new information."
+						android:textSize="13sp"
+						android:textColor="#80CBC4" />
+				</LinearLayout>
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/linear158"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="18dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<TextView
+					android:id="@+id/textview216"
+					android:layout_width="42dp"
+					android:layout_height="42dp"
+					android:background="#80CBC4"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="✓"
+					android:textSize="21sp"
+					android:textStyle="bold"
+					android:textColor="#002B36" />
+				<LinearLayout
+					android:id="@+id/linear159"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="14dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/textview217"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Manage Records"
+						android:textSize="16sp"
+						android:textStyle="bold"
+						android:textColor="#FFFFFF" />
+					<TextView
+						android:id="@+id/textview218"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="3dp"
+						android:text="Keep your saved data organized."
+						android:textSize="13sp"
+						android:textColor="#80CBC4" />
+				</LinearLayout>
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/linear160"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="18dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<TextView
+					android:id="@+id/textview219"
+					android:layout_width="42dp"
+					android:layout_height="42dp"
+					android:background="#009688"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="⇧"
+					android:textSize="22sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF" />
+				<LinearLayout
+					android:id="@+id/linear161"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="14dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/textview220"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Export Data"
+						android:textSize="16sp"
+						android:textStyle="bold"
+						android:textColor="#FFFFFF" />
+					<TextView
+						android:id="@+id/textview221"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="3dp"
+						android:text="Export your records when needed."
+						android:textSize="13sp"
+						android:textColor="#80CBC4" />
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+		<TextView
+			android:id="@+id/welcomeContinue"
+			android:layout_width="match_parent"
+			android:layout_height="56dp"
+			android:layout_marginTop="30dp"
+			android:background="#64FFDA"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="CONTINUE"
+			android:textSize="16sp"
+			android:textStyle="bold"
+			android:textColor="#002B36"
+			android:letterSpacing="0.08"
+			android:focusable="true"
+			android:elevation="3dp" />
+		<TextView
+			android:id="@+id/textview222"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="22dp"
+			android:text="DATA COLLECTION"
+			android:textSize="11sp"
+			android:textStyle="bold"
+			android:textColor="#64FFDA"
+			android:letterSpacing="0.15" />
+	</LinearLayout>
+</ScrollView>

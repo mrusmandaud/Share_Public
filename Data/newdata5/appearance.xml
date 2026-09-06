@@ -1,0 +1,484 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/appearanceScroll"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fillViewport="true"
+	android:background="#F7FAF9"
+	android:scrollbars="none">
+	<LinearLayout
+		android:id="@+id/appearanceLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="24dp"
+		android:orientation="vertical">
+		<LinearLayout
+			android:id="@+id/appearanceTopBar"
+			android:layout_width="match_parent"
+			android:layout_height="64dp"
+			android:paddingLeft="10dp"
+			android:paddingRight="18dp"
+			android:background="#00796B"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<TextView
+				android:id="@+id/appearanceBack"
+				android:layout_width="42dp"
+				android:layout_height="42dp"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="‹"
+				android:textSize="32sp"
+				android:textColor="#FFFFFF"
+				android:focusable="true" />
+			<LinearLayout
+				android:id="@+id/appearanceHeaderText"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:paddingLeft="8dp"
+				android:orientation="vertical"
+				android:layout_weight="1">
+				<TextView
+					android:id="@+id/appearanceHeaderTitle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="Appearance"
+					android:textSize="20sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF" />
+				<TextView
+					android:id="@+id/appearanceHeaderSubtitle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="Customize the look of your app"
+					android:textSize="11sp"
+					android:textColor="#B2DFDB" />
+			</LinearLayout>
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/appearanceCurrentBox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="16dp"
+			android:layout_marginTop="20dp"
+			android:layout_marginRight="16dp"
+			android:padding="16dp"
+			android:background="#E0F2F1"
+			android:orientation="vertical">
+			<TextView
+				android:id="@+id/appearanceCurrentLabel"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="CURRENT APPEARANCE"
+				android:textSize="10sp"
+				android:textStyle="bold"
+				android:textColor="#00796B" />
+			<LinearLayout
+				android:id="@+id/appearanceCurrentRow"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceCurrentColor"
+					android:layout_width="14dp"
+					android:layout_height="14dp"
+					android:background="#00796B" />
+				<LinearLayout
+					android:id="@+id/appearanceCurrentText"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="10dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceCurrentName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Classic"
+						android:textSize="15sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceCurrentDescription"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Your selected color scheme"
+						android:textSize="10sp"
+						android:textColor="#607D7B" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceCurrentCheck"
+					android:layout_width="26dp"
+					android:layout_height="26dp"
+					android:background="#00796B"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="✓"
+					android:textSize="15sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF" />
+			</LinearLayout>
+		</LinearLayout>
+		<TextView
+			android:id="@+id/appearanceSchemeLabel"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="18dp"
+			android:layout_marginTop="24dp"
+			android:layout_marginRight="18dp"
+			android:text="COLOR SCHEMES"
+			android:textSize="10sp"
+			android:textStyle="bold"
+			android:textColor="#607D7B" />
+		<androidx.cardview.widget.CardView
+			android:id="@+id/appearanceClassic"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginLeft="14dp"
+			android:layout_marginTop="8dp"
+			android:layout_marginRight="14dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/appearanceClassicRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="14dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceClassicDot"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#00796B" />
+				<LinearLayout
+					android:id="@+id/appearanceClassicInfo"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="12dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceClassicName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Classic"
+						android:textSize="14sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceClassicDesc"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Clean and balanced"
+						android:textSize="10sp"
+						android:textColor="#78909C" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceClassicCheck"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#00796B"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="✓"
+					android:textSize="15sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF"
+					android:visibility="visible" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/appearanceOcean"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginLeft="14dp"
+			android:layout_marginTop="7dp"
+			android:layout_marginRight="14dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/appearanceOceanRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="14dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceOceanDot"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#006064" />
+				<LinearLayout
+					android:id="@+id/appearanceOceanInfo"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="12dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceOceanName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Ocean"
+						android:textSize="14sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceOceanDesc"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Deep and calm"
+						android:textSize="10sp"
+						android:textColor="#78909C" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceOceanArrow"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#90A4AE" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/appearanceFresh"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginLeft="14dp"
+			android:layout_marginTop="7dp"
+			android:layout_marginRight="14dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/appearanceFreshRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="14dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceFreshDot"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#00897B" />
+				<LinearLayout
+					android:id="@+id/appearanceFreshInfo"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="12dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceFreshName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Fresh"
+						android:textSize="14sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceFreshDesc"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Bright and refreshing"
+						android:textSize="10sp"
+						android:textColor="#78909C" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceFreshArrow"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#90A4AE" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/appearanceDeep"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginLeft="14dp"
+			android:layout_marginTop="7dp"
+			android:layout_marginRight="14dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/appearanceDeepRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="14dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceDeepDot"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#004D40" />
+				<LinearLayout
+					android:id="@+id/appearanceDeepInfo"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="12dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceDeepName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Deep"
+						android:textSize="14sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceDeepDesc"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Rich and professional"
+						android:textSize="10sp"
+						android:textColor="#78909C" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceDeepArrow"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#90A4AE" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/appearanceAqua"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginLeft="14dp"
+			android:layout_marginTop="7dp"
+			android:layout_marginRight="14dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/appearanceAquaRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="14dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceAquaDot"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#00ACC1" />
+				<LinearLayout
+					android:id="@+id/appearanceAquaInfo"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="12dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceAquaName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Aqua"
+						android:textSize="14sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceAquaDesc"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Cool and energetic"
+						android:textSize="10sp"
+						android:textColor="#78909C" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceAquaArrow"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#90A4AE" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<androidx.cardview.widget.CardView
+			android:id="@+id/appearanceBlack"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginLeft="14dp"
+			android:layout_marginTop="7dp"
+			android:layout_marginRight="14dp"
+			app:cardBackgroundColor="#FFFFFF"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="1dp">
+			<LinearLayout
+				android:id="@+id/appearanceBlackRow"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="14dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<View
+					android:id="@+id/appearanceBlackDot"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:background="#000000" />
+				<LinearLayout
+					android:id="@+id/appearanceBlackInfo"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="12dp"
+					android:orientation="vertical"
+					android:layout_weight="1">
+					<TextView
+						android:id="@+id/appearanceBlackName"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Teal Black"
+						android:textSize="14sp"
+						android:textStyle="bold"
+						android:textColor="#263238" />
+					<TextView
+						android:id="@+id/appearanceBlackDesc"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="Dark and minimal"
+						android:textSize="10sp"
+						android:textColor="#78909C" />
+				</LinearLayout>
+				<TextView
+					android:id="@+id/appearanceBlackArrow"
+					android:layout_width="28dp"
+					android:layout_height="28dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="›"
+					android:textSize="22sp"
+					android:textColor="#90A4AE" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<TextView
+			android:id="@+id/appearanceFooter"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="20dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="Choose a color scheme for your app"
+			android:textSize="10sp"
+			android:textColor="#90A4AE" />
+	</LinearLayout>
+</ScrollView>

@@ -1,0 +1,10 @@
+androidx.drawerlayout.widget.DrawerLayout drawer =
+            findViewById(R.id.drawerMain);
+
+    if (drawer != null) {
+
+        drawer.closeDrawer(
+                android.view.Gravity.START,
+                false
+        );
+    }

@@ -1,0 +1,154 @@
+setContentView(R.layout.newrecord);
+
+final android.widget.EditText recordName =
+        findViewById(R.id.recordName);
+
+final android.widget.EditText recordPhone =
+        findViewById(R.id.recordPhone);
+
+final android.widget.EditText recordAddress =
+        findViewById(R.id.recordAddress);
+
+final android.widget.Spinner recordProduct =
+        findViewById(R.id.recordProduct);
+
+final android.widget.CheckBox recordConfirmCheckBox =
+        findViewById(R.id.recordConfirmCheckBox);
+
+final android.widget.Button saveRecordButton =
+        findViewById(R.id.saveRecordButton);
+
+final android.widget.Button clearRecordButton =
+        findViewById(R.id.clearRecordButton);
+
+final android.view.View newRecordBackButton =
+        findViewById(R.id.newRecordBackButton);
+
+
+// PRODUCTS
+final java.util.ArrayList<String> savedProducts =
+        ButtonsController.getProducts(
+                NewrecordActivity.this
+        );
+
+final java.util.ArrayList<String> productList =
+        new java.util.ArrayList<String>();
+
+productList.add("Select Products");
+
+for (int i = 0; i < savedProducts.size(); i++) {
+
+    String product = savedProducts.get(i);
+
+    if (product == null) {
+        continue;
+    }
+
+    product = product.trim();
+
+    if (product.length() == 0) {
+        continue;
+    }
+
+    if (product.equalsIgnoreCase("Select Product")
+            || product.equalsIgnoreCase("Select Products")) {
+        continue;
+    }
+
+    productList.add(product);
+}
+
+
+// SPINNER
+final android.widget.ArrayAdapter<String> productAdapter =
+        new android.widget.ArrayAdapter<String>(
+                NewrecordActivity.this,
+                android.R.layout.simple_spinner_item,
+                productList
+        );
+
+productAdapter.setDropDownViewResource(
+        android.R.layout.simple_spinner_dropdown_item
+);
+
+recordProduct.setAdapter(productAdapter);
+recordProduct.setSelection(0);
+
+
+// BACK
+newRecordBackButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.back(
+                        NewrecordActivity.this
+                );
+            }
+        }
+);
+
+
+// SAVE RECORD
+saveRecordButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                String selectedProduct = "";
+
+                if (recordProduct.getSelectedItem() != null) {
+                    selectedProduct =
+                            recordProduct.getSelectedItem()
+                                    .toString()
+                                    .trim();
+                }
+
+                // SELECT PRODUCTS IS NOT A PRODUCT
+                if (selectedProduct.length() == 0
+                        || selectedProduct.equalsIgnoreCase("Select Products")
+                        || selectedProduct.equalsIgnoreCase("Select Product")) {
+
+                    android.widget.Toast.makeText(
+                            NewrecordActivity.this,
+                            "Please select Product",
+                            android.widget.Toast.LENGTH_SHORT
+                    ).show();
+
+                    return;
+                }
+
+                ButtonsController.saveRecord(
+                        NewrecordActivity.this,
+                        recordName,
+                        recordPhone,
+                        recordAddress,
+                        recordProduct,
+                        recordConfirmCheckBox
+                );
+            }
+        }
+);
+
+
+// CLEAR
+clearRecordButton.setOnClickListener(
+        new android.view.View.OnClickListener() {
+
+            @Override
+            public void onClick(android.view.View v) {
+
+                ButtonsController.clearRecord(
+                        recordName,
+                        recordPhone,
+                        recordAddress,
+                        recordProduct,
+                        recordConfirmCheckBox
+                );
+
+                recordProduct.setSelection(0);
+            }
+        }
+);
