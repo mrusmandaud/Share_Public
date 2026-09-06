@@ -1146,7 +1146,7 @@ public class CustomScrollbar extends FrameLayout {
                     Paint.Style.STROKE
             );
 
-            paint.setStrokeWidth(1.5f);
+            paint.setStrokeWidth(2f);
 
             paint.setStrokeCap(
                     Paint.Cap.ROUND
@@ -1177,38 +1177,38 @@ public class CustomScrollbar extends FrameLayout {
 
             if (up) {
 
-                path.moveTo(
-                        x - 2.5f,
-                        y + 1.5f
-                );
+    path.moveTo(
+            x - 5f,
+            y + 3.5f
+    );
 
-                path.lineTo(
-                        x,
-                        y - 1.5f
-                );
+    path.lineTo(
+            x,
+            y - 3.5f
+    );
 
-                path.lineTo(
-                        x + 2.5f,
-                        y + 1.5f
-                );
+    path.lineTo(
+            x + 5f,
+            y + 3.5f
+    );
 
-            } else {
+} else {
 
-                path.moveTo(
-                        x - 2.5f,
-                        y - 1.5f
-                );
+    path.moveTo(
+            x - 5f,
+            y - 3.5f
+    );
 
-                path.lineTo(
-                        x,
-                        y + 1.5f
-                );
+    path.lineTo(
+            x,
+            y + 3.5f
+    );
 
-                path.lineTo(
-                        x + 2.5f,
-                        y - 1.5f
-                );
-            }
+    path.lineTo(
+            x + 5f,
+            y - 3.5f
+    );
+}
 
             canvas.drawPath(
                     path,
