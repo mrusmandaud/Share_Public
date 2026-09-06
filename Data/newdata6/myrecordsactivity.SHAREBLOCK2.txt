@@ -1,0 +1,222 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class Share {
+
+    private static final int BLUE =
+            Color.rgb(
+                    33,
+                    150,
+                    243
+            );
+
+    /*
+     * SHARE SELECTED RECORD DATA
+     *
+     * Selection source:
+     * popupSelectionRecords
+     *
+     * Only cells whose background is BLUE
+     * are shared.
+     */
+    public static void share(
+            final Activity activity,
+            final ArrayList<
+                    ArrayList<TextView>
+            > records,
+            final PopupWindow popupWindow
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        if (records == null
+                || records.size() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+
+            return;
+        }
+
+        StringBuilder selectedText =
+                new StringBuilder();
+
+        /*
+         * LOOP THROUGH RECORDS
+         */
+        for (
+                int r = 0;
+                r < records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    records.get(r);
+
+            if (record == null) {
+                continue;
+            }
+
+            StringBuilder recordText =
+                    new StringBuilder();
+
+            /*
+             * LOOP THROUGH CELLS
+             */
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView cell =
+                        record.get(c);
+
+                if (cell == null) {
+                    continue;
+                }
+
+                Drawable background =
+                        cell.getBackground();
+
+                boolean selected =
+                        false;
+
+                /*
+                 * CHECK BLUE SELECTION
+                 */
+                if (background
+                        instanceof ColorDrawable) {
+
+                    ColorDrawable
+                            colorBackground =
+                            (ColorDrawable)
+                                    background;
+
+                    if (
+                            colorBackground.getColor()
+                                    == BLUE
+                    ) {
+
+                        selected = true;
+                    }
+                }
+
+                /*
+                 * ADD SELECTED CELL
+                 */
+                if (selected) {
+
+                    if (
+                            recordText.length() > 0
+                    ) {
+
+                        recordText.append(
+                                " | "
+                        );
+                    }
+
+                    recordText.append(
+                            cell.getText()
+                                    .toString()
+                    );
+                }
+            }
+
+            /*
+             * ADD COMPLETE SELECTED RECORD
+             */
+            if (
+                    recordText.length() > 0
+            ) {
+
+                if (
+                        selectedText.length() > 0
+                ) {
+
+                    selectedText.append(
+                            "\n"
+                    );
+                }
+
+                selectedText.append(
+                        recordText.toString()
+                );
+            }
+        }
+
+        /*
+         * NOTHING SELECTED
+         */
+        if (
+                selectedText.length() == 0
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+
+            return;
+        }
+
+        /*
+         * CREATE SHARE INTENT
+         */
+        Intent shareIntent =
+                new Intent(
+                        Intent.ACTION_SEND
+                );
+
+        shareIntent.setType(
+                "text/plain"
+        );
+
+        shareIntent.putExtra(
+                Intent.EXTRA_TEXT,
+                selectedText.toString()
+        );
+
+        /*
+         * OPEN ANDROID SHARE MENU
+         */
+        activity.startActivity(
+                Intent.createChooser(
+                        shareIntent,
+                        "Share"
+                )
+        );
+
+        /*
+         * CLOSE POPUP
+         */
+        if (popupWindow != null) {
+            popupWindow.dismiss();
+        }
+    }
+}

@@ -1,0 +1,237 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class Copy {
+
+    private static final int BLUE =
+            Color.rgb(
+                    33,
+                    150,
+                    243
+            );
+
+    /*
+     * COPY SELECTED RECORD DATA
+     *
+     * Selection source:
+     * popupSelectionRecords
+     *
+     * Only cells whose background is BLUE
+     * are copied.
+     */
+    public static void copy(
+            final Activity activity,
+            final ArrayList<
+                    ArrayList<TextView>
+            > records,
+            final PopupWindow popupWindow
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        if (records == null
+                || records.size() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+
+            return;
+        }
+
+        StringBuilder selectedText =
+                new StringBuilder();
+
+        /*
+         * LOOP THROUGH RECORDS
+         */
+        for (
+                int r = 0;
+                r < records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    records.get(r);
+
+            if (record == null) {
+                continue;
+            }
+
+            StringBuilder recordText =
+                    new StringBuilder();
+
+            /*
+             * LOOP THROUGH CELLS
+             */
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView cell =
+                        record.get(c);
+
+                if (cell == null) {
+                    continue;
+                }
+
+                Drawable background =
+                        cell.getBackground();
+
+                boolean selected =
+                        false;
+
+                /*
+                 * CHECK BLUE SELECTION
+                 */
+                if (background
+                        instanceof ColorDrawable) {
+
+                    ColorDrawable
+                            colorBackground =
+                            (ColorDrawable)
+                                    background;
+
+                    if (
+                            colorBackground.getColor()
+                                    == BLUE
+                    ) {
+
+                        selected = true;
+                    }
+                }
+
+                /*
+                 * ADD SELECTED CELL
+                 */
+                if (selected) {
+
+                    if (
+                            recordText.length() > 0
+                    ) {
+
+                        recordText.append(
+                                " | "
+                        );
+                    }
+
+                    recordText.append(
+                            cell.getText()
+                                    .toString()
+                    );
+                }
+            }
+
+            /*
+             * ADD COMPLETE SELECTED RECORD
+             */
+            if (
+                    recordText.length() > 0
+            ) {
+
+                if (
+                        selectedText.length() > 0
+                ) {
+
+                    selectedText.append(
+                            "\n"
+                    );
+                }
+
+                selectedText.append(
+                        recordText.toString()
+                );
+            }
+        }
+
+        /*
+         * NOTHING SELECTED
+         */
+        if (
+                selectedText.length() == 0
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+
+            return;
+        }
+
+        /*
+         * ANDROID CLIPBOARD
+         */
+        ClipboardManager clipboard =
+                (ClipboardManager)
+                        activity.getSystemService(
+                                Context.CLIPBOARD_SERVICE
+                        );
+
+        if (clipboard == null) {
+
+            Toast.makeText(
+                    activity,
+                    "Copy failed",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+
+            return;
+        }
+
+        ClipData clip =
+                ClipData.newPlainText(
+                        "Selected Records",
+                        selectedText.toString()
+                );
+
+        clipboard.setPrimaryClip(
+                clip
+        );
+
+        Toast.makeText(
+                activity,
+                "Copied",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        /*
+         * CLOSE POPUP
+         */
+        if (popupWindow != null) {
+            popupWindow.dismiss();
+        }
+    }
+}
