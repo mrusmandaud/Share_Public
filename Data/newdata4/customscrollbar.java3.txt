@@ -27,7 +27,7 @@ public class CustomScrollbar extends FrameLayout {
 
     private static final int TRACK_WIDTH_DP = 10;
     private static final int THUMB_WIDTH_DP = 10;
-    private static final int THUMB_HEIGHT_DP = 200;
+    private static final int THUMB_HEIGHT_DP = 130;
 
     private static final int TOUCH_WIDTH_DP = 40;
 
