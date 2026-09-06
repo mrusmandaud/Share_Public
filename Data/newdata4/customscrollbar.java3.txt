@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -24,123 +23,231 @@ import android.widget.ScrollView;
 
 public class CustomScrollbar extends FrameLayout {
 
-    // =========================
-    // SIZE
-    // =========================
+    // =========================================================
+    // MAIN SCROLLBAR
+    // =========================================================
+
     private static final int BAR_HEIGHT_DP = 600;
 
-    private static final int THUMB_HEIGHT_DP = 200;
-
-    // COMPLETE VISIBLE WIDTH = 10dp
-    private static final int BAR_WIDTH_DP = 10;
     private static final int TRACK_WIDTH_DP = 10;
     private static final int THUMB_WIDTH_DP = 10;
+    private static final int THUMB_HEIGHT_DP = 200;
 
-    // =========================
+    // =========================================================
+    // INVISIBLE THUMB TOUCH AREA
+    // =========================================================
+
+    private static final int TOUCH_WIDTH_DP = 40;
+
+    // =========================================================
     // ARROWS
-    // =========================
-    private static final int ARROW_SIZE_DP = 10;
-    private static final int ARROW_MARGIN_DP = 0;
+    // =========================================================
 
-    // =========================
+    private static final int ARROW_SIZE_DP = 16;
+
+    // Arrows slightly lower.
+    private static final int ARROW_MARGIN_DP = 2;
+
+    private static final int ARROW_RADIUS_DP = 8;
+
+    // =========================================================
+    // GEOMETRY
+    // =========================================================
+
+    /*
+     * The arrow is 16dp wide while the scrollbar is 10dp wide.
+     *
+     * Difference:
+     *
+     * 16 - 10 = 6dp
+     *
+     * Therefore 3dp is required on each side when the arrow
+     * is centered on the scrollbar.
+     *
+     * The root is positioned 5dp from the screen edge and
+     * the main scrollbar is moved 3dp inward.
+     *
+     * Result:
+     *
+     * Screen edge
+     *     |
+     *     | 5dp
+     *     |<---- root edge
+     *     |
+     *     | 3dp
+     *     |<---- main scrollbar right edge
+     *     |
+     *     | 8dp total from screen edge
+     *
+     * This lets the complete 16dp arrow fit without clipping.
+     */
+
+    private static final int ROOT_RIGHT_MARGIN_DP = 5;
+
+    private static final int MAIN_BAR_INSET_RIGHT_DP = 3;
+
+    // =========================================================
     // COLORS
-    // =========================
+    // =========================================================
+
     private static final int TRACK_COLOR =
-            Color.rgb(224, 242, 241);       // #E0F2F1
+            Color.rgb(224, 242, 241);
 
     private static final int THUMB_COLOR =
-            Color.rgb(0, 150, 136);         // #009688
+            Color.rgb(0, 150, 136);
 
     private static final int THUMB_PRESSED_COLOR =
-            Color.rgb(0, 121, 107);         // #00796B
+            Color.rgb(0, 121, 107);
 
     private static final int ARROW_COLOR =
-            Color.rgb(0, 191, 165);         // #00BFA5
+            Color.rgb(0, 191, 165);
 
     private static final int ARROW_PRESSED_COLOR =
-            Color.rgb(0, 137, 123);         // #00897B
+            Color.rgb(0, 137, 123);
 
     private static final int ARROW_ICON_COLOR =
             Color.WHITE;
 
-    // =========================
+    // =========================================================
     // RADIUS
-    // =========================
-    private static final int TRACK_RADIUS_DP = 5;
-    private static final int THUMB_RADIUS_DP = 5;
-    private static final int ARROW_RADIUS_DP = 5;
+    // =========================================================
 
-    // =========================
+    private static final int TRACK_RADIUS_DP = 5;
+
+    private static final int THUMB_RADIUS_DP = 5;
+
+    // =========================================================
     // SCROLL
-    // =========================
+    // =========================================================
+
     private static final float PAGE_FACTOR = 0.85f;
+
     private static final int SCROLL_DURATION = 220;
 
-    // =========================
+    // =========================================================
     // FADE
-    // =========================
+    // =========================================================
+
     private static final int FADE_DELAY = 1500;
+
     private static final int FADE_IN_DURATION = 150;
+
     private static final int FADE_OUT_DURATION = 350;
 
+    // =========================================================
+    // VIEWS
+    // =========================================================
+
     private ScrollView scrollView;
-    private FrameLayout scrollbarContainer;
+
+    private FrameLayout mainBar;
 
     private View track;
+
     private View thumb;
 
+    private View thumbTouchArea;
+
     private ImageView topButton;
+
     private ImageView bottomButton;
 
+    // =========================================================
+    // DIMENSIONS
+    // =========================================================
+
     private int barHeight;
+
     private int thumbHeight;
-    private int barWidth;
+
+    // =========================================================
+    // DRAG
+    // =========================================================
 
     private float downY;
+
     private float startThumbY;
 
     private boolean draggingThumb;
 
+    // =========================================================
+    // ANIMATION
+    // =========================================================
+
     private ValueAnimator scrollAnimator;
 
+    // =========================================================
+    // FADE
+    // =========================================================
+
     private final Handler fadeHandler =
-            new Handler(Looper.getMainLooper());
+            new Handler(
+                    Looper.getMainLooper()
+            );
 
     private final Runnable fadeRunnable =
             new Runnable() {
+
                 @Override
                 public void run() {
+
                     fadeScrollbar();
                 }
             };
 
-    private ViewTreeObserver.OnScrollChangedListener
+    // =========================================================
+    // SCROLL LISTENER
+    // =========================================================
+
+    private android.view.ViewTreeObserver
+            .OnScrollChangedListener
             scrollChangedListener;
 
-    // =========================
+    // =========================================================
     // CONSTRUCTOR
-    // =========================
-    public CustomScrollbar(Context context) {
+    // =========================================================
+
+    public CustomScrollbar(
+            Context context
+    ) {
+
         super(context);
 
         setClipChildren(false);
+
         setClipToPadding(false);
 
-        barHeight = dp(BAR_HEIGHT_DP);
-        thumbHeight = dp(THUMB_HEIGHT_DP);
-        barWidth = dp(BAR_WIDTH_DP);
+        barHeight =
+                dp(BAR_HEIGHT_DP);
+
+        thumbHeight =
+                dp(THUMB_HEIGHT_DP);
 
         buildUI();
     }
 
-    // =========================
+    // =========================================================
     // BUILD UI
-    // =========================
+    // =========================================================
+
     private void buildUI() {
+
+        /*
+         * 40dp root is used for the invisible touch area.
+         *
+         * Root itself is positioned 5dp from the screen edge.
+         *
+         * Main scrollbar is moved 3dp inward.
+         *
+         * Therefore:
+         *
+         * Main scrollbar right edge =
+         * 5dp + 3dp = 8dp from screen edge.
+         */
 
         FrameLayout.LayoutParams rootParams =
                 new FrameLayout.LayoutParams(
-                        barWidth,
+                        dp(TOUCH_WIDTH_DP),
                         barHeight
                 );
 
@@ -148,29 +255,63 @@ public class CustomScrollbar extends FrameLayout {
                 Gravity.RIGHT |
                 Gravity.BOTTOM;
 
+        rootParams.rightMargin =
+                dp(ROOT_RIGHT_MARGIN_DP);
+
+        rootParams.bottomMargin =
+                dp(0);
+
         setLayoutParams(rootParams);
 
-        scrollbarContainer =
-                new FrameLayout(getContext());
+        setClipChildren(false);
 
-        FrameLayout.LayoutParams containerParams =
+        setClipToPadding(false);
+
+        // =====================================================
+        // MAIN 10DP BAR
+        // =====================================================
+
+        mainBar =
+                new FrameLayout(
+                        getContext()
+                );
+
+        mainBar.setClipChildren(false);
+
+        mainBar.setClipToPadding(false);
+
+        FrameLayout.LayoutParams mainBarParams =
                 new FrameLayout.LayoutParams(
-                        barWidth,
+                        dp(TRACK_WIDTH_DP),
                         barHeight
                 );
 
-        scrollbarContainer.setClipChildren(false);
-        scrollbarContainer.setClipToPadding(false);
+        mainBarParams.gravity =
+                Gravity.TOP |
+                Gravity.RIGHT;
+
+        /*
+         * Move the 10dp main scrollbar 3dp inward.
+         *
+         * Root right edge = 5dp from screen edge.
+         *
+         * Main bar right edge =
+         * 5dp + 3dp = 8dp from screen edge.
+         */
+        mainBarParams.rightMargin =
+                dp(MAIN_BAR_INSET_RIGHT_DP);
 
         addView(
-                scrollbarContainer,
-                containerParams
+                mainBar,
+                mainBarParams
         );
 
-        // =========================
+        // =====================================================
         // TRACK
-        // =========================
-        track = new View(getContext());
+        // =====================================================
+
+        track =
+                new View(getContext());
 
         track.setBackground(
                 rounded(
@@ -186,17 +327,20 @@ public class CustomScrollbar extends FrameLayout {
                 );
 
         trackParams.gravity =
-                Gravity.CENTER_HORIZONTAL;
+                Gravity.TOP |
+                Gravity.RIGHT;
 
-        scrollbarContainer.addView(
+        mainBar.addView(
                 track,
                 trackParams
         );
 
-        // =========================
+        // =====================================================
         // THUMB
-        // =========================
-        thumb = new View(getContext());
+        // =====================================================
+
+        thumb =
+                new View(getContext());
 
         thumb.setBackground(
                 rounded(
@@ -205,7 +349,9 @@ public class CustomScrollbar extends FrameLayout {
                 )
         );
 
-        thumb.setElevation(dp(3));
+        thumb.setElevation(
+                dp(3)
+        );
 
         FrameLayout.LayoutParams thumbParams =
                 new FrameLayout.LayoutParams(
@@ -215,16 +361,55 @@ public class CustomScrollbar extends FrameLayout {
 
         thumbParams.gravity =
                 Gravity.TOP |
-                Gravity.CENTER_HORIZONTAL;
+                Gravity.RIGHT;
 
-        scrollbarContainer.addView(
+        mainBar.addView(
                 thumb,
                 thumbParams
         );
 
-        // =========================
+        // =====================================================
+        // 40DP INVISIBLE TOUCH AREA
+        // =====================================================
+
+        thumbTouchArea =
+                new View(getContext());
+
+        thumbTouchArea.setBackgroundColor(
+                Color.TRANSPARENT
+        );
+
+        FrameLayout.LayoutParams touchParams =
+                new FrameLayout.LayoutParams(
+                        dp(TOUCH_WIDTH_DP),
+                        thumbHeight
+                );
+
+        /*
+         * Same right edge as main scrollbar.
+         *
+         * Main scrollbar right edge is 8dp from screen.
+         *
+         * Touch area therefore also ends at 8dp.
+         *
+         * Its additional width extends LEFT.
+         */
+        touchParams.gravity =
+                Gravity.TOP |
+                Gravity.RIGHT;
+
+        touchParams.rightMargin =
+                dp(MAIN_BAR_INSET_RIGHT_DP);
+
+        addView(
+                thumbTouchArea,
+                touchParams
+        );
+
+        // =====================================================
         // TOP ARROW
-        // =========================
+        // =====================================================
+
         topButton =
                 createArrowButton(true);
 
@@ -236,19 +421,37 @@ public class CustomScrollbar extends FrameLayout {
 
         topParams.gravity =
                 Gravity.TOP |
-                Gravity.CENTER_HORIZONTAL;
+                Gravity.RIGHT;
+
+        /*
+         * Main scrollbar center:
+         *
+         * Root right edge
+         * - 3dp inset
+         * - 5dp half of scrollbar
+         *
+         * Arrow half width = 8dp.
+         *
+         * Therefore arrow right edge reaches the root right
+         * edge exactly.
+         *
+         * No clipping.
+         */
+        topParams.rightMargin =
+                dp(0);
 
         topParams.topMargin =
                 dp(ARROW_MARGIN_DP);
 
-        scrollbarContainer.addView(
+        addView(
                 topButton,
                 topParams
         );
 
-        // =========================
+        // =====================================================
         // BOTTOM ARROW
-        // =========================
+        // =====================================================
+
         bottomButton =
                 createArrowButton(false);
 
@@ -260,39 +463,52 @@ public class CustomScrollbar extends FrameLayout {
 
         bottomParams.gravity =
                 Gravity.BOTTOM |
-                Gravity.CENTER_HORIZONTAL;
+                Gravity.RIGHT;
+
+        bottomParams.rightMargin =
+                dp(0);
 
         bottomParams.bottomMargin =
                 dp(ARROW_MARGIN_DP);
 
-        scrollbarContainer.addView(
+        addView(
                 bottomButton,
                 bottomParams
         );
 
+        // =====================================================
+        // TOUCH
+        // =====================================================
+
         setupThumbTouch();
+
         setupArrowButtons();
 
         showScrollbar();
     }
 
-    // =========================
-    // ONE-LINE CONNECTION
-    // =========================
+    // =========================================================
+    // ATTACH
+    // =========================================================
+
     public void attachTo(
             final ScrollView scroll
     ) {
 
         attachToScrollView(scroll);
 
-        if (getContext() instanceof Activity) {
+        if (
+                getContext()
+                        instanceof Activity
+        ) {
 
             Activity activity =
-                    (Activity) getContext();
+                    (Activity)
+                    getContext();
 
             FrameLayout.LayoutParams params =
                     new FrameLayout.LayoutParams(
-                            dp(BAR_WIDTH_DP),
+                            dp(TOUCH_WIDTH_DP),
                             dp(BAR_HEIGHT_DP)
                     );
 
@@ -300,8 +516,19 @@ public class CustomScrollbar extends FrameLayout {
                     Gravity.RIGHT |
                     Gravity.BOTTOM;
 
-            params.rightMargin = dp(8);
-            params.bottomMargin = dp(0);
+            /*
+             * Root = 5dp from screen edge.
+             *
+             * Main scrollbar = another 3dp inward.
+             *
+             * Final visible scrollbar right edge =
+             * exactly 8dp from screen edge.
+             */
+            params.rightMargin =
+                    dp(ROOT_RIGHT_MARGIN_DP);
+
+            params.bottomMargin =
+                    dp(0);
 
             activity.addContentView(
                     this,
@@ -310,9 +537,10 @@ public class CustomScrollbar extends FrameLayout {
         }
     }
 
-    // =========================
-    // SCROLLVIEW CONNECTION
-    // =========================
+    // =========================================================
+    // CONNECT SCROLLVIEW
+    // =========================================================
+
     public void attachToScrollView(
             final ScrollView scroll
     ) {
@@ -325,17 +553,23 @@ public class CustomScrollbar extends FrameLayout {
             return;
         }
 
-        scrollView.setVerticalScrollBarEnabled(false);
-        scrollView.setScrollbarFadingEnabled(false);
+        scrollView.setVerticalScrollBarEnabled(
+                false
+        );
+
+        scrollView.setScrollbarFadingEnabled(
+                false
+        );
 
         scrollChangedListener =
-                new ViewTreeObserver
+                new android.view.ViewTreeObserver
                         .OnScrollChangedListener() {
 
                     @Override
                     public void onScrollChanged() {
 
                         if (!draggingThumb) {
+
                             updateThumbFromScroll();
                         }
 
@@ -343,15 +577,18 @@ public class CustomScrollbar extends FrameLayout {
                     }
                 };
 
-        scrollView.getViewTreeObserver()
+        scrollView
+                .getViewTreeObserver()
                 .addOnScrollChangedListener(
                         scrollChangedListener
                 );
 
         scrollView.post(
                 new Runnable() {
+
                     @Override
                     public void run() {
+
                         updateThumbFromScroll();
                     }
                 }
@@ -360,12 +597,13 @@ public class CustomScrollbar extends FrameLayout {
         showScrollbar();
     }
 
-    // =========================
+    // =========================================================
     // THUMB TOUCH
-    // =========================
+    // =========================================================
+
     private void setupThumbTouch() {
 
-        thumb.setOnTouchListener(
+        thumbTouchArea.setOnTouchListener(
                 new OnTouchListener() {
 
                     @Override
@@ -375,6 +613,7 @@ public class CustomScrollbar extends FrameLayout {
                     ) {
 
                         if (scrollView == null) {
+
                             return false;
                         }
 
@@ -386,7 +625,8 @@ public class CustomScrollbar extends FrameLayout {
 
                                 stopScrollAnimation();
 
-                                draggingThumb = true;
+                                draggingThumb =
+                                        true;
 
                                 downY =
                                         event.getRawY();
@@ -394,7 +634,9 @@ public class CustomScrollbar extends FrameLayout {
                                 startThumbY =
                                         thumb.getY();
 
-                                setThumbPressed(true);
+                                setThumbPressed(
+                                        true
+                                );
 
                                 showScrollbar();
 
@@ -404,10 +646,12 @@ public class CustomScrollbar extends FrameLayout {
 
                                 float difference =
                                         event.getRawY()
-                                                - downY;
+                                        -
+                                        downY;
 
                                 moveThumb(
-                                        startThumbY +
+                                        startThumbY
+                                        +
                                         difference
                                 );
 
@@ -415,22 +659,30 @@ public class CustomScrollbar extends FrameLayout {
 
                             case MotionEvent.ACTION_UP:
 
-                                draggingThumb = false;
+                                draggingThumb =
+                                        false;
 
-                                setThumbPressed(false);
+                                setThumbPressed(
+                                        false
+                                );
 
                                 updateThumbFromScroll();
+
                                 showScrollbar();
 
                                 return true;
 
                             case MotionEvent.ACTION_CANCEL:
 
-                                draggingThumb = false;
+                                draggingThumb =
+                                        false;
 
-                                setThumbPressed(false);
+                                setThumbPressed(
+                                        false
+                                );
 
                                 updateThumbFromScroll();
+
                                 showScrollbar();
 
                                 return true;
@@ -442,46 +694,66 @@ public class CustomScrollbar extends FrameLayout {
         );
     }
 
-    // =========================
+    // =========================================================
     // MOVE THUMB
-    // =========================
-    private void moveThumb(float y) {
+    // =========================================================
+
+    private void moveThumb(
+            float y
+    ) {
 
         int available =
                 getAvailableThumbTravel();
 
         if (available <= 0) {
+
             return;
         }
 
-        y = Math.max(
-                0,
-                Math.min(y, available)
-        );
+        y =
+                Math.max(
+                        0,
+                        Math.min(
+                                y,
+                                available
+                        )
+                );
 
         thumb.setY(y);
 
-        int range = getScrollRange();
+        /*
+         * Touch area follows the thumb.
+         */
+        thumbTouchArea.setY(y);
+
+        int range =
+                getScrollRange();
 
         if (range <= 0) {
+
             return;
         }
 
         float percent =
-                y / (float) available;
+                y /
+                (float) available;
 
         scrollView.scrollTo(
                 0,
-                Math.round(percent * range)
+                Math.round(
+                        percent * range
+                )
         );
     }
 
-    // =========================
+    // =========================================================
     // UPDATE THUMB
-    // =========================
+    // =========================================================
+
     private void updateThumbFromScroll() {
 
         if (scrollView == null) {
+
             return;
         }
 
@@ -492,6 +764,8 @@ public class CustomScrollbar extends FrameLayout {
 
             thumb.setY(0);
 
+            thumbTouchArea.setY(0);
+
             return;
         }
 
@@ -499,6 +773,7 @@ public class CustomScrollbar extends FrameLayout {
                 getAvailableThumbTravel();
 
         if (available <= 0) {
+
             return;
         }
 
@@ -510,29 +785,43 @@ public class CustomScrollbar extends FrameLayout {
         percent =
                 Math.max(
                         0f,
-                        Math.min(percent, 1f)
+                        Math.min(
+                                percent,
+                                1f
+                        )
                 );
 
-        thumb.setY(
-                percent * available
-        );
+        float y =
+                percent * available;
+
+        thumb.setY(y);
+
+        thumbTouchArea.setY(y);
     }
+
+    // =========================================================
+    // THUMB TRAVEL
+    // =========================================================
 
     private int getAvailableThumbTravel() {
 
         return Math.max(
                 0,
-                barHeight - thumbHeight
+                barHeight -
+                thumbHeight
         );
     }
 
-    // =========================
+    // =========================================================
     // SCROLL RANGE
-    // =========================
+    // =========================================================
+
     private int getScrollRange() {
 
-        if (scrollView == null ||
-                scrollView.getChildCount() == 0) {
+        if (
+                scrollView == null ||
+                scrollView.getChildCount() == 0
+        ) {
 
             return 0;
         }
@@ -545,25 +834,32 @@ public class CustomScrollbar extends FrameLayout {
 
         int viewportHeight =
                 scrollView.getHeight()
-                - scrollView.getPaddingTop()
-                - scrollView.getPaddingBottom();
+                -
+                scrollView.getPaddingTop()
+                -
+                scrollView.getPaddingBottom();
 
         return Math.max(
                 0,
-                contentHeight - viewportHeight
+                contentHeight -
+                viewportHeight
         );
     }
 
-    // =========================
-    // ARROWS
-    // =========================
+    // =========================================================
+    // ARROW BUTTONS
+    // =========================================================
+
     private void setupArrowButtons() {
 
         topButton.setOnClickListener(
                 new OnClickListener() {
 
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(
+                            View view
+                    ) {
+
                         pageUp();
                     }
                 }
@@ -573,16 +869,24 @@ public class CustomScrollbar extends FrameLayout {
                 new OnClickListener() {
 
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(
+                            View view
+                    ) {
+
                         pageDown();
                     }
                 }
         );
     }
 
+    // =========================================================
+    // PAGE UP
+    // =========================================================
+
     private void pageUp() {
 
         if (scrollView == null) {
+
             return;
         }
 
@@ -591,7 +895,8 @@ public class CustomScrollbar extends FrameLayout {
                         1,
                         Math.round(
                                 scrollView.getHeight()
-                                * PAGE_FACTOR
+                                *
+                                PAGE_FACTOR
                         )
                 );
 
@@ -599,7 +904,8 @@ public class CustomScrollbar extends FrameLayout {
                 Math.max(
                         0,
                         scrollView.getScrollY()
-                        - amount
+                        -
+                        amount
                 );
 
         smoothScrollTo(target);
@@ -607,9 +913,14 @@ public class CustomScrollbar extends FrameLayout {
         showScrollbar();
     }
 
+    // =========================================================
+    // PAGE DOWN
+    // =========================================================
+
     private void pageDown() {
 
         if (scrollView == null) {
+
             return;
         }
 
@@ -618,7 +929,8 @@ public class CustomScrollbar extends FrameLayout {
                         1,
                         Math.round(
                                 scrollView.getHeight()
-                                * PAGE_FACTOR
+                                *
+                                PAGE_FACTOR
                         )
                 );
 
@@ -626,7 +938,8 @@ public class CustomScrollbar extends FrameLayout {
                 Math.min(
                         getScrollRange(),
                         scrollView.getScrollY()
-                        + amount
+                        +
+                        amount
                 );
 
         smoothScrollTo(target);
@@ -634,14 +947,16 @@ public class CustomScrollbar extends FrameLayout {
         showScrollbar();
     }
 
-    // =========================
+    // =========================================================
     // SMOOTH SCROLL
-    // =========================
+    // =========================================================
+
     private void smoothScrollTo(
             final int target
     ) {
 
         if (scrollView == null) {
+
             return;
         }
 
@@ -680,12 +995,14 @@ public class CustomScrollbar extends FrameLayout {
                     ) {
 
                         if (scrollView == null) {
+
                             return;
                         }
 
                         int value =
                                 (Integer)
-                                animation.getAnimatedValue();
+                                animation
+                                        .getAnimatedValue();
 
                         scrollView.scrollTo(
                                 0,
@@ -700,11 +1017,18 @@ public class CustomScrollbar extends FrameLayout {
         scrollAnimator.start();
     }
 
+    // =========================================================
+    // STOP ANIMATION
+    // =========================================================
+
     private void stopScrollAnimation() {
 
         if (scrollAnimator != null) {
 
-            if (scrollAnimator.isRunning()) {
+            if (
+                    scrollAnimator.isRunning()
+            ) {
+
                 scrollAnimator.cancel();
             }
 
@@ -712,9 +1036,10 @@ public class CustomScrollbar extends FrameLayout {
         }
     }
 
-    // =========================
-    // PRESSED
-    // =========================
+    // =========================================================
+    // THUMB PRESSED
+    // =========================================================
+
     private void setThumbPressed(
             boolean pressed
     ) {
@@ -730,23 +1055,21 @@ public class CustomScrollbar extends FrameLayout {
 
         thumb.animate()
                 .scaleX(
-                        pressed ? 1.15f : 1f
+                        pressed
+                                ? 1.15f
+                                : 1f
                 )
                 .setDuration(100)
                 .start();
     }
 
-    // =========================
-    // FADE
-    // =========================
+    // =========================================================
+    // SHOW
+    // =========================================================
+
     private void showScrollbar() {
 
-        if (scrollbarContainer == null) {
-            return;
-        }
-
-        scrollbarContainer
-                .animate()
+        animate()
                 .alpha(1f)
                 .setDuration(
                         FADE_IN_DURATION
@@ -763,16 +1086,18 @@ public class CustomScrollbar extends FrameLayout {
         );
     }
 
+    // =========================================================
+    // FADE
+    // =========================================================
+
     private void fadeScrollbar() {
 
-        if (draggingThumb ||
-                scrollbarContainer == null) {
+        if (draggingThumb) {
 
             return;
         }
 
-        scrollbarContainer
-                .animate()
+        animate()
                 .alpha(0f)
                 .setDuration(
                         FADE_OUT_DURATION
@@ -780,9 +1105,10 @@ public class CustomScrollbar extends FrameLayout {
                 .start();
     }
 
-    // =========================
-    // ARROW BUTTON
-    // =========================
+    // =========================================================
+    // CREATE ARROW
+    // =========================================================
+
     private ImageView createArrowButton(
             final boolean up
     ) {
@@ -809,6 +1135,7 @@ public class CustomScrollbar extends FrameLayout {
         );
 
         button.setClickable(true);
+
         button.setFocusable(true);
 
         button.setOnTouchListener(
@@ -816,7 +1143,7 @@ public class CustomScrollbar extends FrameLayout {
 
                     @Override
                     public boolean onTouch(
-                            View v,
+                            View view,
                             MotionEvent event
                     ) {
 
@@ -826,7 +1153,7 @@ public class CustomScrollbar extends FrameLayout {
 
                             case MotionEvent.ACTION_DOWN:
 
-                                v.setBackground(
+                                view.setBackground(
                                         rounded(
                                                 ARROW_PRESSED_COLOR,
                                                 ARROW_RADIUS_DP
@@ -838,9 +1165,10 @@ public class CustomScrollbar extends FrameLayout {
                                 break;
 
                             case MotionEvent.ACTION_UP:
+
                             case MotionEvent.ACTION_CANCEL:
 
-                                v.setBackground(
+                                view.setBackground(
                                         rounded(
                                                 ARROW_COLOR,
                                                 ARROW_RADIUS_DP
@@ -858,32 +1186,39 @@ public class CustomScrollbar extends FrameLayout {
         return button;
     }
 
-    // =========================
-    // DRAWABLE
-    // =========================
+    // =========================================================
+    // ROUNDED DRAWABLE
+    // =========================================================
+
     private GradientDrawable rounded(
             int color,
             int radiusDp
     ) {
 
-        GradientDrawable d =
+        GradientDrawable drawable =
                 new GradientDrawable();
 
-        d.setColor(color);
+        drawable.setColor(color);
 
-        d.setCornerRadius(
+        drawable.setCornerRadius(
                 dp(radiusDp)
         );
 
-        return d;
+        return drawable;
     }
 
-    // =========================
-    // PUBLIC API
-    // =========================
+    // =========================================================
+    // PUBLIC SHOW
+    // =========================================================
+
     public void show() {
+
         showScrollbar();
     }
+
+    // =========================================================
+    // PUBLIC HIDE
+    // =========================================================
 
     public void hide() {
 
@@ -891,19 +1226,21 @@ public class CustomScrollbar extends FrameLayout {
                 fadeRunnable
         );
 
-        if (scrollbarContainer != null) {
-
-            scrollbarContainer
-                    .animate()
-                    .alpha(0f)
-                    .setDuration(
-                            FADE_OUT_DURATION
-                    )
-                    .start();
-        }
+        animate()
+                .alpha(0f)
+                .setDuration(
+                        FADE_OUT_DURATION
+                )
+                .start();
     }
 
-    public void setThumbColor(int color) {
+    // =========================================================
+    // SET THUMB COLOR
+    // =========================================================
+
+    public void setThumbColor(
+            int color
+    ) {
 
         if (thumb != null) {
 
@@ -916,7 +1253,13 @@ public class CustomScrollbar extends FrameLayout {
         }
     }
 
-    public void setTrackColor(int color) {
+    // =========================================================
+    // SET TRACK COLOR
+    // =========================================================
+
+    public void setTrackColor(
+            int color
+    ) {
 
         if (track != null) {
 
@@ -928,6 +1271,10 @@ public class CustomScrollbar extends FrameLayout {
             );
         }
     }
+
+    // =========================================================
+    // SET BAR HEIGHT
+    // =========================================================
 
     public void setBarHeight(
             int heightDp
@@ -942,6 +1289,10 @@ public class CustomScrollbar extends FrameLayout {
         updateLayout();
     }
 
+    // =========================================================
+    // SET THUMB HEIGHT
+    // =========================================================
+
     public void setThumbHeight(
             int heightDp
     ) {
@@ -954,93 +1305,57 @@ public class CustomScrollbar extends FrameLayout {
 
         if (thumb != null) {
 
-            ViewGroup.LayoutParams p =
+            ViewGroup.LayoutParams params =
                     thumb.getLayoutParams();
 
-            p.height =
+            params.height =
                     thumbHeight;
 
-            thumb.setLayoutParams(p);
+            thumb.setLayoutParams(params);
+        }
+
+        if (thumbTouchArea != null) {
+
+            ViewGroup.LayoutParams params =
+                    thumbTouchArea
+                            .getLayoutParams();
+
+            params.height =
+                    thumbHeight;
+
+            thumbTouchArea
+                    .setLayoutParams(params);
         }
 
         updateThumbFromScroll();
     }
 
-    public void setBarWidth(
-            int widthDp
-    ) {
-
-        barWidth =
-                Math.max(
-                        1,
-                        dp(widthDp)
-                );
-
-        updateLayout();
-    }
+    // =========================================================
+    // UPDATE LAYOUT
+    // =========================================================
 
     private void updateLayout() {
 
-        ViewGroup.LayoutParams root =
+        ViewGroup.LayoutParams params =
                 getLayoutParams();
 
-        if (root != null) {
+        if (params != null) {
 
-            root.width =
-                    barWidth;
+            params.width =
+                    dp(TOUCH_WIDTH_DP);
 
-            root.height =
+            params.height =
                     barHeight;
 
-            setLayoutParams(root);
-        }
-
-        if (scrollbarContainer != null) {
-
-            ViewGroup.LayoutParams p =
-                    scrollbarContainer
-                            .getLayoutParams();
-
-            p.width =
-                    barWidth;
-
-            p.height =
-                    barHeight;
-
-            scrollbarContainer
-                    .setLayoutParams(p);
-        }
-
-        if (track != null) {
-
-            ViewGroup.LayoutParams p =
-                    track.getLayoutParams();
-
-            p.width =
-                    dp(TRACK_WIDTH_DP);
-
-            p.height =
-                    barHeight;
-
-            track.setLayoutParams(p);
-        }
-
-        if (thumb != null) {
-
-            ViewGroup.LayoutParams p =
-                    thumb.getLayoutParams();
-
-            p.width =
-                    dp(THUMB_WIDTH_DP);
-
-            p.height =
-                    thumbHeight;
-
-            thumb.setLayoutParams(p);
+            setLayoutParams(params);
         }
 
         updateThumbFromScroll();
     }
+
+    // =========================================================
+    // FADE DELAY
+    // =========================================================
 
     public void setFadeDelay(
             int milliseconds
@@ -1059,15 +1374,21 @@ public class CustomScrollbar extends FrameLayout {
         );
     }
 
+    // =========================================================
+    // FADE DURATION
+    // =========================================================
+
     public void setFadeDuration(
             int milliseconds
     ) {
+
         // Compatibility method.
     }
 
-    // =========================
-    // CLEANUP
-    // =========================
+    // =========================================================
+    // DETACH
+    // =========================================================
+
     public void detach() {
 
         fadeHandler.removeCallbacks(
@@ -1083,10 +1404,16 @@ public class CustomScrollbar extends FrameLayout {
         scrollView = null;
     }
 
+    // =========================================================
+    // REMOVE LISTENER
+    // =========================================================
+
     private void removePreviousScrollListener() {
 
-        if (scrollView == null ||
-                scrollChangedListener == null) {
+        if (
+                scrollView == null ||
+                scrollChangedListener == null
+        ) {
 
             return;
         }
@@ -1105,27 +1432,33 @@ public class CustomScrollbar extends FrameLayout {
         }
     }
 
-    // =========================
+    // =========================================================
     // DP
-    // =========================
-    private int dp(int value) {
+    // =========================================================
+
+    private int dp(
+            int value
+    ) {
 
         return (int) (
                 value *
                 getResources()
                         .getDisplayMetrics()
                         .density
-                + 0.5f
+                +
+                0.5f
         );
     }
 
-    // =========================
+    // =========================================================
     // ARROW DRAWABLE
-    // =========================
+    // =========================================================
+
     private static class ArrowDrawable
             extends Drawable {
 
         private final Paint paint;
+
         private final boolean up;
 
         ArrowDrawable(
@@ -1146,7 +1479,9 @@ public class CustomScrollbar extends FrameLayout {
                     Paint.Style.STROKE
             );
 
-            paint.setStrokeWidth(2f);
+            paint.setStrokeWidth(
+                    2f
+            );
 
             paint.setStrokeCap(
                     Paint.Cap.ROUND
@@ -1158,7 +1493,9 @@ public class CustomScrollbar extends FrameLayout {
         }
 
         @Override
-        public void draw(Canvas canvas) {
+        public void draw(
+                Canvas canvas
+        ) {
 
             float width =
                     getBounds().width();
@@ -1177,38 +1514,38 @@ public class CustomScrollbar extends FrameLayout {
 
             if (up) {
 
-    path.moveTo(
-            x - 5f,
-            y + 3.5f
-    );
+                path.moveTo(
+                        x - 5f,
+                        y + 3.5f
+                );
 
-    path.lineTo(
-            x,
-            y - 3.5f
-    );
+                path.lineTo(
+                        x,
+                        y - 3.5f
+                );
 
-    path.lineTo(
-            x + 5f,
-            y + 3.5f
-    );
+                path.lineTo(
+                        x + 5f,
+                        y + 3.5f
+                );
 
-} else {
+            } else {
 
-    path.moveTo(
-            x - 5f,
-            y - 3.5f
-    );
+                path.moveTo(
+                        x - 5f,
+                        y - 3.5f
+                );
 
-    path.lineTo(
-            x,
-            y + 3.5f
-    );
+                path.lineTo(
+                        x,
+                        y + 3.5f
+                );
 
-    path.lineTo(
-            x + 5f,
-            y - 3.5f
-    );
-}
+                path.lineTo(
+                        x + 5f,
+                        y - 3.5f
+                );
+            }
 
             canvas.drawPath(
                     path,
@@ -1217,7 +1554,10 @@ public class CustomScrollbar extends FrameLayout {
         }
 
         @Override
-        public void setAlpha(int alpha) {
+        public void setAlpha(
+                int alpha
+        ) {
+
             paint.setAlpha(alpha);
         }
 
@@ -1225,21 +1565,25 @@ public class CustomScrollbar extends FrameLayout {
         public void setColorFilter(
                 android.graphics.ColorFilter filter
         ) {
+
             paint.setColorFilter(filter);
         }
 
         @Override
         public int getOpacity() {
+
             return PixelFormat.TRANSLUCENT;
         }
 
         @Override
         public int getIntrinsicWidth() {
+
             return 10;
         }
 
         @Override
         public int getIntrinsicHeight() {
+
             return 10;
         }
     }
