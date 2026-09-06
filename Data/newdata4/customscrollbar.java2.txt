@@ -1,0 +1,1546 @@
+package com.myrecords.onenewexperience.one;
+
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ScrollView;
+
+/**
+ * Custom modern scrollbar controller.
+ *
+ * Controls an existing ScrollView.
+ *
+ * Required connection from Activity:
+ *
+ * CustomScrollbar customScrollbar =
+ *         new CustomScrollbar(this);
+ *
+ * customScrollbar.attachToScrollView(
+ *         binding.customscrollbar
+ * );
+ *
+ * IMPORTANT:
+ * binding.customscrollbar is the existing ScrollView.
+ *
+ * There is intentionally NO binding.vscroll2 here.
+ */
+public class CustomScrollbar extends FrameLayout {
+
+    // ============================================================
+    // MAIN SIZE
+    // ============================================================
+
+    private static final int BAR_HEIGHT_DP = 600;
+
+    private static final int THUMB_HEIGHT_DP = 200;
+
+    private static final int BAR_WIDTH_DP = 48;
+
+    private static final int TRACK_WIDTH_DP = 8;
+
+    private static final int THUMB_WIDTH_DP = 12;
+
+    // ============================================================
+    // ARROWS
+    // ============================================================
+
+    private static final int ARROW_SIZE_DP = 40;
+
+    private static final int ARROW_MARGIN_DP = 2;
+
+    // ============================================================
+    // COLORS
+    // ============================================================
+
+    private static final int TRACK_COLOR =
+            Color.rgb(226, 230, 236);
+
+    private static final int THUMB_COLOR =
+            Color.rgb(66, 103, 210);
+
+    private static final int THUMB_PRESSED_COLOR =
+            Color.rgb(45, 78, 175);
+
+    private static final int ARROW_COLOR =
+            Color.rgb(66, 103, 210);
+
+    private static final int ARROW_PRESSED_COLOR =
+            Color.rgb(45, 78, 175);
+
+    private static final int ARROW_ICON_COLOR =
+            Color.WHITE;
+
+    // ============================================================
+    // CORNERS
+    // ============================================================
+
+    private static final int TRACK_RADIUS_DP = 6;
+
+    private static final int THUMB_RADIUS_DP = 7;
+
+    private static final int ARROW_RADIUS_DP = 20;
+
+    // ============================================================
+    // SCROLL
+    // ============================================================
+
+    private static final float PAGE_FACTOR = 0.85f;
+
+    private static final int SCROLL_DURATION = 220;
+
+    // ============================================================
+    // FADE
+    // ============================================================
+
+    private static final int FADE_DELAY = 1500;
+
+    private static final int FADE_IN_DURATION = 150;
+
+    private static final int FADE_OUT_DURATION = 350;
+
+    // ============================================================
+    // VIEWS
+    // ============================================================
+
+    private ScrollView scrollView;
+
+    private FrameLayout scrollbarContainer;
+
+    private View track;
+
+    private View thumb;
+
+    private ImageView topButton;
+
+    private ImageView bottomButton;
+
+    // ============================================================
+    // SIZE VALUES
+    // ============================================================
+
+    private int barHeight;
+
+    private int thumbHeight;
+
+    private int barWidth;
+
+    // ============================================================
+    // DRAG VALUES
+    // ============================================================
+
+    private float downY;
+
+    private float startThumbY;
+
+    private boolean draggingThumb = false;
+
+    // ============================================================
+    // ANIMATION
+    // ============================================================
+
+    private ValueAnimator scrollAnimator;
+
+    // ============================================================
+    // FADE HANDLER
+    // ============================================================
+
+    private final Handler fadeHandler =
+            new Handler(Looper.getMainLooper());
+
+    private final Runnable fadeRunnable =
+            new Runnable() {
+
+                @Override
+                public void run() {
+                    fadeScrollbar();
+                }
+            };
+
+    // ============================================================
+    // SCROLL LISTENER
+    // ============================================================
+
+    private ViewTreeObserver.OnScrollChangedListener
+            scrollChangedListener;
+
+    // ============================================================
+    // CONSTRUCTOR
+    // ============================================================
+
+    public CustomScrollbar(Context context) {
+
+        super(context);
+
+        setClipChildren(false);
+
+        setClipToPadding(false);
+
+        barHeight =
+                dp(BAR_HEIGHT_DP);
+
+        thumbHeight =
+                dp(THUMB_HEIGHT_DP);
+
+        barWidth =
+                dp(BAR_WIDTH_DP);
+
+        buildUI();
+    }
+
+    // ============================================================
+    // BUILD UI
+    // ============================================================
+
+    private void buildUI() {
+
+        LayoutParams rootParams =
+                new LayoutParams(
+                        barWidth,
+                        barHeight
+                );
+
+        rootParams.gravity =
+                Gravity.CENTER;
+
+        setLayoutParams(rootParams);
+
+        // --------------------------------------------------------
+        // CONTAINER
+        // --------------------------------------------------------
+
+        scrollbarContainer =
+                new FrameLayout(
+                        getContext()
+                );
+
+        LayoutParams containerParams =
+                new LayoutParams(
+                        barWidth,
+                        barHeight
+                );
+
+        containerParams.gravity =
+                Gravity.CENTER;
+
+        scrollbarContainer.setClipChildren(
+                false
+        );
+
+        scrollbarContainer.setClipToPadding(
+                false
+        );
+
+        addView(
+                scrollbarContainer,
+                containerParams
+        );
+
+        // --------------------------------------------------------
+        // TRACK
+        // --------------------------------------------------------
+
+        track =
+                new View(getContext());
+
+        GradientDrawable trackDrawable =
+                new GradientDrawable();
+
+        trackDrawable.setColor(
+                TRACK_COLOR
+        );
+
+        trackDrawable.setCornerRadius(
+                dp(TRACK_RADIUS_DP)
+        );
+
+        track.setBackground(
+                trackDrawable
+        );
+
+        LayoutParams trackParams =
+                new LayoutParams(
+                        dp(TRACK_WIDTH_DP),
+                        barHeight
+                );
+
+        trackParams.gravity =
+                Gravity.CENTER_HORIZONTAL;
+
+        scrollbarContainer.addView(
+                track,
+                trackParams
+        );
+
+        // --------------------------------------------------------
+        // THUMB
+        // --------------------------------------------------------
+
+        thumb =
+                new View(getContext());
+
+        thumb.setBackground(
+                createRoundedDrawable(
+                        THUMB_COLOR,
+                        THUMB_RADIUS_DP
+                )
+        );
+
+        thumb.setElevation(
+                dp(5)
+        );
+
+        LayoutParams thumbParams =
+                new LayoutParams(
+                        dp(THUMB_WIDTH_DP),
+                        thumbHeight
+                );
+
+        thumbParams.gravity =
+                Gravity.TOP |
+                Gravity.CENTER_HORIZONTAL;
+
+        thumbParams.topMargin = 0;
+
+        scrollbarContainer.addView(
+                thumb,
+                thumbParams
+        );
+
+        // --------------------------------------------------------
+        // TOP ARROW
+        // --------------------------------------------------------
+
+        topButton =
+                createArrowButton(true);
+
+        LayoutParams topParams =
+                new LayoutParams(
+                        dp(ARROW_SIZE_DP),
+                        dp(ARROW_SIZE_DP)
+                );
+
+        topParams.gravity =
+                Gravity.TOP |
+                Gravity.CENTER_HORIZONTAL;
+
+        topParams.topMargin =
+                -dp(ARROW_MARGIN_DP);
+
+        scrollbarContainer.addView(
+                topButton,
+                topParams
+        );
+
+        // --------------------------------------------------------
+        // BOTTOM ARROW
+        // --------------------------------------------------------
+
+        bottomButton =
+                createArrowButton(false);
+
+        LayoutParams bottomParams =
+                new LayoutParams(
+                        dp(ARROW_SIZE_DP),
+                        dp(ARROW_SIZE_DP)
+                );
+
+        bottomParams.gravity =
+                Gravity.BOTTOM |
+                Gravity.CENTER_HORIZONTAL;
+
+        bottomParams.bottomMargin =
+                -dp(ARROW_MARGIN_DP);
+
+        scrollbarContainer.addView(
+                bottomButton,
+                bottomParams
+        );
+
+        // --------------------------------------------------------
+        // TOUCH
+        // --------------------------------------------------------
+
+        setupThumbTouch();
+
+        setupArrowButtons();
+
+        showScrollbar();
+    }
+
+    // ============================================================
+    // ROUNDED DRAWABLE
+    // ============================================================
+
+    private GradientDrawable createRoundedDrawable(
+            int color,
+            int radiusDp
+    ) {
+
+        GradientDrawable drawable =
+                new GradientDrawable();
+
+        drawable.setColor(color);
+
+        drawable.setCornerRadius(
+                dp(radiusDp)
+        );
+
+        return drawable;
+    }
+
+    // ============================================================
+    // ARROW BUTTON
+    // ============================================================
+
+    private ImageView createArrowButton(
+            boolean up
+    ) {
+
+        ImageView button =
+                new ImageView(
+                        getContext()
+                );
+
+        button.setBackground(
+                createRoundedDrawable(
+                        ARROW_COLOR,
+                        ARROW_RADIUS_DP
+                )
+        );
+
+        button.setImageDrawable(
+                new ArrowDrawable(
+                        ARROW_ICON_COLOR,
+                        up
+                )
+        );
+
+        button.setScaleType(
+                ImageView.ScaleType.CENTER
+        );
+
+        button.setClickable(true);
+
+        button.setFocusable(true);
+
+        button.setElevation(
+                dp(6)
+        );
+
+        button.setOnTouchListener(
+                new OnTouchListener() {
+
+                    @Override
+                    public boolean onTouch(
+                            View view,
+                            MotionEvent event
+                    ) {
+
+                        switch (
+                                event.getActionMasked()
+                        ) {
+
+                            case MotionEvent.ACTION_DOWN:
+
+                                view.setBackground(
+                                        createRoundedDrawable(
+                                                ARROW_PRESSED_COLOR,
+                                                ARROW_RADIUS_DP
+                                        )
+                                );
+
+                                view.animate()
+                                        .scaleX(0.92f)
+                                        .scaleY(0.92f)
+                                        .setDuration(80)
+                                        .start();
+
+                                showScrollbar();
+
+                                break;
+
+                            case MotionEvent.ACTION_UP:
+
+                                view.setBackground(
+                                        createRoundedDrawable(
+                                                ARROW_COLOR,
+                                                ARROW_RADIUS_DP
+                                        )
+                                );
+
+                                view.animate()
+                                        .scaleX(1f)
+                                        .scaleY(1f)
+                                        .setDuration(80)
+                                        .start();
+
+                                break;
+
+                            case MotionEvent.ACTION_CANCEL:
+
+                                view.setBackground(
+                                        createRoundedDrawable(
+                                                ARROW_COLOR,
+                                                ARROW_RADIUS_DP
+                                        )
+                                );
+
+                                view.animate()
+                                        .scaleX(1f)
+                                        .scaleY(1f)
+                                        .setDuration(80)
+                                        .start();
+
+                                break;
+                        }
+
+                        return false;
+                    }
+                }
+        );
+
+        return button;
+    }
+
+    // ============================================================
+    // CONNECT TO EXISTING SCROLLVIEW
+    // ============================================================
+
+    public void attachToScrollView(
+            final ScrollView scroll
+    ) {
+
+        removePreviousScrollListener();
+
+        scrollView = scroll;
+
+        if (scrollView == null) {
+            return;
+        }
+
+        // Hide Android's original scrollbar.
+        scrollView.setVerticalScrollBarEnabled(
+                false
+        );
+
+        scrollView.setScrollbarFadingEnabled(
+                false
+        );
+
+        scrollChangedListener =
+                new ViewTreeObserver
+                        .OnScrollChangedListener() {
+
+                    @Override
+                    public void onScrollChanged() {
+
+                        if (!draggingThumb) {
+
+                            updateThumbFromScroll();
+
+                        }
+
+                        showScrollbar();
+                    }
+                };
+
+        scrollView.getViewTreeObserver()
+                .addOnScrollChangedListener(
+                        scrollChangedListener
+                );
+
+        scrollView.post(
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        updateThumbFromScroll();
+
+                    }
+                }
+        );
+
+        showScrollbar();
+    }
+
+    // ============================================================
+    // REMOVE OLD LISTENER
+    // ============================================================
+
+    private void removePreviousScrollListener() {
+
+        if (scrollView == null) {
+            return;
+        }
+
+        if (scrollChangedListener == null) {
+            return;
+        }
+
+        if (
+                scrollView
+                        .getViewTreeObserver()
+                        .isAlive()
+        ) {
+
+            scrollView
+                    .getViewTreeObserver()
+                    .removeOnScrollChangedListener(
+                            scrollChangedListener
+                    );
+        }
+    }
+
+    // ============================================================
+    // THUMB TOUCH
+    // ============================================================
+
+    private void setupThumbTouch() {
+
+        thumb.setOnTouchListener(
+                new OnTouchListener() {
+
+                    @Override
+                    public boolean onTouch(
+                            View view,
+                            MotionEvent event
+                    ) {
+
+                        if (scrollView == null) {
+                            return false;
+                        }
+
+                        switch (
+                                event.getActionMasked()
+                        ) {
+
+                            case MotionEvent.ACTION_DOWN:
+
+                                stopScrollAnimation();
+
+                                draggingThumb =
+                                        true;
+
+                                downY =
+                                        event.getRawY();
+
+                                startThumbY =
+                                        thumb.getY();
+
+                                setThumbPressed(
+                                        true
+                                );
+
+                                showScrollbar();
+
+                                return true;
+
+                            case MotionEvent.ACTION_MOVE:
+
+                                float difference =
+                                        event.getRawY()
+                                                - downY;
+
+                                float newY =
+                                        startThumbY
+                                                + difference;
+
+                                moveThumb(
+                                        newY
+                                );
+
+                                return true;
+
+                            case MotionEvent.ACTION_UP:
+
+                                draggingThumb =
+                                        false;
+
+                                setThumbPressed(
+                                        false
+                                );
+
+                                updateThumbFromScroll();
+
+                                showScrollbar();
+
+                                return true;
+
+                            case MotionEvent.ACTION_CANCEL:
+
+                                draggingThumb =
+                                        false;
+
+                                setThumbPressed(
+                                        false
+                                );
+
+                                updateThumbFromScroll();
+
+                                showScrollbar();
+
+                                return true;
+                        }
+
+                        return true;
+                    }
+                }
+        );
+    }
+
+    // ============================================================
+    // MOVE THUMB
+    // ============================================================
+
+    private void moveThumb(
+            float y
+    ) {
+
+        int availableHeight =
+                getAvailableThumbTravel();
+
+        if (availableHeight <= 0) {
+            return;
+        }
+
+        if (y < 0) {
+            y = 0;
+        }
+
+        if (y > availableHeight) {
+            y = availableHeight;
+        }
+
+        thumb.setY(y);
+
+        int scrollRange =
+                getScrollRange();
+
+        if (scrollRange <= 0) {
+            return;
+        }
+
+        float percentage =
+                y /
+                (float) availableHeight;
+
+        int targetScroll =
+                Math.round(
+                        percentage *
+                        scrollRange
+                );
+
+        scrollView.scrollTo(
+                0,
+                targetScroll
+        );
+    }
+
+    // ============================================================
+    // UPDATE THUMB
+    // ============================================================
+
+    private void updateThumbFromScroll() {
+
+        if (scrollView == null) {
+            return;
+        }
+
+        int range =
+                getScrollRange();
+
+        if (range <= 0) {
+
+            thumb.setY(0);
+
+            return;
+        }
+
+        int availableHeight =
+                getAvailableThumbTravel();
+
+        if (availableHeight <= 0) {
+            return;
+        }
+
+        int scrollY =
+                scrollView.getScrollY();
+
+        float percentage =
+                scrollY /
+                (float) range;
+
+        if (percentage < 0f) {
+            percentage = 0f;
+        }
+
+        if (percentage > 1f) {
+            percentage = 1f;
+        }
+
+        float y =
+                percentage *
+                availableHeight;
+
+        thumb.setY(y);
+    }
+
+    // ============================================================
+    // AVAILABLE THUMB TRAVEL
+    // ============================================================
+
+    private int getAvailableThumbTravel() {
+
+        return Math.max(
+                0,
+                barHeight - thumbHeight
+        );
+    }
+
+    // ============================================================
+    // SCROLL RANGE
+    // ============================================================
+
+    private int getScrollRange() {
+
+        if (scrollView == null) {
+            return 0;
+        }
+
+        if (scrollView.getChildCount() == 0) {
+            return 0;
+        }
+
+        View child =
+                scrollView.getChildAt(0);
+
+        int contentHeight =
+                child.getHeight();
+
+        int viewportHeight =
+                scrollView.getHeight()
+                - scrollView.getPaddingTop()
+                - scrollView.getPaddingBottom();
+
+        return Math.max(
+                0,
+                contentHeight -
+                viewportHeight
+        );
+    }
+
+    // ============================================================
+    // ARROW CLICK
+    // ============================================================
+
+    private void setupArrowButtons() {
+
+        topButton.setOnClickListener(
+                new OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View view
+                    ) {
+
+                        pageUp();
+
+                    }
+                }
+        );
+
+        bottomButton.setOnClickListener(
+                new OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View view
+                    ) {
+
+                        pageDown();
+
+                    }
+                }
+        );
+    }
+
+    // ============================================================
+    // PAGE UP
+    // ============================================================
+
+    private void pageUp() {
+
+        if (scrollView == null) {
+            return;
+        }
+
+        stopScrollAnimation();
+
+        int viewport =
+                scrollView.getHeight();
+
+        int amount =
+                Math.max(
+                        1,
+                        Math.round(
+                                viewport *
+                                PAGE_FACTOR
+                        )
+                );
+
+        int current =
+                scrollView.getScrollY();
+
+        int target =
+                current - amount;
+
+        if (target < 0) {
+            target = 0;
+        }
+
+        smoothScrollTo(
+                target
+        );
+
+        showScrollbar();
+    }
+
+    // ============================================================
+    // PAGE DOWN
+    // ============================================================
+
+    private void pageDown() {
+
+        if (scrollView == null) {
+            return;
+        }
+
+        stopScrollAnimation();
+
+        int viewport =
+                scrollView.getHeight();
+
+        int amount =
+                Math.max(
+                        1,
+                        Math.round(
+                                viewport *
+                                PAGE_FACTOR
+                        )
+                );
+
+        int current =
+                scrollView.getScrollY();
+
+        int range =
+                getScrollRange();
+
+        int target =
+                current + amount;
+
+        if (target > range) {
+            target = range;
+        }
+
+        smoothScrollTo(
+                target
+        );
+
+        showScrollbar();
+    }
+
+    // ============================================================
+    // SMOOTH SCROLL
+    // ============================================================
+
+    private void smoothScrollTo(
+            final int target
+    ) {
+
+        if (scrollView == null) {
+            return;
+        }
+
+        stopScrollAnimation();
+
+        final int start =
+                scrollView.getScrollY();
+
+        if (start == target) {
+
+            updateThumbFromScroll();
+
+            return;
+        }
+
+        scrollAnimator =
+                ValueAnimator.ofInt(
+                        start,
+                        target
+                );
+
+        scrollAnimator.setDuration(
+                SCROLL_DURATION
+        );
+
+        scrollAnimator.setInterpolator(
+                new DecelerateInterpolator()
+        );
+
+        scrollAnimator.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(
+                            ValueAnimator animator
+                    ) {
+
+                        if (scrollView == null) {
+                            return;
+                        }
+
+                        int value =
+                                (Integer)
+                                        animator
+                                                .getAnimatedValue();
+
+                        scrollView.scrollTo(
+                                0,
+                                value
+                        );
+
+                        updateThumbFromScroll();
+                    }
+                }
+        );
+
+        scrollAnimator.start();
+    }
+
+    // ============================================================
+    // STOP ANIMATION
+    // ============================================================
+
+    private void stopScrollAnimation() {
+
+        if (scrollAnimator != null) {
+
+            if (scrollAnimator.isRunning()) {
+
+                scrollAnimator.cancel();
+
+            }
+
+            scrollAnimator =
+                    null;
+        }
+    }
+
+    // ============================================================
+    // THUMB PRESSED
+    // ============================================================
+
+    private void setThumbPressed(
+            boolean pressed
+    ) {
+
+        thumb.setBackground(
+                createRoundedDrawable(
+                        pressed
+                                ? THUMB_PRESSED_COLOR
+                                : THUMB_COLOR,
+                        THUMB_RADIUS_DP
+                )
+        );
+
+        thumb.animate()
+                .scaleX(
+                        pressed
+                                ? 1.30f
+                                : 1.0f
+                )
+                .scaleY(1.0f)
+                .setDuration(100)
+                .start();
+    }
+
+    // ============================================================
+    // SHOW
+    // ============================================================
+
+    private void showScrollbar() {
+
+        if (scrollbarContainer == null) {
+            return;
+        }
+
+        scrollbarContainer
+                .animate()
+                .alpha(1f)
+                .setDuration(
+                        FADE_IN_DURATION
+                )
+                .start();
+
+        fadeHandler.removeCallbacks(
+                fadeRunnable
+        );
+
+        fadeHandler.postDelayed(
+                fadeRunnable,
+                FADE_DELAY
+        );
+    }
+
+    // ============================================================
+    // FADE
+    // ============================================================
+
+    private void fadeScrollbar() {
+
+        if (draggingThumb) {
+            return;
+        }
+
+        if (scrollbarContainer == null) {
+            return;
+        }
+
+        scrollbarContainer
+                .animate()
+                .alpha(0f)
+                .setDuration(
+                        FADE_OUT_DURATION
+                )
+                .start();
+    }
+
+    // ============================================================
+    // PUBLIC SHOW
+    // ============================================================
+
+    public void show() {
+
+        showScrollbar();
+
+    }
+
+    // ============================================================
+    // PUBLIC HIDE
+    // ============================================================
+
+    public void hide() {
+
+        fadeHandler.removeCallbacks(
+                fadeRunnable
+        );
+
+        if (scrollbarContainer != null) {
+
+            scrollbarContainer
+                    .animate()
+                    .alpha(0f)
+                    .setDuration(
+                            FADE_OUT_DURATION
+                    )
+                    .start();
+        }
+    }
+
+    // ============================================================
+    // SET THUMB COLOR
+    // ============================================================
+
+    public void setThumbColor(
+            int color
+    ) {
+
+        if (thumb == null) {
+            return;
+        }
+
+        thumb.setBackground(
+                createRoundedDrawable(
+                        color,
+                        THUMB_RADIUS_DP
+                )
+        );
+    }
+
+    // ============================================================
+    // SET TRACK COLOR
+    // ============================================================
+
+    public void setTrackColor(
+            int color
+    ) {
+
+        if (track == null) {
+            return;
+        }
+
+        track.setBackground(
+                createRoundedDrawable(
+                        color,
+                        TRACK_RADIUS_DP
+                )
+        );
+    }
+
+    // ============================================================
+    // SET BAR HEIGHT
+    // ============================================================
+
+    public void setBarHeight(
+            int dpHeight
+    ) {
+
+        barHeight =
+                Math.max(
+                        1,
+                        dp(dpHeight)
+                );
+
+        updateBarLayout();
+
+    }
+
+    // ============================================================
+    // SET THUMB HEIGHT
+    // ============================================================
+
+    public void setThumbHeight(
+            int dpHeight
+    ) {
+
+        thumbHeight =
+                Math.max(
+                        1,
+                        dp(dpHeight)
+                );
+
+        if (thumb != null) {
+
+            ViewGroup.LayoutParams params =
+                    thumb.getLayoutParams();
+
+            params.height =
+                    thumbHeight;
+
+            thumb.setLayoutParams(
+                    params
+            );
+        }
+
+        updateThumbFromScroll();
+    }
+
+    // ============================================================
+    // SET BAR WIDTH
+    // ============================================================
+
+    public void setBarWidth(
+            int dpWidth
+    ) {
+
+        barWidth =
+                Math.max(
+                        1,
+                        dp(dpWidth)
+                );
+
+        updateBarLayout();
+    }
+
+    // ============================================================
+    // UPDATE BAR LAYOUT
+    // ============================================================
+
+    private void updateBarLayout() {
+
+        LayoutParams rootParams =
+                new LayoutParams(
+                        barWidth,
+                        barHeight
+                );
+
+        rootParams.gravity =
+                Gravity.CENTER;
+
+        setLayoutParams(
+                rootParams
+        );
+
+        if (scrollbarContainer != null) {
+
+            ViewGroup.LayoutParams
+                    containerParams =
+                    scrollbarContainer
+                            .getLayoutParams();
+
+            containerParams.width =
+                    barWidth;
+
+            containerParams.height =
+                    barHeight;
+
+            scrollbarContainer
+                    .setLayoutParams(
+                            containerParams
+                    );
+        }
+
+        if (track != null) {
+
+            ViewGroup.LayoutParams
+                    trackParams =
+                    track.getLayoutParams();
+
+            trackParams.height =
+                    barHeight;
+
+            track.setLayoutParams(
+                    trackParams
+            );
+        }
+
+        updateThumbFromScroll();
+    }
+
+    // ============================================================
+    // SET FADE DELAY
+    // ============================================================
+
+    public void setFadeDelay(
+            int milliseconds
+    ) {
+
+        fadeHandler.removeCallbacks(
+                fadeRunnable
+        );
+
+        fadeHandler.postDelayed(
+                fadeRunnable,
+                Math.max(
+                        0,
+                        milliseconds
+                )
+        );
+    }
+
+    // ============================================================
+    // SET FADE DURATION
+    // ============================================================
+
+    public void setFadeDuration(
+            int milliseconds
+    ) {
+
+        // Kept as a public API for compatibility.
+        //
+        // Default fade duration is controlled by
+        // FADE_OUT_DURATION.
+        //
+        // Existing behavior remains stable.
+    }
+
+    // ============================================================
+    // CLEANUP
+    // ============================================================
+
+    public void detach() {
+
+        fadeHandler.removeCallbacks(
+                fadeRunnable
+        );
+
+        stopScrollAnimation();
+
+        removePreviousScrollListener();
+
+        scrollChangedListener =
+                null;
+
+        scrollView =
+                null;
+    }
+
+    // ============================================================
+    // DP CONVERSION
+    // ============================================================
+
+    private int dp(
+            int value
+    ) {
+
+        return (int)
+                (
+                        value *
+                        getResources()
+                                .getDisplayMetrics()
+                                .density
+                        + 0.5f
+                );
+    }
+
+    // ============================================================
+    // ARROW DRAWABLE
+    // ============================================================
+
+    private static class ArrowDrawable
+            extends Drawable {
+
+        private final Paint paint;
+
+        private final boolean up;
+
+        ArrowDrawable(
+                int color,
+                boolean up
+        ) {
+
+            this.up = up;
+
+            paint =
+                    new Paint(
+                            Paint.ANTI_ALIAS_FLAG
+                    );
+
+            paint.setColor(
+                    color
+            );
+
+            paint.setStyle(
+                    Paint.Style.STROKE
+            );
+
+            paint.setStrokeWidth(
+                    3.2f
+            );
+
+            paint.setStrokeCap(
+                    Paint.Cap.ROUND
+            );
+
+            paint.setStrokeJoin(
+                    Paint.Join.ROUND
+            );
+        }
+
+        @Override
+        public void draw(
+                Canvas canvas
+        ) {
+
+            float width =
+                    getBounds().width();
+
+            float height =
+                    getBounds().height();
+
+            float centerX =
+                    width / 2f;
+
+            float centerY =
+                    height / 2f;
+
+            Path path =
+                    new Path();
+
+            if (up) {
+
+                path.moveTo(
+                        centerX - 8,
+                        centerY + 4
+                );
+
+                path.lineTo(
+                        centerX,
+                        centerY - 5
+                );
+
+                path.lineTo(
+                        centerX + 8,
+                        centerY + 4
+                );
+
+            } else {
+
+                path.moveTo(
+                        centerX - 8,
+                        centerY - 4
+                );
+
+                path.lineTo(
+                        centerX,
+                        centerY + 5
+                );
+
+                path.lineTo(
+                        centerX + 8,
+                        centerY - 4
+                );
+            }
+
+            canvas.drawPath(
+                    path,
+                    paint
+            );
+        }
+
+        @Override
+        public void setAlpha(
+                int alpha
+        ) {
+
+            paint.setAlpha(
+                    alpha
+            );
+        }
+
+        @Override
+        public void setColorFilter(
+                android.graphics.ColorFilter filter
+        ) {
+
+            paint.setColorFilter(
+                    filter
+            );
+        }
+
+        @Override
+        public int getOpacity() {
+
+            return PixelFormat.TRANSLUCENT;
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+
+            return 40;
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+
+            return 40;
+        }
+    }
+}
