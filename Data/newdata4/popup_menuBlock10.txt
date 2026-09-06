@@ -124,14 +124,14 @@ final float popupDensity =
 
 final int popupWidth =
         (int)(
-                220 *
+                152 *
                 popupDensity
         );
 
 
 final int popupButtonHeight =
         (int)(
-                50 *
+                40 *
                 popupDensity
         );
 
@@ -152,10 +152,10 @@ popupLayout.setOrientation(
 
 
 popupLayout.setPadding(
-        (int)(16 * popupDensity),
-        (int)(8 * popupDensity),
-        (int)(16 * popupDensity),
-        (int)(8 * popupDensity)
+    (int)(16 * popupDensity),
+    (int)(4 * popupDensity),
+    (int)(16 * popupDensity),
+    (int)(4 * popupDensity)
 );
 
 
@@ -169,7 +169,11 @@ final android.graphics.drawable.GradientDrawable
 
 
 popupBackground.setColor(
-        android.graphics.Color.WHITE
+        android.graphics.Color.rgb(
+                224,
+                242,
+                241
+        )
 );
 
 
@@ -396,6 +400,42 @@ popupLayout.addView(
                 popupButtonHeight
         )
 );
+
+
+// TEXT SIZE //
+final float fontSize = 20;
+
+copyButton.setTextSize(fontSize);
+shareButton.setTextSize(fontSize);
+exportButton.setTextSize(fontSize);
+selectAllButton.setTextSize(fontSize);
+deselectAllButton.setTextSize(fontSize);
+
+final int buttonGravity = Gravity.CENTER;
+final int buttonPadding = (int)(4 * popupDensity);
+
+copyButton.setGravity(buttonGravity);
+shareButton.setGravity(buttonGravity);
+exportButton.setGravity(buttonGravity);
+selectAllButton.setGravity(buttonGravity);
+deselectAllButton.setGravity(buttonGravity);
+
+copyButton.setPadding(0, buttonPadding, 0, buttonPadding);
+shareButton.setPadding(0, buttonPadding, 0, buttonPadding);
+exportButton.setPadding(0, buttonPadding, 0, buttonPadding);
+selectAllButton.setPadding(0, buttonPadding, 0, buttonPadding);
+deselectAllButton.setPadding(0, buttonPadding, 0, buttonPadding);
+
+
+/*
+final int buttonGravity = Gravity.CENTER;
+
+copyButton.setGravity(buttonGravity);
+shareButton.setGravity(buttonGravity);
+exportButton.setGravity(buttonGravity);
+selectAllButton.setGravity(buttonGravity);
+deselectAllButton.setGravity(buttonGravity);
+*/
 
 
 // ============================================================
@@ -904,6 +944,34 @@ exportButton.setOnClickListener(
 // SHOW POPUP
 // ============================================================
 
+
+/*
 popupWindow.showAsDropDown(
         popupRecordsContainer
 );
+*/
+
+
+/*
+
+1 = Top-right
+2 = Top-center
+3 = Center
+4 = Bottom-right
+
+1 → Left
+2 → Right
+3 → Top
+4 → Bottom
+*/
+
+int location = 2;
+
+if (location == 1)
+    popupWindow.showAtLocation(popupRecordsContainer, Gravity.LEFT | Gravity.CENTER_VERTICAL, 20, 20);
+else if (location == 2)
+    popupWindow.showAtLocation(popupRecordsContainer, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 20, 50);
+else if (location == 3)
+    popupWindow.showAtLocation(popupRecordsContainer, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 20, 20);
+else
+    popupWindow.showAtLocation(popupRecordsContainer, Gravity.RIGHT | Gravity.BOTTOM, 20, 20);

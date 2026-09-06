@@ -132,13 +132,15 @@ for (
 
 // ============================================================
 // COLORS
+//
+// SELECTED = PRIMARY TEAL #009688
 // ============================================================
 
 final int BLUE =
         android.graphics.Color.rgb(
-                33,
+                0,
                 150,
-                243
+                136
         );
 
 final int WHITE =
@@ -164,7 +166,7 @@ final int[] lastIndex =
 
 
 // ============================================================
-// CLEAR ALL BLUE
+// CLEAR ALL SELECTION COLOR
 // ============================================================
 
 final Runnable clearBlue =
@@ -204,7 +206,7 @@ final Runnable clearBlue =
 // ============================================================
 // DESELECT ALL
 //
-// THIS IS THE COMPLETE DESELECT-ALL LOGIC.
+// COMPLETE DESELECT-ALL LOGIC STAYS HERE.
 // ============================================================
 
 final Runnable deselectAll =
@@ -229,7 +231,7 @@ final Runnable deselectAll =
 // ============================================================
 // SELECT ALL
 //
-// THIS IS THE COMPLETE SELECT-ALL LOGIC.
+// COMPLETE SELECT-ALL LOGIC STAYS HERE.
 // ============================================================
 
 final Runnable selectAll =
@@ -281,16 +283,9 @@ final Runnable selectAll =
 // ============================================================
 // CONNECTION BRIDGE
 //
-// IMPORTANT:
+// Popup does NOT contain Select All/Deselect All logic.
 //
-// The Popup does NOT contain Select All logic.
-//
-// It only retrieves these existing Runnable objects:
-//
-// selectAll
-// deselectAll
-//
-// The actual logic above remains completely inside SELECTION.
+// It only gets these existing Runnable objects from here.
 // ============================================================
 
 final java.util.HashMap<String, Object>
@@ -342,7 +337,9 @@ for (
             i;
 
 
-    cell.setClickable(true);
+    cell.setClickable(
+            true
+    );
 
 
     // ========================================================
