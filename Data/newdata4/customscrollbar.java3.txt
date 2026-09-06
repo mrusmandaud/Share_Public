@@ -51,36 +51,21 @@ public class CustomScrollbar extends FrameLayout {
     private static final int ARROW_RADIUS_DP = 8;
 
     // =========================================================
-    // GEOMETRY
+    // THUMB CLEARANCE FROM ARROWS
     // =========================================================
 
     /*
-     * The arrow is 16dp wide while the scrollbar is 10dp wide.
+     * 16dp arrow bowl + 2dp arrow margin = 18dp.
      *
-     * Difference:
-     *
-     * 16 - 10 = 6dp
-     *
-     * Therefore 3dp is required on each side when the arrow
-     * is centered on the scrollbar.
-     *
-     * The root is positioned 5dp from the screen edge and
-     * the main scrollbar is moved 3dp inward.
-     *
-     * Result:
-     *
-     * Screen edge
-     *     |
-     *     | 5dp
-     *     |<---- root edge
-     *     |
-     *     | 3dp
-     *     |<---- main scrollbar right edge
-     *     |
-     *     | 8dp total from screen edge
-     *
-     * This lets the complete 16dp arrow fit without clipping.
+     * The thumb is therefore never allowed to enter
+     * the 18dp area occupied by either arrow.
      */
+    private static final int THUMB_TOP_LIMIT_DP = 18;
+    private static final int THUMB_BOTTOM_LIMIT_DP = 18;
+
+    // =========================================================
+    // GEOMETRY
+    // =========================================================
 
     private static final int ROOT_RIGHT_MARGIN_DP = 5;
 
@@ -190,7 +175,6 @@ public class CustomScrollbar extends FrameLayout {
 
                 @Override
                 public void run() {
-
                     fadeScrollbar();
                 }
             };
@@ -231,19 +215,6 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private void buildUI() {
-
-        /*
-         * 40dp root is used for the invisible touch area.
-         *
-         * Root itself is positioned 5dp from the screen edge.
-         *
-         * Main scrollbar is moved 3dp inward.
-         *
-         * Therefore:
-         *
-         * Main scrollbar right edge =
-         * 5dp + 3dp = 8dp from screen edge.
-         */
 
         FrameLayout.LayoutParams rootParams =
                 new FrameLayout.LayoutParams(
@@ -290,14 +261,6 @@ public class CustomScrollbar extends FrameLayout {
                 Gravity.TOP |
                 Gravity.RIGHT;
 
-        /*
-         * Move the 10dp main scrollbar 3dp inward.
-         *
-         * Root right edge = 5dp from screen edge.
-         *
-         * Main bar right edge =
-         * 5dp + 3dp = 8dp from screen edge.
-         */
         mainBarParams.rightMargin =
                 dp(MAIN_BAR_INSET_RIGHT_DP);
 
@@ -369,7 +332,7 @@ public class CustomScrollbar extends FrameLayout {
         );
 
         // =====================================================
-        // 40DP INVISIBLE TOUCH AREA
+        // INVISIBLE 40DP TOUCH AREA
         // =====================================================
 
         thumbTouchArea =
@@ -385,15 +348,6 @@ public class CustomScrollbar extends FrameLayout {
                         thumbHeight
                 );
 
-        /*
-         * Same right edge as main scrollbar.
-         *
-         * Main scrollbar right edge is 8dp from screen.
-         *
-         * Touch area therefore also ends at 8dp.
-         *
-         * Its additional width extends LEFT.
-         */
         touchParams.gravity =
                 Gravity.TOP |
                 Gravity.RIGHT;
@@ -423,20 +377,6 @@ public class CustomScrollbar extends FrameLayout {
                 Gravity.TOP |
                 Gravity.RIGHT;
 
-        /*
-         * Main scrollbar center:
-         *
-         * Root right edge
-         * - 3dp inset
-         * - 5dp half of scrollbar
-         *
-         * Arrow half width = 8dp.
-         *
-         * Therefore arrow right edge reaches the root right
-         * edge exactly.
-         *
-         * No clipping.
-         */
         topParams.rightMargin =
                 dp(0);
 
@@ -516,14 +456,6 @@ public class CustomScrollbar extends FrameLayout {
                     Gravity.RIGHT |
                     Gravity.BOTTOM;
 
-            /*
-             * Root = 5dp from screen edge.
-             *
-             * Main scrollbar = another 3dp inward.
-             *
-             * Final visible scrollbar right edge =
-             * exactly 8dp from screen edge.
-             */
             params.rightMargin =
                     dp(ROOT_RIGHT_MARGIN_DP);
 
@@ -613,7 +545,6 @@ public class CustomScrollbar extends FrameLayout {
                     ) {
 
                         if (scrollView == null) {
-
                             return false;
                         }
 
@@ -706,37 +637,52 @@ public class CustomScrollbar extends FrameLayout {
                 getAvailableThumbTravel();
 
         if (available <= 0) {
-
             return;
         }
 
+        int topLimit =
+                dp(THUMB_TOP_LIMIT_DP);
+
+        float minimumY =
+                topLimit;
+
+        float maximumY =
+                topLimit +
+                available;
+
         y =
                 Math.max(
-                        0,
+                        minimumY,
                         Math.min(
                                 y,
-                                available
+                                maximumY
                         )
                 );
 
         thumb.setY(y);
 
-        /*
-         * Touch area follows the thumb.
-         */
         thumbTouchArea.setY(y);
 
         int range =
                 getScrollRange();
 
         if (range <= 0) {
-
             return;
         }
 
         float percent =
-                y /
+                (y - topLimit)
+                /
                 (float) available;
+
+        percent =
+                Math.max(
+                        0f,
+                        Math.min(
+                                percent,
+                                1f
+                        )
+                );
 
         scrollView.scrollTo(
                 0,
@@ -753,7 +699,6 @@ public class CustomScrollbar extends FrameLayout {
     private void updateThumbFromScroll() {
 
         if (scrollView == null) {
-
             return;
         }
 
@@ -762,9 +707,12 @@ public class CustomScrollbar extends FrameLayout {
 
         if (range <= 0) {
 
-            thumb.setY(0);
+            int topLimit =
+                    dp(THUMB_TOP_LIMIT_DP);
 
-            thumbTouchArea.setY(0);
+            thumb.setY(topLimit);
+
+            thumbTouchArea.setY(topLimit);
 
             return;
         }
@@ -773,7 +721,6 @@ public class CustomScrollbar extends FrameLayout {
                 getAvailableThumbTravel();
 
         if (available <= 0) {
-
             return;
         }
 
@@ -791,8 +738,15 @@ public class CustomScrollbar extends FrameLayout {
                         )
                 );
 
+        float topLimit =
+                dp(THUMB_TOP_LIMIT_DP);
+
         float y =
-                percent * available;
+                topLimit +
+                (
+                        percent *
+                        available
+                );
 
         thumb.setY(y);
 
@@ -805,10 +759,24 @@ public class CustomScrollbar extends FrameLayout {
 
     private int getAvailableThumbTravel() {
 
+        int topLimit =
+                dp(THUMB_TOP_LIMIT_DP);
+
+        int bottomLimit =
+                dp(THUMB_BOTTOM_LIMIT_DP);
+
+        int maximumThumbY =
+                barHeight
+                -
+                bottomLimit
+                -
+                thumbHeight;
+
         return Math.max(
                 0,
-                barHeight -
-                thumbHeight
+                maximumThumbY
+                -
+                topLimit
         );
     }
 
@@ -822,7 +790,6 @@ public class CustomScrollbar extends FrameLayout {
                 scrollView == null ||
                 scrollView.getChildCount() == 0
         ) {
-
             return 0;
         }
 
@@ -886,7 +853,6 @@ public class CustomScrollbar extends FrameLayout {
     private void pageUp() {
 
         if (scrollView == null) {
-
             return;
         }
 
@@ -920,7 +886,6 @@ public class CustomScrollbar extends FrameLayout {
     private void pageDown() {
 
         if (scrollView == null) {
-
             return;
         }
 
@@ -956,7 +921,6 @@ public class CustomScrollbar extends FrameLayout {
     ) {
 
         if (scrollView == null) {
-
             return;
         }
 
@@ -995,7 +959,6 @@ public class CustomScrollbar extends FrameLayout {
                     ) {
 
                         if (scrollView == null) {
-
                             return;
                         }
 
@@ -1037,7 +1000,7 @@ public class CustomScrollbar extends FrameLayout {
     }
 
     // =========================================================
-    // THUMB PRESSED
+    // PRESSED THUMB
     // =========================================================
 
     private void setThumbPressed(
@@ -1093,7 +1056,6 @@ public class CustomScrollbar extends FrameLayout {
     private void fadeScrollbar() {
 
         if (draggingThumb) {
-
             return;
         }
 
@@ -1311,7 +1273,9 @@ public class CustomScrollbar extends FrameLayout {
             params.height =
                     thumbHeight;
 
-            thumb.setLayoutParams(params);
+            thumb.setLayoutParams(
+                    params
+            );
         }
 
         if (thumbTouchArea != null) {
@@ -1324,7 +1288,9 @@ public class CustomScrollbar extends FrameLayout {
                     thumbHeight;
 
             thumbTouchArea
-                    .setLayoutParams(params);
+                    .setLayoutParams(
+                            params
+                    );
         }
 
         updateThumbFromScroll();
@@ -1414,7 +1380,6 @@ public class CustomScrollbar extends FrameLayout {
                 scrollView == null ||
                 scrollChangedListener == null
         ) {
-
             return;
         }
 
