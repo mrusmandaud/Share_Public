@@ -36,15 +36,15 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private static final int ARROW_SIZE_DP = 16;
-    private static final int ARROW_MARGIN_DP = 2;
+    private static final int ARROW_MARGIN_DP = 0;
     private static final int ARROW_RADIUS_DP = 8;
 
     // =========================================================
     // THUMB CLEARANCE FROM ARROWS
     // =========================================================
 
-    private static final int THUMB_TOP_LIMIT_DP = 18;
-    private static final int THUMB_BOTTOM_LIMIT_DP = 18;
+    private static final int THUMB_TOP_LIMIT_DP = 16;
+    private static final int THUMB_BOTTOM_LIMIT_DP = 16;
 
     // =========================================================
     // GEOMETRY
@@ -1419,7 +1419,6 @@ public class CustomScrollbar extends FrameLayout {
                     Paint.Style.STROKE
             );
 
-            // Slightly bolder arrow.
             paint.setStrokeWidth(
                     2.4f
             );
@@ -1453,7 +1452,6 @@ public class CustomScrollbar extends FrameLayout {
             Path path =
                     new Path();
 
-            // Slightly bigger arrow.
             if (up) {
 
                 path.moveTo(
