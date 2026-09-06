@@ -23,19 +23,11 @@ import android.widget.ScrollView;
 
 public class CustomScrollbar extends FrameLayout {
 
-    // =========================================================
-    // MAIN SCROLLBAR
-    // =========================================================
-
     private static final int BAR_HEIGHT_DP = 600;
 
     private static final int TRACK_WIDTH_DP = 10;
     private static final int THUMB_WIDTH_DP = 10;
     private static final int THUMB_HEIGHT_DP = 200;
-
-    // =========================================================
-    // INVISIBLE THUMB TOUCH AREA
-    // =========================================================
 
     private static final int TOUCH_WIDTH_DP = 40;
 
@@ -44,22 +36,13 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private static final int ARROW_SIZE_DP = 16;
-
-    // Arrows slightly lower.
     private static final int ARROW_MARGIN_DP = 2;
-
     private static final int ARROW_RADIUS_DP = 8;
 
     // =========================================================
     // THUMB CLEARANCE FROM ARROWS
     // =========================================================
 
-    /*
-     * 16dp arrow bowl + 2dp arrow margin = 18dp.
-     *
-     * The thumb is therefore never allowed to enter
-     * the 18dp area occupied by either arrow.
-     */
     private static final int THUMB_TOP_LIMIT_DP = 18;
     private static final int THUMB_BOTTOM_LIMIT_DP = 18;
 
@@ -68,7 +51,6 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private static final int ROOT_RIGHT_MARGIN_DP = 5;
-
     private static final int MAIN_BAR_INSET_RIGHT_DP = 3;
 
     // =========================================================
@@ -98,7 +80,6 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private static final int TRACK_RADIUS_DP = 5;
-
     private static final int THUMB_RADIUS_DP = 5;
 
     // =========================================================
@@ -106,7 +87,6 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private static final float PAGE_FACTOR = 0.85f;
-
     private static final int SCROLL_DURATION = 220;
 
     // =========================================================
@@ -114,9 +94,7 @@ public class CustomScrollbar extends FrameLayout {
     // =========================================================
 
     private static final int FADE_DELAY = 1500;
-
     private static final int FADE_IN_DURATION = 150;
-
     private static final int FADE_OUT_DURATION = 350;
 
     // =========================================================
@@ -175,6 +153,7 @@ public class CustomScrollbar extends FrameLayout {
 
                 @Override
                 public void run() {
+
                     fadeScrollbar();
                 }
             };
@@ -415,10 +394,6 @@ public class CustomScrollbar extends FrameLayout {
                 bottomButton,
                 bottomParams
         );
-
-        // =====================================================
-        // TOUCH
-        // =====================================================
 
         setupThumbTouch();
 
@@ -1444,8 +1419,9 @@ public class CustomScrollbar extends FrameLayout {
                     Paint.Style.STROKE
             );
 
+            // Slightly bolder arrow.
             paint.setStrokeWidth(
-                    2f
+                    2.4f
             );
 
             paint.setStrokeCap(
@@ -1477,38 +1453,39 @@ public class CustomScrollbar extends FrameLayout {
             Path path =
                     new Path();
 
+            // Slightly bigger arrow.
             if (up) {
 
                 path.moveTo(
-                        x - 5f,
-                        y + 3.5f
+                        x - 6.5f,
+                        y + 4.5f
                 );
 
                 path.lineTo(
                         x,
-                        y - 3.5f
+                        y - 4.5f
                 );
 
                 path.lineTo(
-                        x + 5f,
-                        y + 3.5f
+                        x + 6.5f,
+                        y + 4.5f
                 );
 
             } else {
 
                 path.moveTo(
-                        x - 5f,
-                        y - 3.5f
+                        x - 6.5f,
+                        y - 4.5f
                 );
 
                 path.lineTo(
                         x,
-                        y + 3.5f
+                        y + 4.5f
                 );
 
                 path.lineTo(
-                        x + 5f,
-                        y - 3.5f
+                        x + 6.5f,
+                        y - 4.5f
                 );
             }
 
@@ -1543,13 +1520,13 @@ public class CustomScrollbar extends FrameLayout {
         @Override
         public int getIntrinsicWidth() {
 
-            return 10;
+            return 13;
         }
 
         @Override
         public int getIntrinsicHeight() {
 
-            return 10;
+            return 9;
         }
     }
 }
