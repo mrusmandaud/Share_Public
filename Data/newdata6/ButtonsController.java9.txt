@@ -1,0 +1,2031 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+public final class ButtonsController {
+
+    private static final String RECORDS_FILE =
+            "myrecords.txt";
+
+    private static final String PRODUCTS_PREF =
+            "products_state";
+
+    private static final String PRODUCTS_KEY =
+            "products";
+
+    private static final int SELECTED_COLOR =
+            Color.rgb(
+                    0,
+                    150,
+                    136
+            );
+
+    private static final int WHITE =
+            Color.WHITE;
+
+    private static final int BLACK =
+            Color.BLACK;
+
+    private static final Map<
+            Activity,
+            SelectionState
+            > SELECTION_STATES =
+            new WeakHashMap<
+                    Activity,
+                    SelectionState
+                    >();
+
+    private ButtonsController() {
+    }
+
+
+    // ============================================================
+    // MAIN → NEW RECORD
+    // ============================================================
+
+    public static void newRecord(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent =
+                new Intent(
+                        activity,
+                        NewrecordActivity.class
+                );
+
+        activity.startActivity(intent);
+
+        activity.overridePendingTransition(
+                0,
+                0
+        );
+    }
+
+
+    // ============================================================
+    // MAIN → MY RECORDS
+    // ============================================================
+
+    public static void myRecords(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent =
+                new Intent(
+                        activity,
+                        MyrecordsActivity.class
+                );
+
+        activity.startActivity(intent);
+
+        activity.overridePendingTransition(
+                0,
+                0
+        );
+    }
+
+
+    // ============================================================
+    // EXPORT
+    // ============================================================
+
+    public static void export(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            SettingsActivity.class
+                    );
+
+            intent.putExtra(
+                    "open_export",
+                    true
+            );
+
+            activity.startActivity(intent);
+
+            activity.overridePendingTransition(
+                    0,
+                    0
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Export is not available",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // SIDEBAR → SETTINGS
+    // ============================================================
+
+    public static void settings(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent =
+                new Intent(
+                        activity,
+                        SettingsActivity.class
+                );
+
+        activity.startActivity(intent);
+
+        activity.overridePendingTransition(
+                0,
+                0
+        );
+    }
+
+
+    // ============================================================
+    // BACK
+    // ============================================================
+
+    public static void back(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        activity.finish();
+    }
+
+
+    // ============================================================
+    // BACK TO SETTINGS
+    // ============================================================
+
+    public static void backToSettings(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent =
+                new Intent(
+                        activity,
+                        SettingsActivity.class
+                );
+
+        activity.startActivity(intent);
+
+        activity.finish();
+    }
+
+
+    // ============================================================
+    // SAVE RECORD
+    // ============================================================
+
+    public static boolean saveRecord(
+            Activity activity,
+            EditText nameView,
+            EditText phoneView,
+            EditText addressView,
+            Spinner productSpinner,
+            CheckBox confirm
+    ) {
+
+        if (activity == null) {
+            return false;
+        }
+
+        if (confirm == null
+                || !confirm.isChecked()) {
+
+            Toast.makeText(
+                    activity,
+                    "Please confirm and agree to save",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        String name = "";
+
+        if (nameView != null
+                && nameView.getText() != null) {
+
+            name =
+                    nameView
+                            .getText()
+                            .toString()
+                            .trim();
+        }
+
+
+        String phone = "";
+
+        if (phoneView != null
+                && phoneView.getText() != null) {
+
+            phone =
+                    phoneView
+                            .getText()
+                            .toString()
+                            .trim();
+        }
+
+
+        String address = "";
+
+        if (addressView != null
+                && addressView.getText() != null) {
+
+            address =
+                    addressView
+                            .getText()
+                            .toString()
+                            .trim();
+        }
+
+
+        String product = "";
+
+        if (productSpinner != null
+                && productSpinner.getSelectedItem() != null) {
+
+            product =
+                    productSpinner
+                            .getSelectedItem()
+                            .toString()
+                            .trim();
+        }
+
+
+        if (name.length() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "Please enter Name",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        if (phone.length() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "Please enter Phone",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        if (address.length() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "Please enter Address",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        if (product.length() == 0
+                || product.equalsIgnoreCase(
+                        "Select Product"
+                )) {
+
+            Toast.makeText(
+                    activity,
+                    "Please select Product",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        String record =
+                name
+                        + " | "
+                        + phone
+                        + " | "
+                        + address
+                        + " | "
+                        + product
+                        + "\n";
+
+
+        FileOutputStream output = null;
+
+
+        try {
+
+            output =
+                    activity.openFileOutput(
+                            RECORDS_FILE,
+                            Context.MODE_APPEND
+                    );
+
+            output.write(
+                    record.getBytes("UTF-8")
+            );
+
+            output.flush();
+
+
+            Toast.makeText(
+                    activity,
+                    "Record saved successfully",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+            clearRecord(
+                    nameView,
+                    phoneView,
+                    addressView,
+                    productSpinner,
+                    confirm
+            );
+
+
+            return true;
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to save record",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+
+
+        } finally {
+
+            if (output != null) {
+
+                try {
+
+                    output.close();
+
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+
+    // ============================================================
+    // CLEAR RECORD
+    // ============================================================
+
+    public static void clearRecord(
+            EditText nameView,
+            EditText phoneView,
+            EditText addressView,
+            Spinner productSpinner,
+            CheckBox confirm
+    ) {
+
+        if (nameView != null) {
+            nameView.setText("");
+        }
+
+        if (phoneView != null) {
+            phoneView.setText("");
+        }
+
+        if (addressView != null) {
+            addressView.setText("");
+        }
+
+
+        if (productSpinner != null
+                && productSpinner.getAdapter() != null
+                && productSpinner.getAdapter().getCount() > 0) {
+
+            productSpinner.setSelection(0);
+        }
+
+
+        if (confirm != null) {
+            confirm.setChecked(false);
+        }
+    }
+
+
+    // ============================================================
+    // GET RECORDS
+    // ============================================================
+
+    public static ArrayList<String> getRecords(
+            Activity activity
+    ) {
+
+        ArrayList<String> records =
+                new ArrayList<String>();
+
+
+        if (activity == null) {
+            return records;
+        }
+
+
+        BufferedReader reader = null;
+
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+
+            reader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    input,
+                                    "UTF-8"
+                            )
+                    );
+
+
+            String line;
+
+
+            while (
+                    (line = reader.readLine()) != null
+            ) {
+
+                line =
+                        line.trim();
+
+
+                if (line.length() > 0) {
+
+                    records.add(line);
+                }
+            }
+
+
+        } catch (Exception e) {
+
+        } finally {
+
+            if (reader != null) {
+
+                try {
+
+                    reader.close();
+
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+
+        return records;
+    }
+
+
+    // ============================================================
+    // SELECTION STATE
+    // ============================================================
+
+    private static class SelectionState {
+
+        final ArrayList<
+                ArrayList<TextView>
+                > records;
+
+
+        final ArrayList<TextView>
+                cells;
+
+
+        int firstIndex =
+                -1;
+
+
+        int lastIndex =
+                -1;
+
+
+        SelectionState(
+                ArrayList<
+                        ArrayList<TextView>
+                        > records
+        ) {
+
+            this.records =
+                    records;
+
+
+            this.cells =
+                    new ArrayList<TextView>();
+
+
+            if (records == null) {
+                return;
+            }
+
+
+            for (
+                    int r = 0;
+                    r < records.size();
+                    r++
+            ) {
+
+                ArrayList<TextView> record =
+                        records.get(r);
+
+
+                if (record == null) {
+                    continue;
+                }
+
+
+                for (
+                        int c = 0;
+                        c < record.size();
+                        c++
+                ) {
+
+                    TextView cell =
+                            record.get(c);
+
+
+                    if (cell != null) {
+
+                        cells.add(cell);
+                    }
+                }
+            }
+        }
+    }
+
+
+    // ============================================================
+    // GET SELECTION STATE
+    // ============================================================
+
+    private static SelectionState getSelectionState(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+
+        return SELECTION_STATES.get(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // SELECTION
+    // ============================================================
+
+    @SuppressWarnings("unchecked")
+    public static void selection(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final LinearLayout
+                selectionContainer =
+                activity.findViewById(
+                        R.id.recordsContainer
+                );
+
+
+        if (selectionContainer == null) {
+            return;
+        }
+
+
+        Object selectionObject =
+                selectionContainer.getTag();
+
+
+        if (!(selectionObject
+                instanceof ArrayList)) {
+
+            return;
+        }
+
+
+        final ArrayList<
+                ArrayList<TextView>
+                > selectionRecords =
+                (ArrayList<
+                        ArrayList<TextView>
+                        >)
+                        selectionObject;
+
+
+        if (selectionRecords.size() == 0) {
+
+            SELECTION_STATES.remove(
+                    activity
+            );
+
+            return;
+        }
+
+
+        final SelectionState state =
+                new SelectionState(
+                        selectionRecords
+                );
+
+
+        if (state.cells.size() == 0) {
+
+            SELECTION_STATES.remove(
+                    activity
+            );
+
+            return;
+        }
+
+
+        SELECTION_STATES.put(
+                activity,
+                state
+        );
+
+
+        // ========================================================
+        // CLEAR ALL
+        // ========================================================
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            TextView cell =
+                    state.cells.get(i);
+
+
+            if (cell != null) {
+
+                cell.setBackgroundColor(
+                        WHITE
+                );
+
+                cell.setTextColor(
+                        BLACK
+                );
+            }
+        }
+
+
+        // ========================================================
+        // TAP HANDLERS
+        // ========================================================
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            final TextView cell =
+                    state.cells.get(i);
+
+
+            if (cell == null) {
+                continue;
+            }
+
+
+            final int index =
+                    i;
+
+
+            cell.setClickable(
+                    true
+            );
+
+
+            // ====================================================
+            // NORMAL TAP
+            // ====================================================
+
+            cell.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            SelectionState
+                                    currentState =
+                                    getSelectionState(
+                                            activity
+                                    );
+
+
+                            if (currentState == null) {
+                                return;
+                            }
+
+
+                            // FIRST CELL
+
+                            if (
+                                    currentState.firstIndex
+                                            == -1
+                            ) {
+
+                                clearSelection(
+                                        currentState
+                                );
+
+
+                                cell.setBackgroundColor(
+                                        SELECTED_COLOR
+                                );
+
+                                cell.setTextColor(
+                                        WHITE
+                                );
+
+
+                                currentState.firstIndex =
+                                        index;
+
+                                currentState.lastIndex =
+                                        index;
+
+
+                                return;
+                            }
+
+
+                            // SAME SINGLE CELL
+
+                            if (
+                                    currentState.firstIndex
+                                            == currentState.lastIndex
+
+                                    &&
+
+                                    index ==
+                                            currentState.firstIndex
+                            ) {
+
+                                deselectState(
+                                        currentState
+                                );
+
+                                return;
+                            }
+
+
+                            int currentStart =
+                                    currentState.firstIndex;
+
+
+                            int currentEnd =
+                                    currentState.lastIndex;
+
+
+                            if (
+                                    currentStart >
+                                            currentEnd
+                            ) {
+
+                                int temp =
+                                        currentStart;
+
+                                currentStart =
+                                        currentEnd;
+
+                                currentEnd =
+                                        temp;
+                            }
+
+
+                            // TAP INSIDE CURRENT RANGE
+
+                            if (
+                                    index >= currentStart
+                                    &&
+                                    index <= currentEnd
+                            ) {
+
+                                deselectState(
+                                        currentState
+                                );
+
+                                return;
+                            }
+
+
+                            // SECOND TAP
+
+                            int start =
+                                    currentState.firstIndex;
+
+
+                            int end =
+                                    index;
+
+
+                            if (start > end) {
+
+                                int temp =
+                                        start;
+
+                                start =
+                                        end;
+
+                                end =
+                                        temp;
+                            }
+
+
+                            clearSelection(
+                                    currentState
+                            );
+
+
+                            // INCLUSIVE RANGE
+
+                            for (
+                                    int x = start;
+                                    x <= end;
+                                    x++
+                            ) {
+
+                                if (
+                                        x < 0
+                                        ||
+                                        x >=
+                                                currentState.cells.size()
+                                ) {
+                                    continue;
+                                }
+
+
+                                TextView selected =
+                                        currentState.cells.get(
+                                                x
+                                        );
+
+
+                                if (selected != null) {
+
+                                    selected.setBackgroundColor(
+                                            SELECTED_COLOR
+                                    );
+
+                                    selected.setTextColor(
+                                            WHITE
+                                    );
+                                }
+                            }
+
+
+                            currentState.firstIndex =
+                                    start;
+
+                            currentState.lastIndex =
+                                    end;
+                        }
+                    }
+            );
+
+
+            // ====================================================
+            // LONG PRESS → POPUP
+            // ====================================================
+
+            cell.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+
+                        @Override
+                        public boolean onLongClick(
+                                View v
+                        ) {
+
+                            popupMenu(
+                                    activity
+                            );
+
+                            return true;
+                        }
+                    }
+            );
+        }
+    }
+
+
+    // ============================================================
+    // CLEAR SELECTION
+    // ============================================================
+
+    private static void clearSelection(
+            SelectionState state
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            TextView cell =
+                    state.cells.get(i);
+
+
+            if (cell != null) {
+
+                cell.setBackgroundColor(
+                        WHITE
+                );
+
+                cell.setTextColor(
+                        BLACK
+                );
+            }
+        }
+    }
+
+
+    // ============================================================
+    // DESELECT CURRENT STATE
+    // ============================================================
+
+    private static void deselectState(
+            SelectionState state
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        clearSelection(
+                state
+        );
+
+
+        state.firstIndex =
+                -1;
+
+
+        state.lastIndex =
+                -1;
+    }
+
+
+    // ============================================================
+    // SELECT ALL
+    // ============================================================
+
+    public static void selectAll(
+            Activity activity
+    ) {
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return;
+        }
+
+
+        if (state.cells.size() == 0) {
+            return;
+        }
+
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            TextView cell =
+                    state.cells.get(i);
+
+
+            if (cell != null) {
+
+                cell.setBackgroundColor(
+                        SELECTED_COLOR
+                );
+
+                cell.setTextColor(
+                        WHITE
+                );
+            }
+        }
+
+
+        state.firstIndex =
+                0;
+
+
+        state.lastIndex =
+                state.cells.size() - 1;
+    }
+
+
+    // ============================================================
+    // DESELECT ALL
+    // ============================================================
+
+    public static void deselectAll(
+            Activity activity
+    ) {
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return;
+        }
+
+
+        deselectState(
+                state
+        );
+    }
+
+
+    // ============================================================
+    // GET SELECTED TEXT
+    // ============================================================
+
+    private static String getSelectedText(
+            Activity activity
+    ) {
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return "";
+        }
+
+
+        StringBuilder selectedText =
+                new StringBuilder();
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            StringBuilder recordText =
+                    new StringBuilder();
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView cell =
+                        record.get(c);
+
+
+                if (cell == null) {
+                    continue;
+                }
+
+
+                boolean selected =
+                        false;
+
+
+                if (
+                        cell.getBackground()
+                                instanceof ColorDrawable
+                ) {
+
+                    ColorDrawable background =
+                            (ColorDrawable)
+                                    cell.getBackground();
+
+
+                    selected =
+                            background.getColor()
+                                    ==
+                                    SELECTED_COLOR;
+                }
+
+
+                if (!selected) {
+                    continue;
+                }
+
+
+                if (
+                        recordText.length() > 0
+                ) {
+
+                    recordText.append(
+                            " | "
+                    );
+                }
+
+
+                recordText.append(
+                        cell.getText()
+                                .toString()
+                );
+            }
+
+
+            if (
+                    recordText.length() > 0
+            ) {
+
+                if (
+                        selectedText.length() > 0
+                ) {
+
+                    selectedText.append(
+                            "\n"
+                    );
+                }
+
+
+                selectedText.append(
+                        recordText.toString()
+                );
+            }
+        }
+
+
+        return selectedText.toString();
+    }
+
+
+    // ============================================================
+    // COPY
+    // ============================================================
+
+    public static void copy(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        String selectedText =
+                getSelectedText(
+                        activity
+                );
+
+
+        if (
+                selectedText == null
+                ||
+                selectedText.length() == 0
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        ClipboardManager clipboard =
+                (ClipboardManager)
+                        activity.getSystemService(
+                                Context.CLIPBOARD_SERVICE
+                        );
+
+
+        if (clipboard == null) {
+
+            Toast.makeText(
+                    activity,
+                    "Clipboard unavailable",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        clipboard.setPrimaryClip(
+                ClipData.newPlainText(
+                        "Selected Records",
+                        selectedText
+                )
+        );
+
+
+        Toast.makeText(
+                activity,
+                "Copied",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    // ============================================================
+    // SHARE
+    // ============================================================
+
+    public static void share(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        String selectedText =
+                getSelectedText(
+                        activity
+                );
+
+
+        if (
+                selectedText == null
+                ||
+                selectedText.length() == 0
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        try {
+
+            Intent shareIntent =
+                    new Intent(
+                            Intent.ACTION_SEND
+                    );
+
+
+            shareIntent.setType(
+                    "text/plain"
+            );
+
+
+            shareIntent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    selectedText
+            );
+
+
+            activity.startActivity(
+                    Intent.createChooser(
+                            shareIntent,
+                            "Share"
+                    )
+            );
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to share",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // POPUP MENU
+    // ============================================================
+    //
+    // MATCHES popup_menu.xml EXACTLY:
+    //
+    // copyButton
+    // shareButton
+    // exportButton
+    // selectAllButton
+    // deselectAllButton
+    //
+    // ============================================================
+
+    public static void popupMenu(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+
+            Toast.makeText(
+                    activity,
+                    "Selection is not initialized",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        View popupView =
+                LayoutInflater
+                        .from(activity)
+                        .inflate(
+                                R.layout.popup_menu,
+                                null
+                        );
+
+
+        if (popupView == null) {
+            return;
+        }
+
+
+        final PopupWindow popupWindow =
+                new PopupWindow(
+                        popupView,
+                        dp(
+                                activity,
+                                300
+                        ),
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+
+        popupWindow.setBackgroundDrawable(
+                new ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+
+        popupWindow.setOutsideTouchable(
+                true
+        );
+
+
+        popupWindow.setFocusable(
+                true
+        );
+
+
+        popupWindow.setElevation(
+                dp(
+                        activity,
+                        12
+                )
+        );
+
+
+        // ========================================================
+        // COPY
+        // XML ID: copyButton
+        // ========================================================
+
+        View copyButton =
+                popupView.findViewById(
+                        R.id.copyButton
+                );
+
+
+        if (copyButton != null) {
+
+            copyButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            copy(
+                                    activity
+                            );
+
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // SHARE
+        // XML ID: shareButton
+        // ========================================================
+
+        View shareButton =
+                popupView.findViewById(
+                        R.id.shareButton
+                );
+
+
+        if (shareButton != null) {
+
+            shareButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            share(
+                                    activity
+                            );
+
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // EXPORT
+        // XML ID: exportButton
+        // ========================================================
+
+        View exportButton =
+                popupView.findViewById(
+                        R.id.exportButton
+                );
+
+
+        if (exportButton != null) {
+
+            exportButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            export(
+                                    activity
+                            );
+
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // SELECT ALL
+        // XML ID: selectAllButton
+        // ========================================================
+
+        View selectAllButton =
+                popupView.findViewById(
+                        R.id.selectAllButton
+                );
+
+
+        if (selectAllButton != null) {
+
+            selectAllButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            selectAll(
+                                    activity
+                            );
+
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // DESELECT ALL
+        // XML ID: deselectAllButton
+        // ========================================================
+
+        View deselectAllButton =
+                popupView.findViewById(
+                        R.id.deselectAllButton
+                );
+
+
+        if (deselectAllButton != null) {
+
+            deselectAllButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            deselectAll(
+                                    activity
+                            );
+
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // SHOW POPUP
+        // ========================================================
+
+        popupWindow.showAtLocation(
+                activity.getWindow()
+                        .getDecorView(),
+                Gravity.CENTER,
+                0,
+                0
+        );
+    }
+
+
+    // ============================================================
+    // DP HELPER
+    // ============================================================
+
+    private static int dp(
+            Activity activity,
+            int value
+    ) {
+
+        if (activity == null) {
+            return value;
+        }
+
+
+        float density =
+                activity
+                        .getResources()
+                        .getDisplayMetrics()
+                        .density;
+
+
+        return (int)(
+                value
+                        * density
+                        + 0.5f
+        );
+    }
+
+
+    // ============================================================
+    // GET PRODUCTS
+    // ============================================================
+
+    public static ArrayList<String> getProducts(
+            Activity activity
+    ) {
+
+        ArrayList<String> products =
+                new ArrayList<String>();
+
+
+        if (activity == null) {
+
+            products.add(
+                    "Select Product"
+            );
+
+            return products;
+        }
+
+
+        SharedPreferences preferences =
+                activity.getSharedPreferences(
+                        PRODUCTS_PREF,
+                        Context.MODE_PRIVATE
+                );
+
+
+        String saved =
+                preferences.getString(
+                        PRODUCTS_KEY,
+                        ""
+                );
+
+
+        if (
+                saved != null
+                &&
+                saved.trim().length() > 0
+        ) {
+
+            String[] values =
+                    saved.split(
+                            "\\|",
+                            -1
+                    );
+
+
+            for (
+                    String value :
+                    values
+            ) {
+
+                if (value == null) {
+                    continue;
+                }
+
+
+                value =
+                        value.trim();
+
+
+                if (
+                        value.length() > 0
+                ) {
+
+                    products.add(
+                            value
+                    );
+                }
+            }
+        }
+
+
+        if (products.size() == 0) {
+
+            products.add(
+                    "Select Product"
+            );
+        }
+
+
+        return products;
+    }
+
+
+    // ============================================================
+    // SAVE PRODUCTS
+    // ============================================================
+
+    public static void saveProducts(
+            Activity activity,
+            ArrayList<String> products
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        StringBuilder builder =
+                new StringBuilder();
+
+
+        if (products != null) {
+
+            for (
+                    String product :
+                    products
+            ) {
+
+                if (product == null) {
+                    continue;
+                }
+
+
+                product =
+                        product.trim();
+
+
+                if (
+                        product.length() == 0
+                ) {
+                    continue;
+                }
+
+
+                if (
+                        builder.length() > 0
+                ) {
+
+                    builder.append(
+                            "|"
+                    );
+                }
+
+
+                builder.append(
+                        product
+                );
+            }
+        }
+
+
+        activity
+                .getSharedPreferences(
+                        PRODUCTS_PREF,
+                        Context.MODE_PRIVATE
+                )
+                .edit()
+                .putString(
+                        PRODUCTS_KEY,
+                        builder.toString()
+                )
+                .apply();
+    }
+
+
+    // ============================================================
+    // ADD PRODUCT
+    // ============================================================
+
+    public static void addProduct(
+            Activity activity,
+            String product
+    ) {
+
+        if (activity == null
+                || product == null) {
+
+            return;
+        }
+
+
+        product =
+                product.trim();
+
+
+        if (
+                product.length() == 0
+        ) {
+
+            return;
+        }
+
+
+        ArrayList<String> products =
+                getProducts(
+                        activity
+                );
+
+
+        if (
+                products.size() == 1
+                &&
+                products.get(0)
+                        .equals(
+                                "Select Product"
+                        )
+        ) {
+
+            products.clear();
+        }
+
+
+        if (
+                !products.contains(
+                        product
+                )
+        ) {
+
+            products.add(
+                    product
+            );
+        }
+
+
+        saveProducts(
+                activity,
+                products
+        );
+    }
+
+
+    // ============================================================
+    // REMOVE PRODUCT
+    // ============================================================
+
+    public static void removeProduct(
+            Activity activity,
+            String product
+    ) {
+
+        if (activity == null
+                || product == null) {
+
+            return;
+        }
+
+
+        ArrayList<String> products =
+                getProducts(
+                        activity
+                );
+
+
+        products.remove(
+                product
+        );
+
+
+        saveProducts(
+                activity,
+                products
+        );
+    }
+
+
+    // ============================================================
+    // RECORD FILE EXISTS
+    // ============================================================
+
+    public static boolean recordsFileExists(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return false;
+        }
+
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+
+            input.close();
+
+
+            return true;
+
+
+        } catch (Exception e) {
+
+            return false;
+        }
+    }
+
+
+    // ============================================================
+    // GET FILE URI
+    // ============================================================
+
+    public static Uri getFileUri(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+
+        try {
+
+            return Uri.parse(
+                    activity
+                            .getFilesDir()
+                            .getAbsolutePath()
+            );
+
+
+        } catch (Exception e) {
+
+            return null;
+        }
+    }
+}
