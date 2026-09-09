@@ -1,0 +1,995 @@
+/*            
+ * ============================================================            
+ * REFRESH PRODUCT LIST            
+ * ============================================================            
+ */            
+        
+private static void refreshProducts(            
+        final SettingsActivity context            
+) {            
+        
+    if (productContainer == null) {            
+        return;            
+    }            
+        
+        
+    productContainer.removeAllViews();            
+        
+        
+    ArrayList<String> products =            
+            getProducts(            
+                    context            
+            );            
+        
+        
+    ArrayList<String> realProducts =            
+            new ArrayList<String>();            
+        
+        
+    /*            
+     * IMPORTANT:            
+     *            
+     * Select Products is removed            
+     * from the real product list.            
+     */            
+    for (            
+            String product :            
+            products            
+    ) {            
+        
+        if (product == null) {            
+            continue;            
+        }            
+        
+        
+        product =            
+                product.trim();            
+        
+        
+        if (product.length() == 0) {            
+            continue;            
+        }            
+        
+        
+        if (            
+                product.equalsIgnoreCase(            
+                        SELECT_PRODUCTS            
+                )            
+                ||            
+                product.equalsIgnoreCase(            
+                        "Select Product"            
+                )            
+        ) {            
+        
+            continue;            
+        }            
+        
+        
+        boolean duplicate =            
+                false;            
+        
+        
+        for (            
+                String existing :            
+                realProducts            
+        ) {            
+        
+            if (            
+                    existing.equalsIgnoreCase(            
+                            product            
+                    )            
+            ) {            
+        
+                duplicate =            
+                        true;            
+        
+                break;            
+            }            
+        }            
+        
+        
+        if (!duplicate) {            
+        
+            realProducts.add(            
+                    product            
+            );            
+        }            
+    }            
+        
+        
+    /*            
+     * NO PRODUCTS            
+     */            
+    if (            
+            realProducts.size() == 0            
+    ) {            
+        
+        TextView empty =            
+                new TextView(context);            
+        
+        empty.setText(            
+                "No products added"            
+        );            
+        
+        empty.setTextSize(            
+                16            
+        );            
+        
+        empty.setTextColor(            
+                Color.rgb(            
+                        100,            
+                        100,            
+                        100            
+                )            
+        );            
+        
+        empty.setGravity(            
+                Gravity.CENTER            
+        );            
+        
+        empty.setPadding(            
+                0,            
+                dp(context, 30),            
+                0,            
+                dp(context, 30)            
+        );            
+        
+        
+        productContainer.addView(            
+                empty            
+        );            
+        
+        
+        /*            
+         * Save ONLY real products.            
+         *            
+         * Do NOT save Select Products.            
+         */            
+        saveProducts(            
+                context,            
+                new ArrayList<String>()            
+        );            
+        
+        
+        return;            
+    }            
+        
+        
+    /*            
+     * DISPLAY PRODUCTS            
+     */            
+    for (            
+            final String product :            
+            realProducts            
+    ) {            
+        
+        addProductRow(            
+                context,            
+                product            
+        );            
+    }            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * PRODUCT ROW            
+ * ============================================================            
+ */            
+        
+private static void addProductRow(            
+        final SettingsActivity context,            
+        final String product            
+) {            
+        
+    final LinearLayout row =            
+            new LinearLayout(context);            
+        
+    row.setOrientation(            
+            LinearLayout.HORIZONTAL            
+    );            
+        
+    row.setGravity(            
+            Gravity.CENTER_VERTICAL            
+    );            
+        
+    row.setPadding(            
+            dp(context, 8),            
+            dp(context, 5),            
+            dp(context, 8),            
+            dp(context, 5)            
+    );            
+        
+    row.setBackground(            
+            background(            
+                    Color.WHITE,            
+                    dp(context, 12)            
+            )            
+    );            
+        
+        
+    /*            
+     * Slight border.            
+     */            
+    GradientDrawable rowBackground =            
+            background(            
+                    Color.WHITE,            
+                    dp(context, 12)            
+            );            
+        
+    rowBackground.setStroke(            
+            dp(context, 1),            
+            COLOR_LIGHT_3            
+    );            
+        
+    row.setBackground(            
+            rowBackground            
+    );            
+        
+        
+    LinearLayout.LayoutParams rowParams =            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    dp(context, 58)            
+            );            
+        
+    rowParams.bottomMargin =            
+            dp(context, 7);            
+        
+        
+    productContainer.addView(            
+            row,            
+            rowParams            
+    );            
+        
+        
+    /*            
+     * DRAG THUMB            
+     */            
+    final TextView dragThumb =            
+            new TextView(context);            
+        
+    dragThumb.setText(            
+            "☷"            
+    );            
+        
+    dragThumb.setTextSize(            
+            25            
+    );            
+        
+    dragThumb.setTextColor(            
+            COLOR_PRIMARY            
+    );            
+        
+    dragThumb.setGravity(            
+            Gravity.CENTER            
+    );            
+        
+    dragThumb.setBackground(            
+            background(            
+                    COLOR_LIGHT,            
+                    dp(context, 9)            
+            )            
+    );            
+        
+        
+    LinearLayout.LayoutParams thumbParams =            
+            new LinearLayout.LayoutParams(            
+                    dp(context, 44),            
+                    dp(context, 44)            
+            );            
+        
+    thumbParams.rightMargin =            
+            dp(context, 8);            
+        
+        
+    row.addView(            
+            dragThumb,            
+            thumbParams            
+    );            
+        
+        
+    /*            
+     * PRODUCT NAME            
+     */            
+    TextView name =            
+            new TextView(context);            
+        
+    name.setText(            
+            product            
+    );            
+        
+    name.setTextSize(            
+            16            
+    );            
+        
+    name.setTextColor(            
+            Color.rgb(            
+                    35,            
+                    35,            
+                    35            
+            )            
+    );            
+        
+    name.setGravity(            
+            Gravity.CENTER_VERTICAL            
+    );            
+        
+    name.setSingleLine(            
+            true            
+    );            
+        
+    name.setPadding(            
+            dp(context, 4),            
+            0,            
+            dp(context, 4),            
+            0            
+    );            
+        
+        
+    row.addView(            
+            name,            
+            new LinearLayout.LayoutParams(            
+                    0,            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    1            
+            )            
+    );            
+        
+        
+    /*            
+     * EDIT            
+     */            
+    Button edit =            
+            new Button(context);            
+        
+    edit.setText(            
+            "EDIT"            
+    );            
+        
+    edit.setTextSize(            
+            11            
+    );            
+        
+    edit.setTextColor(            
+            COLOR_DARK_2            
+    );            
+        
+    edit.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+    edit.setAllCaps(            
+            false            
+    );            
+        
+    edit.setPadding(            
+            0,            
+            0,            
+            0,            
+            0            
+    );            
+        
+    edit.setMinWidth(            
+            0            
+    );            
+        
+    edit.setMinimumWidth(            
+            0            
+    );            
+        
+    edit.setBackground(            
+            background(            
+                    COLOR_LIGHT_2,            
+                    dp(context, 9)            
+            )            
+    );            
+        
+        
+    LinearLayout.LayoutParams editParams =            
+            new LinearLayout.LayoutParams(            
+                    dp(context, 56),            
+                    dp(context, 40)            
+            );            
+        
+    editParams.rightMargin =            
+            dp(context, 5);            
+        
+        
+    row.addView(            
+            edit,            
+            editParams            
+    );            
+        
+        
+    /*            
+     * DELETE            
+     */            
+    Button delete =            
+            new Button(context);            
+        
+    delete.setText(            
+            "DELETE"            
+    );            
+        
+    delete.setTextSize(            
+            10            
+    );            
+        
+    delete.setTextColor(            
+            Color.WHITE            
+    );            
+        
+    delete.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+    delete.setAllCaps(            
+            false            
+    );            
+        
+    delete.setPadding(            
+            0,            
+            0,            
+            0,            
+            0            
+    );            
+        
+    delete.setMinWidth(            
+            0            
+    );            
+        
+    delete.setMinimumWidth(            
+            0            
+    );            
+        
+    delete.setBackground(            
+            background(            
+                    COLOR_DARK,            
+                    dp(context, 9)            
+            )            
+    );            
+        
+        
+    LinearLayout.LayoutParams deleteParams =            
+            new LinearLayout.LayoutParams(            
+                    dp(context, 68),            
+                    dp(context, 40)            
+            );            
+        
+        
+    row.addView(            
+            delete,            
+            deleteParams            
+    );            
+        
+        
+    /*            
+     * EDIT CLICK            
+     */            
+    edit.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    editProduct(            
+                            context,            
+                            product            
+                    );            
+                }            
+            }            
+    );            
+        
+        
+    /*            
+     * DELETE CLICK            
+     */            
+    delete.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    deleteProduct(            
+                            context,            
+                            product            
+                    );            
+                }            
+            }            
+    );
+
+/*
+
+============================================================
+
+DRAG THUMB
+
+============================================================
+*/
+dragThumb.setOnTouchListener(
+new View.OnTouchListener() {
+
+private float lastY;            
+
+     private boolean dragging = false;            
+
+
+     @Override            
+     public boolean onTouch(            
+             View v,            
+             MotionEvent event            
+     ) {            
+
+         switch (            
+                 event.getActionMasked()            
+         ) {            
+
+
+             /*            
+              * ====================================================            
+              * START DRAG            
+              * ====================================================            
+              */            
+             case MotionEvent.ACTION_DOWN:            
+
+                 lastY =            
+                         event.getRawY();            
+
+                 dragging =            
+                         true;            
+
+
+                 /*            
+                  * Prevent the ScrollView from taking            
+                  * control of the finger movement.            
+                  */            
+                 if (v.getParent() != null) {            
+
+                     v.getParent()            
+                             .requestDisallowInterceptTouchEvent(            
+                                     true            
+                             );            
+                 }            
+
+
+                 /*            
+                  * Visual indication that            
+                  * the row is being dragged.            
+                  */            
+                 row.setElevation(            
+                         dp(            
+                                 context,            
+                                 8            
+                         )            
+                 );            
+
+
+                 dragThumb.setBackground(            
+                         background(            
+                                 COLOR_ACCENT,            
+                                 dp(            
+                                         context,            
+                                         9            
+                                 )            
+                         )            
+                 );            
+
+
+                 /*            
+                  * Keep receiving all touch events.            
+                  */            
+                 return true;            
+
+
+             /*            
+              * ====================================================            
+              * MOVE DRAG            
+              * ====================================================            
+              */            
+             case MotionEvent.ACTION_MOVE:            
+
+                 if (!dragging) {            
+
+                     return true;            
+                 }            
+
+
+                 float currentY =            
+                         event.getRawY();            
+
+
+                 /*            
+                  * Only move when the finger            
+                  * has actually changed position.            
+                  */            
+                 if (            
+                         currentY != lastY            
+                 ) {            
+
+                     moveRowWhileDragging(            
+                             row,            
+                             currentY            
+                     );            
+
+
+                     lastY =            
+                             currentY;            
+                 }            
+
+
+                 return true;            
+
+
+             /*            
+              * ====================================================            
+              * FINISH DRAG            
+              * ====================================================            
+              */            
+             case MotionEvent.ACTION_UP:            
+
+             case MotionEvent.ACTION_CANCEL:            
+
+                 if (dragging) {            
+
+                     dragging =            
+                             false;            
+
+
+                     /*            
+                      * Restore row appearance.            
+                      */            
+                     row.setElevation(            
+                             0            
+                     );            
+
+
+                     /*            
+                      * Restore drag thumb.            
+                      */            
+                     dragThumb.setBackground(            
+                             background(            
+                                     COLOR_LIGHT,            
+                                     dp(            
+                                             context,            
+                                             9            
+                                     )            
+                             )            
+                     );            
+
+
+                     /*            
+                      * Allow ScrollView to receive            
+                      * touch events again.            
+                      */            
+                     if (            
+                             v.getParent() != null            
+                     ) {            
+
+                         v.getParent()            
+                                 .requestDisallowInterceptTouchEvent(            
+                                         false            
+                                 );            
+                     }            
+
+
+                     /*            
+                      * Save the new product order.            
+                      */            
+                     saveCurrentProductOrder(            
+                             context            
+                     );            
+                 }            
+
+
+                 return true;            
+         }            
+
+
+         return true;            
+     }            
+ }
+
+
+);
+
+}
+
+/*
+
+============================================================
+
+MOVE ROW WHILE DRAGGING
+
+============================================================
+*/
+private static void moveRowWhileDragging(
+View row,
+float rawY
+) {
+
+if (
+productContainer == null
+||
+row == null
+) {
+
+return;
+
+}
+
+int currentIndex =
+productContainer.indexOfChild(
+row
+);
+
+if (currentIndex < 0) {
+
+return;
+
+}
+
+int childCount =
+productContainer.getChildCount();
+
+if (childCount <= 1) {
+
+return;
+
+}
+
+int targetIndex =
+currentIndex;
+
+for (
+int i = 0;
+i < childCount;
+i++
+) {
+
+View child =            
+         productContainer.getChildAt(            
+                 i            
+         );            
+
+
+ if (child == null) {            
+
+     continue;            
+ }            
+
+
+ if (child == row) {            
+
+     continue;            
+ }            
+
+
+ /*            
+  * IMPORTANT:            
+  *            
+  * getLocationOnScreen() requires            
+  * int[] — NOT float[].            
+  */            
+ int[] location =            
+         new int[2];            
+
+
+ child.getLocationOnScreen(            
+         location            
+ );            
+
+
+ float childTop =            
+         (float) location[1];            
+
+
+ float childCenter =            
+         childTop            
+         +            
+         (            
+                 child.getHeight()            
+                 /            
+                 2f            
+         );            
+
+
+ /*            
+  * Finger is above this row's center.            
+  */            
+ if (            
+         rawY < childCenter            
+ ) {            
+
+     targetIndex =            
+             i;            
+
+     break;            
+ }            
+
+
+ /*            
+  * Finger is below this row's center.            
+  */            
+ targetIndex =            
+         i + 1;
+
+}
+
+/*
+
+Remove the dragged row from
+
+its current position first.
+*/
+if (
+targetIndex != currentIndex
+) {
+
+productContainer.removeView(
+row
+);
+
+/*
+
+After removing the row,
+
+the child count is smaller.
+*/
+int newChildCount =
+productContainer.getChildCount();
+
+
+/*
+
+Correct the target position
+
+after removal.
+*/
+if (
+targetIndex > newChildCount
+) {
+
+targetIndex =
+newChildCount;
+}
+
+
+if (
+targetIndex < 0
+) {
+
+targetIndex =            
+         0;
+
+}
+
+/*
+
+Insert the row at the
+
+new position.
+*/
+productContainer.addView(
+row,
+targetIndex
+);
+
+
+row.requestLayout();
+}
+}
+
+
+/*
+
+============================================================
+
+SAVE CURRENT DRAG ORDER
+
+============================================================
+*/
+
+
+private static void saveCurrentProductOrder(
+SettingsActivity context
+) {
+
+if (            
+         context == null            
+         ||            
+         productContainer == null            
+ ) {            
+
+     return;            
+ }            
+
+
+ ArrayList<String> orderedProducts =            
+         new ArrayList<String>();            
+
+
+ for (            
+         int i = 0;            
+         i < productContainer.getChildCount();            
+         i++            
+ ) {            
+
+     View child =            
+             productContainer.getChildAt(            
+                     i            
+             );            
+
+
+     if (!(child instanceof LinearLayout)) {            
+         continue;            
+     }            
+
+
+     LinearLayout row =            
+             (LinearLayout) child;            
+
+
+     /*            
+      * Product name is the second            
+      * child after the drag thumb.            
+      */            
+     if (row.getChildCount() < 2) {            
+         continue;            
+     }            
+
+
+     View nameView =            
+             row.getChildAt(            
+                     1            
+             );            
+
+
+     if (!(nameView instanceof TextView)) {            
+         continue;            
+     }            
+
+
+     String product =            
+             ((TextView) nameView)            
+                     .getText()            
+                     .toString()            
+                     .trim();            
+
+
+     if (            
+             product.length() == 0            
+             ||            
+             product.equalsIgnoreCase(            
+                     SELECT_PRODUCTS            
+             )            
+             ||            
+             product.equalsIgnoreCase(            
+                     "Select Product"            
+             )            
+     ) {            
+
+         continue;            
+     }            
+
+
+     orderedProducts.add(            
+             product            
+     );            
+ }            
+
+
+ saveProducts(            
+         context,            
+         orderedProducts            
+ );
+
+}
+
+/*
