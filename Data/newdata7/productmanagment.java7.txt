@@ -1,0 +1,4548 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+
+public class ProductManagement {
+
+/*            
+ * This is a Java/Kotlin Manager helper.            
+ *            
+ * It is NOT an Activity.            
+ *            
+ * Open it from SettingsActivity:            
+ *            
+ * ProductManagement.show(SettingsActivity.this);            
+ *            
+ * Do NOT add ProductManagement to AndroidManifest.xml.            
+ */            
+        
+        
+/*            
+ * ============================================================            
+ * COLORS            
+ * ============================================================            
+ */            
+        
+private static final int COLOR_PRIMARY =            
+        Color.rgb(0, 150, 136);            
+        
+private static final int COLOR_LIGHT =            
+        Color.rgb(224, 242, 241);            
+        
+private static final int COLOR_LIGHT_2 =            
+        Color.rgb(178, 223, 219);            
+        
+private static final int COLOR_LIGHT_3 =            
+        Color.rgb(128, 203, 196);            
+        
+private static final int COLOR_MEDIUM =            
+        Color.rgb(77, 182, 172);            
+        
+private static final int COLOR_MEDIUM_2 =            
+        Color.rgb(38, 166, 154);            
+        
+private static final int COLOR_DARK =            
+        Color.rgb(0, 121, 107);            
+        
+private static final int COLOR_DARK_2 =            
+        Color.rgb(0, 105, 92);            
+        
+private static final int COLOR_ACCENT =            
+        Color.rgb(100, 255, 218);            
+        
+private static final int COLOR_NEW =            
+        Color.rgb(0, 191, 165);            
+        
+        
+/*            
+ * ============================================================            
+ * PRODUCT STORAGE            
+ * ============================================================            
+ */            
+        
+private static final String SELECT_PRODUCTS =            
+        "Select Products";            
+        
+private static final String PRODUCTS_PREF =            
+        "products_state";            
+        
+private static final String PRODUCTS_KEY =            
+        "products";            
+        
+        
+/*            
+ * Separate request codes.            
+ */            
+public static final int IMPORT_TXT_REQUEST = 9001;            
+public static final int IMPORT_CSV_REQUEST = 9002;            
+public static final int IMPORT_XLSX_REQUEST = 9003;            
+        
+        
+private static AlertDialog dialog;            
+        
+private static SettingsActivity settingsContext;            
+        
+private static EditText productInput;            
+        
+private static LinearLayout productContainer;            
+        
+        
+/*            
+ * ============================================================            
+ * DP            
+ * ============================================================            
+ */            
+        
+private static int dp(            
+        Context context,            
+        int value            
+) {            
+        
+    if (context == null) {            
+        return value;            
+    }            
+        
+    return (int) (            
+            value            
+            *            
+            context.getResources()            
+                    .getDisplayMetrics()            
+                    .density            
+            +            
+            0.5f            
+    );            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * ROUNDED BACKGROUND            
+ * ============================================================            
+ */            
+        
+private static GradientDrawable background(            
+        int color,            
+        int radius            
+) {            
+        
+    GradientDrawable drawable =            
+            new GradientDrawable();            
+        
+    drawable.setColor(            
+            color            
+    );            
+        
+    drawable.setCornerRadius(            
+            radius            
+    );            
+        
+    return drawable;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * GET PRODUCTS            
+ * ============================================================            
+ */            
+        
+public static ArrayList<String> getProducts(            
+        Activity activity            
+) {            
+        
+    ArrayList<String> products =            
+            new ArrayList<String>();            
+        
+        
+    if (activity == null) {            
+        
+        products.add(            
+                "Select Product"            
+        );            
+        
+        return products;            
+    }            
+        
+        
+    SharedPreferences preferences =            
+            activity.getSharedPreferences(            
+                    PRODUCTS_PREF,            
+                    Context.MODE_PRIVATE            
+            );            
+        
+        
+    String saved =            
+            preferences.getString(            
+                    PRODUCTS_KEY,            
+                    ""            
+            );            
+        
+        
+    if (            
+            saved != null            
+            &&            
+            saved.trim().length() > 0            
+    ) {            
+        
+        String[] values =            
+                saved.split(            
+                        "\\|",            
+                        -1            
+                );            
+        
+        
+        for (            
+                String value :            
+                values            
+        ) {            
+        
+            if (value == null) {            
+                continue;            
+            }            
+        
+        
+            value =            
+                    value.trim();            
+        
+        
+            if (            
+                    value.length() > 0            
+            ) {            
+        
+                products.add(            
+                        value            
+                );            
+            }            
+        }            
+    }            
+        
+        
+    if (            
+            products.size() == 0            
+    ) {            
+        
+        products.add(            
+                "Select Product"            
+        );            
+    }            
+        
+        
+    return products;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * SAVE PRODUCTS            
+ * ============================================================            
+ */            
+        
+public static void saveProducts(            
+        Activity activity,            
+        ArrayList<String> products            
+) {            
+        
+    if (activity == null) {            
+        return;            
+    }            
+        
+        
+    StringBuilder builder =            
+            new StringBuilder();            
+        
+        
+    if (products != null) {            
+        
+        for (            
+                String product :            
+                products            
+        ) {            
+        
+            if (product == null) {            
+                continue;            
+            }            
+        
+        
+            product =            
+                    product.trim();            
+        
+        
+            if (            
+                    product.length() == 0            
+            ) {            
+        
+                continue;            
+            }            
+        
+        
+            if (            
+                    builder.length() > 0            
+            ) {            
+        
+                builder.append(            
+                        "|"            
+                );            
+            }            
+        
+        
+            builder.append(            
+                    product            
+            );            
+        }            
+    }            
+        
+        
+    activity            
+            .getSharedPreferences(            
+                    PRODUCTS_PREF,            
+                    Context.MODE_PRIVATE            
+            )            
+            .edit()            
+            .putString(            
+                    PRODUCTS_KEY,            
+                    builder.toString()            
+            )            
+            .apply();            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * ADD PRODUCT            
+ * ============================================================            
+ */            
+        
+public static void addProduct(            
+        Activity activity,            
+        String product            
+) {            
+        
+    if (            
+            activity == null            
+            ||            
+            product == null            
+    ) {            
+        
+        return;            
+    }            
+        
+        
+    product =            
+            product.trim();            
+        
+        
+    if (            
+            product.length() == 0            
+    ) {            
+        
+        return;            
+    }            
+        
+        
+    ArrayList<String> products =            
+            getProducts(            
+                    activity            
+            );            
+        
+        
+    if (            
+            products.size() == 1            
+            &&            
+            products.get(0)            
+                    .equals(            
+                            "Select Product"            
+                    )            
+    ) {            
+        
+        products.clear();            
+    }            
+        
+        
+    if (            
+            !products.contains(            
+                    product            
+            )            
+    ) {            
+        
+        products.add(            
+                product            
+        );            
+    }            
+        
+        
+    saveProducts(            
+            activity,            
+            products            
+    );            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * REMOVE PRODUCT            
+ * ============================================================            
+ */            
+        
+public static void removeProduct(            
+        Activity activity,            
+        String product            
+) {            
+        
+    if (            
+            activity == null            
+            ||            
+            product == null            
+    ) {            
+        
+        return;            
+    }            
+        
+        
+    ArrayList<String> products =            
+            getProducts(            
+                    activity            
+            );            
+        
+        
+    products.remove(            
+            product            
+    );            
+        
+        
+    saveProducts(            
+            activity,            
+            products            
+    );            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * SHOW PRODUCT MANAGEMENT            
+ * ============================================================            
+ */            
+        
+public static void show(            
+        final SettingsActivity context            
+) {            
+        
+    if (context == null) {            
+        return;            
+    }            
+        
+        
+    settingsContext =            
+            context;            
+        
+        
+    /*            
+     * ROOT            
+     */            
+    LinearLayout root =            
+            new LinearLayout(context);            
+        
+    root.setOrientation(            
+            LinearLayout.VERTICAL            
+    );            
+        
+    root.setPadding(            
+            dp(context, 20),            
+            dp(context, 18),            
+            dp(context, 20),            
+            dp(context, 18)            
+    );            
+        
+    root.setBackgroundColor(            
+            Color.WHITE            
+    );            
+        
+        
+    /*            
+     * TITLE            
+     */            
+    TextView title =            
+            new TextView(context);            
+        
+    title.setText(            
+            "Manage Products"            
+    );            
+        
+    title.setTextSize(            
+            23            
+    );            
+        
+    title.setTextColor(            
+            COLOR_DARK_2            
+    );            
+        
+    title.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+    title.setGravity(            
+            Gravity.CENTER            
+    );            
+        
+    title.setPadding(            
+            0,            
+            0,            
+            0,            
+            dp(context, 4)            
+    );            
+        
+        
+    root.addView(            
+            title,            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    LinearLayout.LayoutParams.WRAP_CONTENT            
+            )            
+    );            
+        
+        
+    /*            
+     * SUBTITLE            
+     */            
+    TextView subtitle =            
+            new TextView(context);            
+        
+    subtitle.setText(            
+            "Add, edit, delete and reorder your products"            
+    );            
+        
+    subtitle.setTextSize(            
+            13            
+    );            
+        
+    subtitle.setTextColor(            
+            Color.rgb(90, 90, 90)            
+    );            
+        
+    subtitle.setGravity(            
+            Gravity.CENTER            
+    );            
+        
+    subtitle.setPadding(            
+            0,            
+            0,            
+            0,            
+            dp(context, 16)            
+    );            
+        
+        
+    root.addView(            
+            subtitle,            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    LinearLayout.LayoutParams.WRAP_CONTENT            
+            )            
+    );            
+        
+        
+    /*            
+     * PRODUCT INPUT            
+     */            
+    productInput =            
+            new EditText(context);            
+        
+    productInput.setHint(            
+            "Enter product name"            
+    );            
+        
+    productInput.setSingleLine(            
+            true            
+    );            
+        
+    productInput.setTextSize(            
+            16            
+    );            
+        
+    productInput.setPadding(            
+            dp(context, 16),            
+            dp(context, 12),            
+            dp(context, 16),            
+            dp(context, 12)            
+    );            
+        
+    productInput.setBackground(            
+            background(            
+                    COLOR_LIGHT,            
+                    dp(context, 12)            
+            )            
+    );            
+        
+        
+    LinearLayout.LayoutParams inputParams =            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    LinearLayout.LayoutParams.WRAP_CONTENT            
+            );            
+        
+    inputParams.bottomMargin =            
+            dp(context, 10);            
+        
+        
+    root.addView(            
+            productInput,            
+            inputParams            
+    );            
+        
+        
+    /*            
+     * ADD PRODUCT            
+     */            
+    Button addButton =            
+            new Button(context);            
+        
+    addButton.setText(            
+            "ADD PRODUCT"            
+    );            
+        
+    addButton.setTextColor(            
+            Color.WHITE            
+    );            
+        
+    addButton.setTextSize(            
+            14            
+    );            
+        
+    addButton.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+    addButton.setAllCaps(            
+            false            
+    );            
+        
+    addButton.setGravity(            
+            Gravity.CENTER            
+    );            
+        
+    addButton.setBackground(            
+            background(            
+                    COLOR_PRIMARY,            
+                    dp(context, 12)            
+            )            
+    );            
+        
+        
+    LinearLayout.LayoutParams addParams =            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    dp(context, 50)            
+            );            
+        
+    addParams.bottomMargin =            
+            dp(context, 8);            
+        
+        
+    root.addView(            
+            addButton,            
+            addParams            
+    );            
+        
+        
+    /*            
+     * IMPORT BUTTON ROW            
+     */            
+    LinearLayout importRow =            
+            new LinearLayout(context);            
+        
+    importRow.setOrientation(            
+            LinearLayout.HORIZONTAL            
+    );            
+        
+    importRow.setGravity(            
+            Gravity.CENTER            
+    );            
+        
+        
+    /*            
+     * IMPORT TXT            
+     */            
+    Button importTxtButton =            
+            createSmallButton(            
+                    context,            
+                    "TXT"            
+            );            
+        
+        
+    /*            
+     * IMPORT CSV            
+     */            
+    Button importCsvButton =            
+            createSmallButton(            
+                    context,            
+                    "CSV"            
+            );            
+        
+        
+    /*            
+     * IMPORT XLSX            
+     */            
+    Button importXlsxButton =            
+            createSmallButton(            
+                    context,            
+                    "XLSX"            
+            );            
+        
+        
+    importRow.addView(            
+            importTxtButton,            
+            equalButtonParams(            
+                    context,            
+                    4            
+            )            
+    );            
+        
+        
+    importRow.addView(            
+            importCsvButton,            
+            equalButtonParams(            
+                    context,            
+                    4            
+            )            
+    );            
+        
+        
+    importRow.addView(            
+            importXlsxButton,            
+            equalButtonParams(            
+                    context,            
+                    0            
+            )            
+    );            
+        
+        
+    root.addView(            
+            importRow            
+    );            
+        
+        
+    /*            
+     * PRODUCTS HEADER            
+     */            
+    LinearLayout productsHeader =            
+            new LinearLayout(context);            
+        
+    productsHeader.setOrientation(            
+            LinearLayout.HORIZONTAL            
+    );            
+        
+    productsHeader.setGravity(            
+            Gravity.CENTER_VERTICAL            
+    );            
+        
+    productsHeader.setPadding(            
+            dp(context, 4),            
+            dp(context, 18),            
+            dp(context, 4),            
+            dp(context, 8)            
+    );            
+        
+        
+    TextView productsTitle =            
+            new TextView(context);            
+        
+    productsTitle.setText(            
+            "Products"            
+    );            
+        
+    productsTitle.setTextSize(            
+            18            
+    );            
+        
+    productsTitle.setTextColor(            
+            COLOR_DARK_2            
+    );            
+        
+    productsTitle.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+        
+    productsHeader.addView(            
+            productsTitle,            
+            new LinearLayout.LayoutParams(            
+                    0,            
+                    LinearLayout.LayoutParams.WRAP_CONTENT,            
+                    1            
+            )            
+    );            
+        
+        
+    TextView dragInfo =            
+            new TextView(context);            
+        
+    dragInfo.setText(            
+            "☷ Drag to reorder"            
+    );            
+        
+    dragInfo.setTextSize(            
+            12            
+    );            
+        
+    dragInfo.setTextColor(            
+            COLOR_MEDIUM_2            
+    );            
+        
+    dragInfo.setGravity(            
+            Gravity.CENTER_VERTICAL            
+    );            
+        
+        
+    productsHeader.addView(            
+            dragInfo,            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.WRAP_CONTENT,            
+                    LinearLayout.LayoutParams.WRAP_CONTENT            
+            )            
+    );            
+        
+        
+    root.addView(            
+            productsHeader            
+    );            
+        
+        
+    /*            
+     * SCROLL VIEW            
+     */            
+    ScrollView scrollView =            
+            new ScrollView(context);            
+        
+    scrollView.setFillViewport(            
+            true            
+    );            
+        
+        
+    /*            
+     * PRODUCT CONTAINER            
+     */            
+    productContainer =            
+            new LinearLayout(context);            
+        
+    productContainer.setOrientation(            
+            LinearLayout.VERTICAL            
+    );            
+        
+        
+    scrollView.addView(            
+            productContainer,            
+            new ScrollView.LayoutParams(            
+                    ScrollView.LayoutParams.MATCH_PARENT,            
+                    ScrollView.LayoutParams.WRAP_CONTENT            
+            )            
+    );            
+        
+        
+    root.addView(            
+            scrollView,            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    0,            
+                    1            
+            )            
+    );            
+        
+        
+    /*            
+     * BACK            
+     */            
+    Button backButton =            
+            new Button(context);            
+        
+    backButton.setText(            
+            "BACK"            
+    );            
+        
+    backButton.setTextColor(            
+            COLOR_DARK_2            
+    );            
+        
+    backButton.setTextSize(            
+            14            
+    );            
+        
+    backButton.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+    backButton.setAllCaps(            
+            false            
+    );            
+        
+    backButton.setBackground(            
+            background(            
+                    COLOR_LIGHT,            
+                    dp(context, 12)            
+            )            
+    );            
+        
+        
+    LinearLayout.LayoutParams backParams =            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    dp(context, 48)            
+            );            
+        
+    backParams.topMargin =            
+            dp(context, 10);            
+        
+        
+    root.addView(            
+            backButton,            
+            backParams            
+    );            
+        
+        
+    /*            
+     * DIALOG            
+     */            
+    dialog =            
+            new AlertDialog.Builder(context)            
+                    .setView(root)            
+                    .create();            
+        
+        
+    /*            
+     * ADD            
+     */            
+    addButton.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    addProduct(            
+                            context            
+                    );            
+                }            
+            }            
+    );            
+        
+        
+    /*            
+     * TXT            
+     */            
+    importTxtButton.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    openTxtPicker(            
+                            context            
+                    );            
+                }            
+            }            
+    );            
+        
+        
+    /*            
+     * CSV            
+     */            
+    importCsvButton.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    openCsvPicker(            
+                            context            
+                    );            
+                }            
+            }            
+    );            
+        
+        
+    /*            
+     * XLSX            
+     */            
+    importXlsxButton.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    openXlsxPicker(            
+                            context            
+                    );            
+                }            
+            }            
+    );            
+        
+        
+    /*            
+     * BACK            
+     */            
+    backButton.setOnClickListener(            
+            new View.OnClickListener() {            
+        
+                @Override            
+                public void onClick(            
+                        View v            
+                ) {            
+        
+                    close();            
+                }            
+            }            
+    );            
+        
+        
+    dialog.show();            
+        
+        
+    /*            
+     * LOAD PRODUCTS            
+     */            
+    refreshProducts(            
+            context            
+    );            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * SMALL IMPORT BUTTON            
+ * ============================================================            
+ */            
+        
+private static Button createSmallButton(            
+        Context context,            
+        String text            
+) {            
+        
+    Button button =            
+            new Button(context);            
+        
+    button.setText(            
+            text            
+    );            
+        
+    button.setTextSize(            
+            12            
+    );            
+        
+    button.setTextColor(            
+            COLOR_DARK_2            
+    );            
+        
+    button.setTypeface(            
+            null,            
+            android.graphics.Typeface.BOLD            
+    );            
+        
+    button.setAllCaps(            
+            false            
+    );            
+        
+    button.setBackground(            
+            background(            
+                    COLOR_LIGHT_2,            
+                    dp(context, 10)            
+            )            
+    );            
+        
+    button.setGravity(            
+            Gravity.CENTER            
+    );            
+        
+    return button;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * EQUAL IMPORT BUTTON PARAMS            
+ * ============================================================            
+ */            
+        
+private static LinearLayout.LayoutParams            
+equalButtonParams(            
+        Context context,            
+        int rightMargin            
+) {            
+        
+    LinearLayout.LayoutParams params =            
+            new LinearLayout.LayoutParams(            
+                    0,            
+                    dp(context, 44),            
+                    1            
+            );            
+        
+    if (rightMargin > 0) {            
+        
+        params.rightMargin =            
+                dp(context, rightMargin);            
+    }            
+        
+    return params;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * ADD PRODUCT            
+ * ============================================================            
+ */            
+        
+private static void addProduct(            
+        SettingsActivity context            
+) {            
+        
+    if (productInput == null) {            
+        return;            
+    }            
+        
+        
+    String product =            
+            productInput            
+                    .getText()            
+                    .toString()            
+                    .trim();            
+        
+        
+    /*            
+     * EMPTY            
+     */            
+    if (product.length() == 0) {            
+        
+        Toast.makeText(            
+                context,            
+                "Enter a product name",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+        
+        return;            
+    }            
+        
+        
+    /*            
+     * PLACEHOLDER IS NOT A PRODUCT            
+     */            
+    if (product.equalsIgnoreCase(            
+            SELECT_PRODUCTS            
+    )            
+            || product.equalsIgnoreCase(            
+            "Select Product"            
+    )) {            
+        
+        Toast.makeText(            
+                context,            
+                "Select Products is not a product",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+        
+        return;            
+    }            
+        
+        
+    /*            
+     * DUPLICATE CHECK            
+     */            
+    if (productExists(            
+            context,            
+            product            
+    )) {            
+        
+        Toast.makeText(            
+                context,            
+                "Product already exists",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+        
+        return;            
+    }            
+        
+        
+    /*            
+     * LOCAL PRODUCT STORAGE            
+     */            
+    addProduct(            
+            context,            
+            product            
+    );            
+        
+        
+    productInput.setText(            
+            ""            
+    );            
+        
+        
+    refreshProducts(            
+            context            
+    );            
+        
+        
+    Toast.makeText(            
+            context,            
+            "Product added",            
+            Toast.LENGTH_SHORT            
+    ).show();            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * CHECK DUPLICATE            
+ * ============================================================            
+ */            
+        
+private static boolean productExists(            
+        SettingsActivity context,            
+        String product            
+) {            
+        
+    ArrayList<String> products =            
+            getProducts(            
+                    context            
+            );            
+        
+        
+    for (String existing :            
+            products) {            
+        
+        if (existing == null) {            
+            continue;            
+        }            
+        
+        
+        existing =            
+                existing.trim();            
+        
+        
+        if (existing.length() == 0) {            
+            continue;            
+        }            
+        
+        
+        if (existing.equalsIgnoreCase(            
+                SELECT_PRODUCTS            
+        )            
+                || existing.equalsIgnoreCase(            
+                "Select Product"            
+        )) {            
+        
+            continue;            
+        }            
+        
+        
+        if (existing.equalsIgnoreCase(            
+                product            
+        )) {            
+        
+            return true;            
+        }            
+    }            
+        
+        
+    return false;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * EDIT PRODUCT            
+ * ============================================================            
+ */            
+        
+private static void editProduct(            
+        final SettingsActivity context,            
+        final String oldProduct            
+) {            
+        
+    if (context == null            
+            || oldProduct == null) {            
+        
+        return;            
+    }            
+        
+        
+    final EditText editInput =            
+            new EditText(context);            
+        
+    editInput.setSingleLine(            
+            true            
+    );            
+        
+    editInput.setText(            
+            oldProduct            
+    );            
+        
+    editInput.setSelectAllOnFocus(            
+            true            
+    );            
+        
+    editInput.setTextSize(            
+            16            
+    );            
+        
+    editInput.setPadding(            
+            dp(context, 16),            
+            dp(context, 12),            
+            dp(context, 16),            
+            dp(context, 12)            
+    );            
+        
+    editInput.setBackground(            
+            background(            
+                    COLOR_LIGHT,            
+                    dp(context, 12)            
+            )            
+    );            
+        
+        
+    LinearLayout container =            
+            new LinearLayout(context);            
+        
+    container.setPadding(            
+            dp(context, 20),            
+            dp(context, 4),            
+            dp(context, 20),            
+            dp(context, 4)            
+    );            
+        
+    container.addView(            
+            editInput,            
+            new LinearLayout.LayoutParams(            
+                    LinearLayout.LayoutParams.MATCH_PARENT,            
+                    LinearLayout.LayoutParams.WRAP_CONTENT            
+            )            
+    );            
+        
+        
+    final AlertDialog editDialog =            
+            new AlertDialog.Builder(            
+                    context            
+            )            
+            .setTitle(            
+                    "Edit Product"            
+            )            
+            .setView(            
+                    container            
+            )            
+            .setNegativeButton(            
+                    "CANCEL",            
+                    null            
+            )            
+            .setPositiveButton(            
+                    "SAVE",            
+                    null            
+            )            
+            .create();            
+        
+        
+    editDialog.setOnShowListener(            
+            new android.content.DialogInterface.OnShowListener() {            
+        
+                @Override            
+                public void onShow(            
+                        android.content.DialogInterface d            
+                ) {            
+        
+                    Button saveButton =            
+                            editDialog.getButton(            
+                                    AlertDialog.BUTTON_POSITIVE            
+                            );            
+        
+                    if (saveButton != null) {            
+        
+                        saveButton.setTextColor(            
+                                COLOR_PRIMARY            
+                        );            
+        
+                        saveButton.setOnClickListener(            
+                                new View.OnClickListener() {            
+        
+                                    @Override            
+                                    public void onClick(            
+                                            View v            
+                                    ) {            
+        
+                                        String newProduct =            
+                                                editInput            
+                                                        .getText()            
+                                                        .toString()            
+                                                        .trim();            
+        
+        
+                                        if (            
+                                                newProduct.length()            
+                                                == 0            
+                                        ) {            
+        
+                                            Toast.makeText(            
+                                                    context,            
+                                                    "Enter a product name",            
+                                                    Toast.LENGTH_SHORT            
+                                            ).show();            
+        
+                                            return;            
+                                        }            
+        
+        
+                                        if (            
+                                                newProduct.equalsIgnoreCase(            
+                                                        SELECT_PRODUCTS            
+                                                )            
+                                                ||            
+                                                newProduct.equalsIgnoreCase(            
+                                                        "Select Product"            
+                                                )            
+                                        ) {            
+        
+                                            Toast.makeText(            
+                                                    context,            
+                                                    "Select Products is not a product",            
+                                                    Toast.LENGTH_SHORT            
+                                            ).show();            
+        
+                                            return;            
+                                        }            
+        
+        
+                                        /*            
+                                         * Same name is allowed            
+                                         * when capitalization only            
+                                         * changes.            
+                                         */            
+                                        if (            
+                                                !newProduct.equalsIgnoreCase(            
+                                                        oldProduct            
+                                                )            
+                                                &&            
+                                                productExists(            
+                                                        context,            
+                                                        newProduct            
+                                                )            
+                                        ) {            
+        
+                                            Toast.makeText(            
+                                                    context,            
+                                                    "Product already exists",            
+                                                    Toast.LENGTH_SHORT            
+                                            ).show();            
+        
+                                            return;            
+                                        }            
+        
+        
+                                        ArrayList<String> products =            
+                                                getProducts(            
+                                                        context            
+                                                );            
+        
+        
+                                        for (            
+                                                int i = 0;            
+                                                i < products.size();            
+                                                i++            
+                                        ) {            
+        
+                                            String current =            
+                                                    products.get(i);            
+        
+        
+                                            if (            
+                                                    current != null            
+                                                    &&            
+                                                    current.equals(            
+                                                            oldProduct            
+                                                    )            
+                                            ) {            
+        
+                                                products.set(            
+                                                        i,            
+                                                        newProduct            
+                                                );            
+        
+                                                break;            
+                                            }            
+                                        }            
+        
+        
+                                        saveProducts(            
+                                                context,            
+                                                products            
+                                        );            
+        
+        
+                                        editDialog.dismiss();            
+        
+        
+                                        refreshProducts(            
+                                                context            
+                                        );            
+        
+        
+                                        Toast.makeText(            
+                                                context,            
+                                                "Product updated",            
+                                                Toast.LENGTH_SHORT            
+                                        ).show();            
+                                    }            
+                                }            
+                        );            
+                    }            
+                }            
+            }            
+    );            
+        
+        
+    editDialog.show();            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * TXT PICKER            
+ * ============================================================            
+ */            
+        
+private static void openTxtPicker(            
+        SettingsActivity context            
+) {            
+        
+    try {            
+        
+        Intent intent =            
+                new Intent(            
+                        Intent.ACTION_OPEN_DOCUMENT            
+                );            
+        
+        intent.addCategory(            
+                Intent.CATEGORY_OPENABLE            
+        );            
+        
+        intent.setType(            
+                "text/plain"            
+        );            
+        
+        intent.addFlags(            
+                Intent.FLAG_GRANT_READ_URI_PERMISSION            
+        );            
+        
+        context.startActivityForResult(            
+                intent,            
+                IMPORT_TXT_REQUEST            
+        );            
+        
+    } catch (Exception e) {            
+        
+        Toast.makeText(            
+                context,            
+                "Unable to open TXT picker",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+    }            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * CSV PICKER            
+ * ============================================================            
+ */            
+        
+private static void openCsvPicker(            
+        SettingsActivity context            
+) {            
+        
+    try {            
+        
+        Intent intent =            
+                new Intent(            
+                        Intent.ACTION_OPEN_DOCUMENT            
+                );            
+        
+        intent.addCategory(            
+                Intent.CATEGORY_OPENABLE            
+        );            
+        
+        intent.setType(            
+                "text/csv"            
+        );            
+        
+        intent.putExtra(            
+                Intent.EXTRA_MIME_TYPES,            
+                new String[] {            
+                        "text/csv",            
+                        "application/csv",            
+                        "text/comma-separated-values",            
+                        "application/vnd.ms-excel"            
+                }            
+        );            
+        
+        intent.addFlags(            
+                Intent.FLAG_GRANT_READ_URI_PERMISSION            
+        );            
+        
+        context.startActivityForResult(            
+                intent,            
+                IMPORT_CSV_REQUEST            
+        );            
+        
+    } catch (Exception e) {            
+        
+        Toast.makeText(            
+                context,            
+                "Unable to open CSV picker",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+    }            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * XLSX PICKER            
+ * ============================================================            
+ */            
+        
+private static void openXlsxPicker(            
+        SettingsActivity context            
+) {            
+        
+    try {            
+        
+        Intent intent =            
+                new Intent(            
+                        Intent.ACTION_OPEN_DOCUMENT            
+                );            
+        
+        intent.addCategory(            
+                Intent.CATEGORY_OPENABLE            
+        );            
+        
+        intent.setType(            
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"            
+        );            
+        
+        intent.addFlags(            
+                Intent.FLAG_GRANT_READ_URI_PERMISSION            
+        );            
+        
+        context.startActivityForResult(            
+                intent,            
+                IMPORT_XLSX_REQUEST            
+        );            
+        
+    } catch (Exception e) {            
+        
+        Toast.makeText(            
+                context,            
+                "Unable to open XLSX picker",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+    }            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * IMPORT RESULT            
+ * ============================================================            
+ */            
+        
+public static boolean handleImportResult(            
+        SettingsActivity context,            
+        int requestCode,            
+        int resultCode,            
+        Intent data            
+) {            
+        
+    if (            
+            requestCode != IMPORT_TXT_REQUEST            
+            &&            
+            requestCode != IMPORT_CSV_REQUEST            
+            &&            
+            requestCode != IMPORT_XLSX_REQUEST            
+    ) {            
+        
+        return false;            
+    }            
+        
+        
+    if (            
+            resultCode !=            
+            android.app.Activity.RESULT_OK            
+    ) {            
+        
+        return true;            
+    }            
+        
+        
+    if (            
+            data == null            
+            ||            
+            data.getData() == null            
+    ) {            
+        
+        Toast.makeText(            
+                context,            
+                "No file selected",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+        
+        return true;            
+    }            
+        
+        
+    Uri uri =            
+            data.getData();            
+        
+        
+    try {            
+        
+        context.getContentResolver()            
+                .takePersistableUriPermission(            
+                        uri,            
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION            
+                );            
+        
+    } catch (Exception ignored) {            
+    }            
+        
+        
+    try {            
+        
+        int imported;            
+        
+        
+        if (            
+                requestCode ==            
+                IMPORT_XLSX_REQUEST            
+        ) {            
+        
+            imported =            
+                    importXlsx(            
+                            context,            
+                            uri            
+                    );            
+        
+        } else {            
+        
+            imported =            
+                    importText(            
+                            context,            
+                            uri,            
+                            requestCode ==            
+                                    IMPORT_CSV_REQUEST            
+                    );            
+        }            
+        
+        
+        refreshProducts(            
+                context            
+        );            
+        
+        
+        Toast.makeText(            
+                context,            
+                imported            
+                        + " product(s) imported",            
+                Toast.LENGTH_SHORT            
+        ).show();            
+        
+        
+    } catch (Exception e) {            
+        
+        Toast.makeText(            
+                context,            
+                "Import failed: "            
+                        + errorMessage(e),            
+                Toast.LENGTH_LONG            
+        ).show();            
+    }            
+        
+        
+    return true;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * TXT / CSV IMPORT            
+ * ============================================================            
+ */            
+        
+private static int importText(            
+        SettingsActivity context,            
+        Uri uri,            
+        boolean csv            
+) throws Exception {            
+        
+    InputStream input =            
+            context.getContentResolver()            
+                    .openInputStream(uri);            
+        
+        
+    if (input == null) {            
+        
+        throw new Exception(            
+                "Cannot open file"            
+        );            
+    }            
+        
+        
+    BufferedReader reader =            
+            new BufferedReader(            
+                    new InputStreamReader(            
+                            input,            
+                            StandardCharsets.UTF_8            
+                    )            
+            );            
+        
+        
+    int imported = 0;            
+        
+        
+    try {            
+        
+        String line;            
+        
+        
+        Set<String> importedNames =            
+                new HashSet<String>();            
+        
+        
+        while (            
+                (line =            
+                        reader.readLine())            
+                        != null            
+        ) {            
+        
+            line =            
+                    line.trim();            
+        
+        
+            if (line.length() == 0) {            
+                continue;            
+            }            
+        
+        
+            /*            
+             * Remove BOM.            
+             */            
+            if (            
+                    line.charAt(0) ==            
+                    '\uFEFF'            
+            ) {            
+        
+                line =            
+                        line.substring(1)            
+                                .trim();            
+            }            
+        
+        
+            /*            
+             * TXT:            
+             *            
+             * One product per line.            
+             *            
+             * CSV:            
+             *            
+             * Product,Product,Product            
+             */            
+            String[] values;            
+        
+        
+            if (csv) {            
+        
+                values =            
+                        splitCsvLine(            
+                                line            
+                        );            
+        
+            } else {            
+        
+                values =            
+                        new String[] {            
+                                line            
+                        };            
+            }            
+        
+        
+            for (            
+                    String value :            
+                    values            
+            ) {            
+        
+                if (value == null) {            
+                    continue;            
+                }            
+        
+        
+                String product =            
+                        cleanProduct(            
+                                value            
+                        );            
+        
+        
+                if (            
+                        !validImportedProduct(            
+                                product            
+                        )            
+                ) {            
+        
+                    continue;            
+                }            
+        
+        
+                String key =            
+                        product.toLowerCase(            
+                                Locale.US            
+                        );            
+        
+        
+                if (            
+                        importedNames.contains(            
+                                key            
+                        )            
+                ) {            
+        
+                    continue;            
+                }            
+        
+        
+                if (            
+                        productExists(            
+                                context,            
+                                product            
+                        )            
+                ) {            
+        
+                    importedNames.add(            
+                            key            
+                    );            
+        
+                    continue;            
+                }            
+        
+        
+                addProduct(            
+                        context,            
+                        product            
+                );            
+        
+        
+                importedNames.add(            
+                        key            
+                );            
+        
+        
+                imported++;            
+            }            
+        }            
+        
+        
+    } finally {            
+        
+        reader.close();            
+    }            
+        
+        
+    return imported;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * CSV SPLITTER            
+ * ============================================================            
+ */            
+        
+private static String[] splitCsvLine(            
+        String line            
+) {            
+        
+    ArrayList<String> values =            
+            new ArrayList<String>();            
+        
+        
+    StringBuilder current =            
+            new StringBuilder();            
+        
+        
+    boolean quoted =            
+            false;            
+        
+        
+    for (            
+            int i = 0;            
+            i < line.length();            
+            i++            
+    ) {            
+        
+        char c =            
+                line.charAt(i);            
+        
+        
+        if (c == '"') {            
+        
+            if (            
+                    quoted            
+                    &&            
+                    i + 1 < line.length()            
+                    &&            
+                    line.charAt(i + 1) == '"'            
+            ) {            
+        
+                current.append(            
+                        '"'            
+                );            
+        
+                i++;            
+        
+            } else {            
+        
+                quoted =            
+                        !quoted;            
+            }            
+        
+        } else if (            
+                c == ','            
+                &&            
+                !quoted            
+        ) {            
+        
+            values.add(            
+                    current.toString()            
+            );            
+        
+            current.setLength(            
+                    0            
+            );            
+        
+        } else {            
+        
+            current.append(            
+                    c            
+            );            
+        }            
+    }            
+        
+        
+    values.add(            
+            current.toString()            
+    );            
+        
+        
+    return values.toArray(            
+            new String[values.size()]            
+    );            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * XLSX IMPORT            
+ * ============================================================            
+ */            
+        
+private static int importXlsx(            
+        SettingsActivity context,            
+        Uri uri            
+) throws Exception {            
+        
+    InputStream input =            
+            context.getContentResolver()            
+                    .openInputStream(uri);            
+        
+        
+    if (input == null) {            
+        
+        throw new Exception(            
+                "Cannot open XLSX file"            
+        );            
+    }            
+        
+        
+    java.io.File temp =            
+            java.io.File.createTempFile(            
+                    "products_",            
+                    ".xlsx",            
+                    context.getCacheDir()            
+            );            
+        
+        
+    java.io.FileOutputStream output =            
+            new java.io.FileOutputStream(            
+                    temp            
+            );            
+        
+        
+    try {            
+        
+        byte[] buffer =            
+                new byte[8192];            
+        
+        
+        int length;            
+        
+        
+        while (            
+                (length =            
+                        input.read(buffer))            
+                        != -1            
+        ) {            
+        
+            output.write(            
+                    buffer,            
+                    0,            
+                    length            
+            );            
+        }            
+        
+        
+    } finally {            
+        
+        try {            
+            input.close();            
+        } catch (Exception ignored) {            
+        }            
+        
+        
+        try {            
+            output.close();            
+        } catch (Exception ignored) {            
+        }            
+    }            
+        
+        
+    int imported = 0;            
+        
+        
+    ZipFile zip =            
+            new ZipFile(            
+                    temp            
+            );            
+        
+        
+    try {            
+        
+        ArrayList<String> sharedStrings =            
+                readSharedStrings(            
+                        zip            
+                );            
+        
+        
+        /*            
+         * Find worksheet XML files.            
+         */            
+        java.util.Enumeration<? extends ZipEntry>            
+                entries =            
+                zip.entries();            
+        
+        
+        while (            
+                entries.hasMoreElements()            
+        ) {            
+        
+            ZipEntry entry =            
+                    entries.nextElement();            
+        
+        
+            String name =            
+                    entry.getName();            
+        
+        
+            if (            
+                    !name.startsWith(            
+                            "xl/worksheets/"            
+                    )            
+            ) {            
+        
+                continue;            
+            }            
+        
+        
+            if (            
+                    !name.endsWith(            
+                            ".xml"            
+                    )            
+            ) {            
+        
+                continue;            
+            }            
+        
+        
+            InputStream sheet =            
+                    zip.getInputStream(            
+                            entry            
+                    );            
+        
+        
+            try {            
+        
+                imported +=            
+                        readWorksheetProducts(            
+                                context,            
+                                sheet,            
+                                sharedStrings            
+                        );            
+        
+            } finally {            
+        
+                sheet.close();            
+            }            
+        }            
+        
+        
+    } finally {            
+        
+        zip.close();            
+        
+        
+        try {            
+            temp.delete();            
+        } catch (Exception ignored) {            
+        }            
+    }            
+        
+        
+    return imported;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * READ XLSX SHARED STRINGS            
+ * ============================================================            
+ */            
+        
+private static ArrayList<String>            
+readSharedStrings(            
+        ZipFile zip            
+) throws Exception {            
+        
+    ArrayList<String> strings =            
+            new ArrayList<String>();            
+        
+        
+    ZipEntry entry =            
+            zip.getEntry(            
+                    "xl/sharedStrings.xml"            
+            );            
+        
+        
+    if (entry == null) {            
+        return strings;            
+    }            
+        
+        
+    InputStream input =            
+            zip.getInputStream(            
+                    entry            
+            );            
+        
+        
+    XmlPullParserFactory factory =            
+            XmlPullParserFactory            
+                    .newInstance();            
+        
+        
+    XmlPullParser parser =            
+            factory.newPullParser();            
+        
+        
+    parser.setInput(            
+            input,            
+            "UTF-8"            
+    );            
+        
+        
+    StringBuilder current =            
+            null;            
+        
+        
+    int event;            
+        
+        
+    while (            
+            (event =            
+                    parser.next())            
+                    != XmlPullParser.END_DOCUMENT            
+    ) {            
+        
+        if (            
+                event ==            
+                XmlPullParser.START_TAG            
+        ) {            
+        
+            String tag =            
+                    parser.getName();            
+        
+        
+            if (            
+                    "si".equals(tag)            
+            ) {            
+        
+                current =            
+                        new StringBuilder();            
+        
+            } else if (            
+                    "t".equals(tag)            
+                    &&            
+                    current != null            
+            ) {            
+        
+                current.append(            
+                        parser.nextText()            
+                );            
+            }            
+        
+        
+        } else if (            
+                event ==            
+                XmlPullParser.END_TAG            
+        ) {            
+        
+            if (            
+                    "si".equals(            
+                            parser.getName()            
+                    )            
+                    &&            
+                    current != null            
+            ) {            
+        
+                strings.add(            
+                        current.toString()            
+                );            
+        
+                current =            
+                        null;            
+            }            
+        }            
+    }            
+        
+        
+    input.close();            
+        
+        
+    return strings;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * READ XLSX WORKSHEET            
+ * ============================================================            
+ */            
+        
+private static int readWorksheetProducts(            
+        SettingsActivity context,            
+        InputStream input,            
+        ArrayList<String> sharedStrings            
+) throws Exception {            
+        
+    XmlPullParserFactory factory =            
+            XmlPullParserFactory            
+                    .newInstance();            
+        
+        
+    XmlPullParser parser =            
+            factory.newPullParser();            
+        
+        
+    parser.setInput(            
+            input,            
+            "UTF-8"            
+    );            
+        
+        
+    int imported = 0;            
+        
+        
+    String cellType =            
+            null;            
+        
+        
+    String cellValue =            
+            null;            
+        
+        
+    boolean inValue =            
+            false;            
+        
+        
+    int event;            
+        
+        
+    while (            
+            (event =            
+                    parser.next())            
+                    != XmlPullParser.END_DOCUMENT            
+    ) {            
+        
+        if (            
+                event ==            
+                XmlPullParser.START_TAG            
+        ) {            
+        
+            String tag =            
+                    parser.getName();            
+        
+        
+            if (            
+                    "c".equals(tag)            
+            ) {            
+        
+                cellType =            
+                        parser.getAttributeValue(            
+                                null,            
+                                "t"            
+                        );            
+        
+                cellValue =            
+                        null;            
+            }            
+        
+        
+            if (            
+                    "v".equals(tag)            
+            ) {            
+        
+                inValue =            
+                        true;            
+            }            
+        
+        
+            if (            
+                    "t".equals(tag)            
+                    &&            
+                    "inlineStr".equals(            
+                            cellType            
+                    )            
+            ) {            
+        
+                cellValue =            
+                        parser.nextText();            
+        
+        
+                addXlsxProductIfValid(            
+                        context,            
+                        cellValue            
+                );            
+            }            
+        
+        
+        } else if (            
+                event ==            
+                XmlPullParser.TEXT            
+        ) {            
+        
+            if (inValue) {            
+        
+                cellValue =            
+                        parser.getText();            
+            }            
+        
+        
+        } else if (            
+                event ==            
+                XmlPullParser.END_TAG            
+        ) {            
+        
+            String tag =            
+                    parser.getName();            
+        
+        
+            if (            
+                    "v".equals(tag)            
+            ) {            
+        
+                inValue =            
+                        false;            
+        
+        
+                if (            
+                        cellValue != null            
+                ) {            
+        
+                    String product =            
+                            cellValue.trim();            
+        
+        
+                    /*            
+                     * Shared string index.            
+                     */            
+                    if (            
+                            "s".equals(            
+                                    cellType            
+                            )            
+                    ) {            
+        
+                        try {            
+        
+                            int index =            
+                                    Integer.parseInt(            
+                                            product            
+                                    );            
+        
+        
+                            if (            
+                                    index >= 0            
+                                    &&            
+                                    index <            
+                                    sharedStrings.size()            
+                            ) {            
+        
+                                product =            
+                                        sharedStrings.get(            
+                                                index            
+                                        );            
+                            }            
+        
+                        } catch (            
+                                NumberFormatException ignored            
+                        ) {            
+                        }            
+                    }            
+        
+        
+                    /*            
+                     * We cannot directly count            
+                     * here because add method            
+                     * returns boolean.            
+                     */            
+                    if (            
+                            addXlsxProductIfValid(            
+                                    context,            
+                                    product            
+                            )            
+                    ) {            
+        
+                        imported++;            
+                    }            
+                }            
+            }            
+        
+        
+            if (            
+                    "c".equals(tag)            
+            ) {            
+        
+                cellType =            
+                        null;            
+        
+                cellValue =            
+                        null;            
+            }            
+        }            
+    }            
+        
+        
+    return imported;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * ADD XLSX PRODUCT            
+ * ============================================================            
+ */            
+        
+private static boolean            
+addXlsxProductIfValid(            
+        SettingsActivity context,            
+        String value            
+) {            
+        
+    String product =            
+            cleanProduct(            
+                    value            
+            );            
+        
+        
+    if (            
+            !validImportedProduct(            
+                    product            
+            )            
+    ) {            
+        
+        return false;            
+    }            
+        
+        
+    if (            
+            productExists(            
+                    context,            
+                    product            
+            )            
+    ) {            
+        
+        return false;            
+    }            
+        
+        
+    addProduct(            
+            context,            
+            product            
+    );            
+        
+        
+    return true;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * CLEAN PRODUCT            
+ * ============================================================            
+ */            
+        
+private static String cleanProduct(            
+        String product            
+) {            
+        
+    if (product == null) {            
+        return "";            
+    }            
+        
+        
+    product =            
+            product.trim();            
+        
+        
+    if (            
+            product.length() >= 2            
+            &&            
+            product.startsWith("\"")            
+            &&            
+            product.endsWith("\"")            
+    ) {            
+        
+        product =            
+                product.substring(            
+                        1,            
+                        product.length() - 1            
+                ).trim();            
+    }            
+        
+        
+    return product;            
+}            
+        
+        
+/*            
+ * ============================================================            
+ * VALIDATE IMPORTED PRODUCT            
+ * ============================================================            
+ */            
+        
+private static boolean            
+validImportedProduct(            
+        String product            
+) {            
+        
+    if (            
+            product == null            
+            ||            
+            product.length() == 0            
+    ) {            
+        
+        return false;            
+    }            
+        
+        
+    /*            
+     * Never import placeholder.            
+     */            
+    if (            
+            product.equalsIgnoreCase(            
+                    SELECT_PRODUCTS            
+            )            
+            ||            
+            product.equalsIgnoreCase(            
+                    "Select Product"            
+            )            
+    ) {            
+        
+        return false;            
+    }            
+        
+        
+    /*            
+     * Ignore common column headers.            
+     */            
+    String lower =            
+            product.toLowerCase(            
+                    Locale.US            
+            );            
+        
+        
+    if (            
+            lower.equals("product")            
+            ||            
+            lower.equals("products")            
+            ||            
+            lower.equals("product name")            
+            ||            
+            lower.equals("productname")            
+            ||            
+            lower.equals("name")            
+    ) {            
+        
+        return false;            
+    }            
+        
+        
+    return true;            
+}            
+        
+        
+/*
+ * ============================================================
+ * REFRESH PRODUCT LIST
+ * ============================================================
+ */
+
+private static void refreshProducts(
+        final SettingsActivity context
+) {
+
+    if (productContainer == null) {
+        return;
+    }
+
+    productContainer.removeAllViews();
+
+    ArrayList<String> products =
+            getProducts(
+                    context
+            );
+
+    ArrayList<String> realProducts =
+            new ArrayList<String>();
+
+    /*
+     * IMPORTANT:
+     *
+     * Select Products is removed
+     * from the real product list.
+     */
+    for (
+            String product :
+            products
+    ) {
+
+        if (product == null) {
+            continue;
+        }
+
+        product =
+                product.trim();
+
+        if (product.length() == 0) {
+            continue;
+        }
+
+        if (
+                product.equalsIgnoreCase(
+                        SELECT_PRODUCTS
+                )
+                ||
+                product.equalsIgnoreCase(
+                        "Select Product"
+                )
+        ) {
+
+            continue;
+        }
+
+        boolean duplicate =
+                false;
+
+        for (
+                String existing :
+                realProducts
+        ) {
+
+            if (
+                    existing.equalsIgnoreCase(
+                            product
+                    )
+            ) {
+
+                duplicate =
+                        true;
+
+                break;
+            }
+        }
+
+        if (!duplicate) {
+
+            realProducts.add(
+                    product
+            );
+        }
+    }
+
+    /*
+     * NO PRODUCTS
+     */
+    if (
+            realProducts.size() == 0
+    ) {
+
+        TextView empty =
+                new TextView(context);
+
+        empty.setText(
+                "No products added"
+        );
+
+        empty.setTextSize(
+                16
+        );
+
+        empty.setTextColor(
+                Color.rgb(
+                        100,
+                        100,
+                        100
+                )
+        );
+
+        empty.setGravity(
+                Gravity.CENTER
+        );
+
+        empty.setPadding(
+                0,
+                dp(context, 30),
+                0,
+                dp(context, 30)
+        );
+
+        productContainer.addView(
+                empty
+        );
+
+        /*
+         * Save ONLY real products.
+         *
+         * Do NOT save Select Products.
+         */
+        saveProducts(
+                context,
+                new ArrayList<String>()
+        );
+
+        return;
+    }
+
+    /*
+     * DISPLAY PRODUCTS
+     */
+    for (
+            final String product :
+            realProducts
+    ) {
+
+        addProductRow(
+                context,
+                product
+        );
+    }
+}
+
+
+/*
+ * ============================================================
+ * PRODUCT ROW
+ * ============================================================
+ */
+
+private static void addProductRow(
+        final SettingsActivity context,
+        final String product
+) {
+
+    final LinearLayout row =
+            new LinearLayout(context);
+
+    row.setOrientation(
+            LinearLayout.HORIZONTAL
+    );
+
+    row.setGravity(
+            Gravity.CENTER_VERTICAL
+    );
+
+    row.setPadding(
+            dp(context, 8),
+            dp(context, 5),
+            dp(context, 8),
+            dp(context, 5)
+    );
+
+    /*
+     * White row with Teal border.
+     */
+    GradientDrawable rowBackground =
+            background(
+                    Color.WHITE,
+                    dp(context, 12)
+            );
+
+    rowBackground.setStroke(
+            dp(context, 1),
+            COLOR_LIGHT_3
+    );
+
+    row.setBackground(
+            rowBackground
+    );
+
+    /*
+     * Small elevation before dragging.
+     */
+    row.setElevation(
+            0
+    );
+
+    LinearLayout.LayoutParams rowParams =
+            new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    dp(context, 58)
+            );
+
+    rowParams.bottomMargin =
+            dp(context, 7);
+
+    productContainer.addView(
+            row,
+            rowParams
+    );
+
+
+    /*
+     * ========================================================
+     * DRAG THUMB
+     * ========================================================
+     *
+     * Smaller than the old 25sp / 44dp version.
+     */
+    final TextView dragThumb =
+            new TextView(context);
+
+    dragThumb.setText(
+            "☷"
+    );
+
+    /*
+     * LITTLE SMALLER
+     */
+    dragThumb.setTextSize(
+            20
+    );
+
+    dragThumb.setTextColor(
+            COLOR_PRIMARY
+    );
+
+    dragThumb.setGravity(
+            Gravity.CENTER
+    );
+
+    dragThumb.setIncludeFontPadding(
+            false
+    );
+
+    dragThumb.setBackground(
+            background(
+                    COLOR_LIGHT,
+                    dp(context, 8)
+            )
+    );
+
+    LinearLayout.LayoutParams thumbParams =
+            new LinearLayout.LayoutParams(
+                    dp(context, 38),
+                    dp(context, 38)
+            );
+
+    thumbParams.rightMargin =
+            dp(context, 8);
+
+    row.addView(
+            dragThumb,
+            thumbParams
+    );
+
+
+    /*
+     * ========================================================
+     * PRODUCT NAME
+     * ========================================================
+     */
+
+    TextView name =
+            new TextView(context);
+
+    name.setText(
+            product
+    );
+
+    name.setTextSize(
+            16
+    );
+
+    name.setTextColor(
+            Color.rgb(
+                    35,
+                    35,
+                    35
+            )
+    );
+
+    name.setGravity(
+            Gravity.CENTER_VERTICAL
+    );
+
+    name.setSingleLine(
+            true
+    );
+
+    name.setPadding(
+            dp(context, 4),
+            0,
+            dp(context, 4),
+            0
+    );
+
+    row.addView(
+            name,
+            new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1
+            )
+    );
+
+
+    /*
+     * ========================================================
+     * EDIT
+     * ========================================================
+     */
+
+    Button edit =
+            new Button(context);
+
+    edit.setText(
+            "EDIT"
+    );
+
+    edit.setTextSize(
+            11
+    );
+
+    edit.setTextColor(
+            COLOR_DARK_2
+    );
+
+    edit.setTypeface(
+            null,
+            android.graphics.Typeface.BOLD
+    );
+
+    edit.setAllCaps(
+            false
+    );
+
+    edit.setPadding(
+            0,
+            0,
+            0,
+            0
+    );
+
+    edit.setMinWidth(
+            0
+    );
+
+    edit.setMinimumWidth(
+            0
+    );
+
+    edit.setBackground(
+            background(
+                    COLOR_LIGHT_2,
+                    dp(context, 9)
+            )
+    );
+
+    LinearLayout.LayoutParams editParams =
+            new LinearLayout.LayoutParams(
+                    dp(context, 56),
+                    dp(context, 40)
+            );
+
+    editParams.rightMargin =
+            dp(context, 5);
+
+    row.addView(
+            edit,
+            editParams
+    );
+
+
+    /*
+     * ========================================================
+     * DELETE
+     * ========================================================
+     */
+
+    Button delete =
+            new Button(context);
+
+    delete.setText(
+            "DELETE"
+    );
+
+    delete.setTextSize(
+            10
+    );
+
+    delete.setTextColor(
+            Color.WHITE
+    );
+
+    delete.setTypeface(
+            null,
+            android.graphics.Typeface.BOLD
+    );
+
+    delete.setAllCaps(
+            false
+    );
+
+    delete.setPadding(
+            0,
+            0,
+            0,
+            0
+    );
+
+    delete.setMinWidth(
+            0
+    );
+
+    delete.setMinimumWidth(
+            0
+    );
+
+    delete.setBackground(
+            background(
+                    COLOR_DARK,
+                    dp(context, 9)
+            )
+    );
+
+    LinearLayout.LayoutParams deleteParams =
+            new LinearLayout.LayoutParams(
+                    dp(context, 68),
+                    dp(context, 40)
+            );
+
+    row.addView(
+            delete,
+            deleteParams
+    );
+
+
+    /*
+     * ========================================================
+     * EDIT CLICK
+     * ========================================================
+     */
+
+    edit.setOnClickListener(
+            new View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                        View v
+                ) {
+
+                    editProduct(
+                            context,
+                            product
+                    );
+                }
+            }
+    );
+
+
+    /*
+     * ========================================================
+     * DELETE CLICK
+     * ========================================================
+     */
+
+    delete.setOnClickListener(
+            new View.OnClickListener() {
+
+                @Override
+                public void onClick(
+                        View v
+                ) {
+
+                    deleteProduct(
+                            context,
+                            product
+                    );
+                }
+            }
+    );
+
+
+    /*
+     * ============================================================
+     * DRAG THUMB
+     * ============================================================
+     *
+     * IMPORTANT:
+     *
+     * The old code removed and re-added the row on EVERY
+     * ACTION_MOVE.
+     *
+     * That causes:
+     *
+     * - blinking
+     * - jumping
+     * - unstable touch movement
+     * - ScrollView fighting with the drag
+     *
+     * This version DOES NOT remove/re-add the row while moving.
+     *
+     * The dragged row stays in its layout position and the
+     * surrounding rows smoothly move away to create a gap.
+     *
+     * The actual child order is changed only when the finger
+     * is released.
+     */
+
+    dragThumb.setOnTouchListener(
+            new View.OnTouchListener() {
+
+                private float startY;
+
+                private boolean dragging =
+                        false;
+
+                private int originalIndex =
+                        -1;
+
+                private int currentTargetIndex =
+                        -1;
+
+                /*
+                 * Original screen positions of the rows.
+                 */
+                private final java.util.HashMap<
+                        View,
+                        Float
+                        > originalCenters =
+                        new java.util.HashMap<
+                                View,
+                                Float
+                                >();
+
+
+                @Override
+                public boolean onTouch(
+                        View v,
+                        MotionEvent event
+                ) {
+
+                    switch (
+                            event.getActionMasked()
+                    ) {
+
+
+                        /*
+                         * ====================================================
+                         * START DRAG
+                         * ====================================================
+                         */
+
+                        case MotionEvent.ACTION_DOWN:
+
+                            startY =
+                                    event.getRawY();
+
+                            dragging =
+                                    true;
+
+                            originalIndex =
+                                    productContainer.indexOfChild(
+                                            row
+                                    );
+
+                            currentTargetIndex =
+                                    originalIndex;
+
+                            originalCenters.clear();
+
+
+                            /*
+                             * Stop the parent ScrollView from
+                             * stealing the drag.
+                             */
+                            if (
+                                    v.getParent() != null
+                            ) {
+
+                                v.getParent()
+                                        .requestDisallowInterceptTouchEvent(
+                                                true
+                                        );
+                            }
+
+
+                            /*
+                             * Save the original center position
+                             * of every row.
+                             */
+                            for (
+                                    int i = 0;
+                                    i < productContainer.getChildCount();
+                                    i++
+                            ) {
+
+                                View child =
+                                        productContainer.getChildAt(
+                                                i
+                                        );
+
+                                if (
+                                        child == null
+                                ) {
+                                    continue;
+                                }
+
+                                int[] location =
+                                        new int[2];
+
+                                child.getLocationOnScreen(
+                                        location
+                                );
+
+                                float center =
+                                        location[1]
+                                        +
+                                        (
+                                                child.getHeight()
+                                                /
+                                                2f
+                                        );
+
+                                originalCenters.put(
+                                        child,
+                                        center
+                                );
+                            }
+
+
+                            /*
+                             * Lift the row.
+                             */
+                            row.setElevation(
+                                    dp(
+                                            context,
+                                            8
+                                    )
+                            );
+
+
+                            /*
+                             * Teal active drag color.
+                             *
+                             * Uses your NEW color:
+                             * #00BFA5
+                             */
+                            dragThumb.setBackground(
+                                    background(
+                                            COLOR_ACCENT,
+                                            dp(
+                                                    context,
+                                                    8
+                                            )
+                                    )
+                            );
+
+
+                            /*
+                             * Very small smooth lift.
+                             *
+                             * This does NOT change the layout size,
+                             * so there is no blinking.
+                             */
+                            row.animate()
+                                    .scaleX(1.015f)
+                                    .scaleY(1.015f)
+                                    .setDuration(120)
+                                    .setInterpolator(
+                                            new android.view.animation.DecelerateInterpolator()
+                                    )
+                                    .start();
+
+
+                            return true;
+
+
+                        /*
+                         * ====================================================
+                         * MOVE DRAG
+                         * ====================================================
+                         */
+
+                        case MotionEvent.ACTION_MOVE:
+
+                            if (
+                                    !dragging
+                            ) {
+
+                                return true;
+                            }
+
+
+                            float currentY =
+                                    event.getRawY();
+
+
+                            float distance =
+                                    currentY
+                                    -
+                                    startY;
+
+
+                            /*
+                             * Move the dragged row visually.
+                             *
+                             * The actual layout position does NOT
+                             * change here.
+                             */
+                            row.setTranslationY(
+                                    distance
+                            );
+
+
+                            /*
+                             * Determine where the dragged row
+                             * visually belongs.
+                             */
+                            int targetIndex =
+                                    calculateDragTarget(
+                                            row,
+                                            distance,
+                                            originalIndex,
+                                            originalCenters
+                                    );
+
+
+                            if (
+                                    targetIndex
+                                    !=
+                                    currentTargetIndex
+                            ) {
+
+                                currentTargetIndex =
+                                        targetIndex;
+                            }
+
+
+                            /*
+                             * Smoothly create the gap.
+                             */
+                            animateDragGap(
+                                    row,
+                                    originalIndex,
+                                    currentTargetIndex
+                            );
+
+
+                            return true;
+
+
+                        /*
+                         * ====================================================
+                         * FINISH DRAG
+                         * ====================================================
+                         */
+
+                        case MotionEvent.ACTION_UP:
+
+                        case MotionEvent.ACTION_CANCEL:
+
+                            if (
+                                    dragging
+                            ) {
+
+                                dragging =
+                                        false;
+
+
+                                /*
+                                 * Stop accepting ScrollView
+                                 * interception after the drag.
+                                 */
+                                if (
+                                        v.getParent() != null
+                                ) {
+
+                                    v.getParent()
+                                            .requestDisallowInterceptTouchEvent(
+                                                    false
+                                            );
+                                }
+
+
+                                /*
+                                 * Final physical position.
+                                 */
+                                int finalIndex =
+                                        currentTargetIndex;
+
+
+                                if (
+                                        finalIndex < 0
+                                ) {
+
+                                    finalIndex =
+                                            originalIndex;
+                                }
+
+
+                                int childCount =
+                                        productContainer.getChildCount();
+
+
+                                if (
+                                        finalIndex
+                                        >=
+                                        childCount
+                                ) {
+
+                                    finalIndex =
+                                            childCount - 1;
+                                }
+
+
+                                if (
+                                        finalIndex < 0
+                                ) {
+
+                                    finalIndex =
+                                            0;
+                                }
+
+
+                                /*
+                                 * First smoothly return all
+                                 * surrounding rows to their
+                                 * normal translation.
+                                 */
+                                for (
+                                        int i = 0;
+                                        i < productContainer.getChildCount();
+                                        i++
+                                ) {
+
+                                    View child =
+                                            productContainer.getChildAt(
+                                                    i
+                                            );
+
+                                    if (
+                                            child == null
+                                    ) {
+                                        continue;
+                                    }
+
+                                    child.animate()
+                                            .translationY(
+                                                    0f
+                                            )
+                                            .setDuration(
+                                                    160
+                                            )
+                                            .setInterpolator(
+                                                    new android.view.animation.DecelerateInterpolator()
+                                            )
+                                            .start();
+                                }
+
+
+                                /*
+                                 * Animate the dragged row back
+                                 * into its normal visual position
+                                 * before changing the actual order.
+                                 */
+                                row.animate()
+                                        .translationY(
+                                                0f
+                                        )
+                                        .scaleX(1f)
+                                        .scaleY(1f)
+                                        .setDuration(
+                                                160
+                                        )
+                                        .setInterpolator(
+                                                new android.view.animation.DecelerateInterpolator()
+                                        )
+                                        .start();
+
+
+                                /*
+                                 * Restore elevation.
+                                 */
+                                row.setElevation(
+                                        0
+                                );
+
+
+                                /*
+                                 * Restore normal drag handle.
+                                 */
+                                dragThumb.setBackground(
+                                        background(
+                                                COLOR_LIGHT,
+                                                dp(
+                                                        context,
+                                                        8
+                                                )
+                                        )
+                                );
+
+
+                                /*
+                                 * Change the REAL child order
+                                 * only once, at the end.
+                                 *
+                                 * This is the important part
+                                 * that eliminates continuous
+                                 * remove/add blinking.
+                                 */
+                                if (
+                                        finalIndex
+                                        !=
+                                        originalIndex
+                                ) {
+
+                                    /*
+                                     * Save the current row
+                                     * LayoutParams.
+                                     */
+                                    android.view.ViewGroup.LayoutParams params =
+                                            row.getLayoutParams();
+
+
+                                    /*
+                                     * Remove ONLY ONCE after
+                                     * dragging has finished.
+                                     */
+                                    productContainer.removeView(
+                                            row
+                                    );
+
+
+                                    /*
+                                     * Correct final index after
+                                     * removing the dragged row.
+                                     */
+                                    if (
+                                            finalIndex
+                                            >
+                                            productContainer.getChildCount()
+                                    ) {
+
+                                        finalIndex =
+                                                productContainer.getChildCount();
+                                    }
+
+
+                                    if (
+                                            finalIndex < 0
+                                    ) {
+
+                                        finalIndex =
+                                                0;
+                                    }
+
+
+                                    /*
+                                     * Add at final position.
+                                     */
+                                    productContainer.addView(
+                                            row,
+                                            finalIndex
+                                    );
+
+
+                                    /*
+                                     * Restore the exact
+                                     * LayoutParams.
+                                     */
+                                    row.setLayoutParams(
+                                            params
+                                    );
+                                }
+
+
+                                /*
+                                 * Make absolutely sure every row
+                                 * has zero translation after the
+                                 * reorder.
+                                 */
+                                for (
+                                        int i = 0;
+                                        i < productContainer.getChildCount();
+                                        i++
+                                ) {
+
+                                    View child =
+                                            productContainer.getChildAt(
+                                                    i
+                                            );
+
+                                    if (
+                                            child != null
+                                    ) {
+
+                                        child.setTranslationY(
+                                                0f
+                                        );
+
+                                        child.setScaleX(
+                                                1f
+                                        );
+
+                                        child.setScaleY(
+                                                1f
+                                        );
+                                    }
+                                }
+
+
+                                /*
+                                 * Save the new product order.
+                                 */
+                                saveCurrentProductOrder(
+                                        context
+                                );
+
+
+                                /*
+                                 * Clean drag state.
+                                 */
+                                originalCenters.clear();
+
+                                originalIndex =
+                                        -1;
+
+                                currentTargetIndex =
+                                        -1;
+                            }
+
+
+                            return true;
+                    }
+
+
+                    return true;
+                }
+            }
+    );
+}
+
+
+/*
+ * ============================================================
+ * CALCULATE DRAG TARGET
+ * ============================================================
+ *
+ * Determines the destination index from the dragged row's
+ * VISUAL center.
+ *
+ * Works both directions:
+ *
+ * DOWN:
+ * Apple
+ * Banana
+ * Orange
+ *
+ * UP:
+ * Orange
+ * Banana
+ * Apple
+ *
+ * No child is removed during this calculation.
+ */
+
+private static int calculateDragTarget(
+        View row,
+        float distance,
+        int originalIndex,
+        java.util.HashMap<
+                View,
+                Float
+                > originalCenters
+) {
+
+    if (
+            productContainer == null
+            ||
+            row == null
+            ||
+            originalIndex < 0
+    ) {
+
+        return originalIndex;
+    }
+
+
+    Float originalCenter =
+            originalCenters.get(
+                    row
+            );
+
+
+    if (
+            originalCenter == null
+    ) {
+
+        return originalIndex;
+    }
+
+
+    float draggedCenter =
+            originalCenter
+            +
+            distance;
+
+
+    int targetIndex =
+            originalIndex;
+
+
+    /*
+     * Compare the dragged row against the
+     * ORIGINAL positions of the other rows.
+     */
+    for (
+            int i = 0;
+            i < productContainer.getChildCount();
+            i++
+    ) {
+
+        View child =
+                productContainer.getChildAt(
+                        i
+                );
+
+
+        if (
+                child == null
+                ||
+                child == row
+        ) {
+
+            continue;
+        }
+
+
+        Float childCenter =
+                originalCenters.get(
+                        child
+                );
+
+
+        if (
+                childCenter == null
+        ) {
+
+            continue;
+        }
+
+
+        /*
+         * DOWNWARD MOVEMENT
+         *
+         * The dragged center has crossed the
+         * other row's center.
+         */
+        if (
+                draggedCenter
+                >
+                childCenter
+        ) {
+
+            if (
+                    i > originalIndex
+            ) {
+
+                targetIndex =
+                        i;
+            }
+        }
+
+
+        /*
+         * UPWARD MOVEMENT
+         */
+        else {
+
+            if (
+                    i < originalIndex
+            ) {
+
+                targetIndex =
+                        i;
+            }
+        }
+    }
+
+
+    /*
+     * Correct the index when moving DOWN.
+     *
+     * Example:
+     *
+     * 0 Apple
+     * 1 Banana
+     * 2 Orange
+     *
+     * Apple dragged below Orange:
+     * target = 2
+     */
+    if (
+            targetIndex < 0
+    ) {
+
+        targetIndex =
+                0;
+    }
+
+
+    int maxIndex =
+            productContainer.getChildCount()
+            -
+            1;
+
+
+    if (
+            targetIndex > maxIndex
+    ) {
+
+        targetIndex =
+                maxIndex;
+    }
+
+
+    return targetIndex;
+}
+
+
+/*
+ * ============================================================
+ * ANIMATE DRAG GAP
+ * ============================================================
+ *
+ * This creates the visible SPACE/GAP while dragging.
+ *
+ * The dragged row moves with the finger.
+ *
+ * Rows between the original position and target position
+ * slide smoothly away.
+ *
+ * IMPORTANT:
+ *
+ * No removeView()
+ * No addView()
+ *
+ * while the finger is moving.
+ *
+ * Therefore:
+ *
+ * NO BLINKING.
+ */
+
+private static void animateDragGap(
+        View draggedRow,
+        int originalIndex,
+        int targetIndex
+) {
+
+    if (
+            productContainer == null
+            ||
+            draggedRow == null
+            ||
+            originalIndex < 0
+            ||
+            targetIndex < 0
+    ) {
+
+        return;
+    }
+
+
+    if (
+            targetIndex == originalIndex
+    ) {
+
+        /*
+         * No gap is necessary.
+         *
+         * Return all other rows to normal.
+         */
+        for (
+                int i = 0;
+                i < productContainer.getChildCount();
+                i++
+        ) {
+
+            View child =
+                    productContainer.getChildAt(
+                            i
+                    );
+
+            if (
+                    child == null
+                    ||
+                    child == draggedRow
+            ) {
+
+                continue;
+            }
+
+            child.animate()
+                    .translationY(
+                            0f
+                    )
+                    .setDuration(
+                            90
+                    )
+                    .setInterpolator(
+                            new android.view.animation.DecelerateInterpolator()
+                    )
+                    .start();
+        }
+
+        return;
+    }
+
+
+    /*
+     * Height of one row including its bottom spacing.
+     *
+     * This produces a clean, consistent gap.
+     */
+    int rowDistance =
+            draggedRow.getHeight();
+
+
+    android.view.ViewGroup.LayoutParams lp =
+            draggedRow.getLayoutParams();
+
+
+    if (
+            lp instanceof LinearLayout.LayoutParams
+    ) {
+
+        rowDistance +=
+                (
+                        (
+                                LinearLayout.LayoutParams
+                                        ) lp
+                        ).bottomMargin;
+    }
+
+
+    if (
+            rowDistance <= 0
+    ) {
+
+        rowDistance =
+                dp(
+                        null,
+                        65
+                );
+    }
+
+
+    float shift =
+            rowDistance;
+
+
+    /*
+     * ========================================================
+     * MOVING DOWN
+     * ========================================================
+     *
+     * Example:
+     *
+     * Apple   ← dragged
+     * Banana
+     * Orange
+     *
+     * When Apple moves toward Orange:
+     *
+     * Apple
+     * GAP
+     * Banana
+     * Orange
+     *
+     * Banana/Orange move upward to create the space.
+     */
+    if (
+            targetIndex
+            >
+            originalIndex
+    ) {
+
+        for (
+                int i = 0;
+                i < productContainer.getChildCount();
+                i++
+        ) {
+
+            View child =
+                    productContainer.getChildAt(
+                            i
+                    );
+
+            if (
+                    child == null
+                    ||
+                    child == draggedRow
+            ) {
+
+                continue;
+            }
+
+
+            if (
+                    i > originalIndex
+                    &&
+                    i <= targetIndex
+            ) {
+
+                child.animate()
+                        .translationY(
+                                -shift
+                        )
+                        .setDuration(
+                                140
+                        )
+                        .setInterpolator(
+                                new android.view.animation.DecelerateInterpolator()
+                        )
+                        .start();
+            }
+
+            else {
+
+                child.animate()
+                        .translationY(
+                                0f
+                        )
+                        .setDuration(
+                                120
+                        )
+                        .setInterpolator(
+                                new android.view.animation.DecelerateInterpolator()
+                        )
+                        .start();
+            }
+        }
+    }
+
+
+    /*
+     * ========================================================
+     * MOVING UP
+     * ========================================================
+     *
+     * Example:
+     *
+     * Apple
+     * Banana
+     * Orange  ← dragged
+     *
+     * When Orange moves toward Apple:
+     *
+     * Apple
+     * Banana
+     * GAP
+     * Orange
+     *
+     * The rows above move downward to create the space.
+     */
+    else {
+
+        for (
+                int i = 0;
+                i < productContainer.getChildCount();
+                i++
+        ) {
+
+            View child =
+                    productContainer.getChildAt(
+                            i
+                    );
+
+            if (
+                    child == null
+                    ||
+                    child == draggedRow
+            ) {
+
+                continue;
+            }
+
+
+            if (
+                    i >= targetIndex
+                    &&
+                    i < originalIndex
+            ) {
+
+                child.animate()
+                        .translationY(
+                                shift
+                        )
+                        .setDuration(
+                                140
+                        )
+                        .setInterpolator(
+                                new android.view.animation.DecelerateInterpolator()
+                        )
+                        .start();
+            }
+
+            else {
+
+                child.animate()
+                        .translationY(
+                                0f
+                        )
+                        .setDuration(
+                                120
+                        )
+                        .setInterpolator(
+                                new android.view.animation.DecelerateInterpolator()
+                        )
+                        .start();
+            }
+        }
+    }
+}
+
+
+/*
+ * ============================================================
+ * SAVE CURRENT DRAG ORDER
+ * ============================================================
+ */
+
+private static void saveCurrentProductOrder(
+        SettingsActivity context
+) {
+
+    if (
+            context == null
+            ||
+            productContainer == null
+    ) {
+
+        return;
+    }
+
+
+    ArrayList<String> orderedProducts =
+            new ArrayList<String>();
+
+
+    for (
+            int i = 0;
+            i < productContainer.getChildCount();
+            i++
+    ) {
+
+        View child =
+                productContainer.getChildAt(
+                        i
+                );
+
+
+        if (
+                !(child instanceof LinearLayout)
+        ) {
+
+            continue;
+        }
+
+
+        LinearLayout row =
+                (LinearLayout) child;
+
+
+        /*
+         * Product name is the second
+         * child after the drag thumb.
+         */
+        if (
+                row.getChildCount() < 2
+        ) {
+
+            continue;
+        }
+
+
+        View nameView =
+                row.getChildAt(
+                        1
+                );
+
+
+        if (
+                !(nameView instanceof TextView)
+        ) {
+
+            continue;
+        }
+
+
+        String product =
+                (
+                        (
+                                TextView
+                                        ) nameView
+                        )
+                        .getText()
+                        .toString()
+                        .trim();
+
+
+        if (
+                product.length() == 0
+                ||
+                product.equalsIgnoreCase(
+                        SELECT_PRODUCTS
+                )
+                ||
+                product.equalsIgnoreCase(
+                        "Select Product"
+                )
+        ) {
+
+            continue;
+        }
+
+
+        orderedProducts.add(
+                product
+        );
+    }
+
+
+    /*
+     * Save exactly the visual/list order.
+     */
+    saveProducts(
+            context,
+            orderedProducts
+    );
+}
+
+/*
+============================================================
+
+DELETE
+
+============================================================
+*/
+
+
+private static void deleteProduct(
+SettingsActivity context,
+String product
+) {
+
+if (product == null) {            
+     return;            
+ }            
+
+
+ product =            
+         product.trim();            
+
+
+ if (product.length() == 0) {            
+     return;            
+ }            
+
+
+ if (            
+         product.equalsIgnoreCase(            
+                 SELECT_PRODUCTS            
+         )            
+         ||            
+         product.equalsIgnoreCase(            
+                 "Select Product"            
+         )            
+ ) {            
+
+     Toast.makeText(            
+             context,            
+             "Select Products is not a product",            
+             Toast.LENGTH_SHORT            
+     ).show();            
+
+     return;            
+ }            
+
+
+ removeProduct(            
+         context,            
+         product            
+ );            
+
+
+ refreshProducts(            
+         context            
+ );            
+
+
+ Toast.makeText(            
+         context,            
+         "Product deleted",            
+         Toast.LENGTH_SHORT            
+ ).show();
+
+}
+
+/*
+
+============================================================
+
+CLOSE
+
+============================================================
+*/
+
+
+public static void close() {
+
+if (            
+         dialog != null            
+         &&            
+         dialog.isShowing()            
+ ) {            
+
+     dialog.dismiss();            
+ }            
+
+
+ dialog =            
+         null;            
+
+ productInput =            
+         null;            
+
+ productContainer =            
+         null;            
+
+ settingsContext =            
+         null;
+
+}
+
+/*
+
+============================================================
+
+ERROR MESSAGE
+
+============================================================
+*/
+
+
+private static String errorMessage(
+Exception e
+) {
+
+if (e == null) {            
+     return "Unknown error";            
+ }            
+
+
+ String message =            
+         e.getMessage();            
+
+
+ if (            
+         message == null            
+         ||            
+         message.trim().length() == 0            
+ ) {            
+
+     return "Unknown error";            
+ }            
+
+
+ return message;
+
+}
+}
