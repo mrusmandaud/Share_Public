@@ -1,0 +1,4845 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.text.InputType;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+public final class ButtonsController {
+
+    private static final String RECORDS_FILE =
+            "myrecords.txt";
+
+    private static final int SELECTED_COLOR =
+            Color.rgb(0, 150, 136);
+
+    private static final int WHITE =
+            Color.WHITE;
+
+    private static final int BLACK =
+            Color.BLACK;
+
+
+    // ============================================================
+    // POPUP SIZE
+    // ============================================================
+
+    private static final int POPUP_WIDTH_DP = 160;
+
+
+    // ============================================================
+    // BUTTON SIZE
+    // ============================================================
+
+    private static final int BUTTON_WIDTH_DP = 0;
+
+    private static final int BUTTON_HEIGHT_DP = 40;
+
+
+    // ============================================================
+    // POPUP POSITION
+    // ============================================================
+
+    private static final int POSITION_TOP = 1;
+
+    private static final int POSITION_BOTTOM = 2;
+
+    private static final int POSITION_LEFT = 3;
+
+    private static final int POSITION_RIGHT = 4;
+
+    private static final int POSITION_CENTER = 5;
+
+
+    private static final int POPUP_POSITION_MODE =
+            POSITION_RIGHT;
+
+
+    private static final int POPUP_TOP_DP = 320;
+
+    private static final int POPUP_BOTTOM_DP = 10;
+
+    private static final int POPUP_LEFT_DP = 10;
+
+    private static final int POPUP_RIGHT_DP = 12;
+
+
+    // ============================================================
+    // X / Y CUSTOM ADJUSTMENT
+    // ============================================================
+
+    private static final int POPUP_X_ADJUST_DP = 0;
+
+    private static final int POPUP_Y_ADJUST_DP = 0;
+
+
+    // ============================================================
+    // POPUP GRAVITY
+    // ============================================================
+
+    private static final int POPUP_GRAVITY =
+            Gravity.TOP | Gravity.RIGHT;
+
+
+    private static final Map<Activity, SelectionState>
+            SELECTION_STATES =
+            new WeakHashMap<Activity, SelectionState>();
+
+
+    // ============================================================
+    // EDIT SESSION STATE
+    // ============================================================
+
+    private static final Map<Activity, EditSession>
+            EDIT_SESSIONS =
+            new WeakHashMap<Activity, EditSession>();
+
+
+    private ButtonsController() {
+    }
+
+
+    // ============================================================
+    // EDIT SESSION
+    // ============================================================
+
+    private static class EditSession {
+
+        boolean editMode = false;
+
+        /*
+         * Rows waiting to be removed when Save is pressed.
+         * This is internal only. No "marked for deletion"
+         * message is shown to the user.
+         */
+        final Set<Integer> deletedRows =
+                new HashSet<Integer>();
+
+        final Set<TextView> removedCells =
+                new HashSet<TextView>();
+
+        final ArrayList<String> originalRecords =
+                new ArrayList<String>();
+
+        boolean menuConnected = false;
+
+        /*
+         * Cell currently being edited.
+         */
+        TextView focusedCell = null;
+
+        /*
+         * External edit popup window.
+         */
+        PopupWindow editPopupWindow = null;
+    }
+
+
+    // ============================================================
+    // GET EDIT SESSION
+    // ============================================================
+
+    private static EditSession getEditSession(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+        EditSession session =
+                EDIT_SESSIONS.get(activity);
+
+        if (session == null) {
+
+            session =
+                    new EditSession();
+
+            EDIT_SESSIONS.put(
+                    activity,
+                    session
+            );
+        }
+
+        return session;
+    }
+
+
+    // ============================================================
+    // NEW RECORD
+    // ============================================================
+
+    public static void newRecord(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            NewrecordActivity.class
+                    );
+
+            activity.startActivity(intent);
+
+            activity.overridePendingTransition(
+                    0,
+                    0
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to open New Record",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // MY RECORDS
+    // ============================================================
+
+    public static void myRecords(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            MyrecordsActivity.class
+                    );
+
+            activity.startActivity(intent);
+
+            activity.overridePendingTransition(
+                    0,
+                    0
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to open Records",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // EXPORT
+    // ============================================================
+
+    public static void export(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            SettingsActivity.class
+                    );
+
+            intent.putExtra(
+                    "open_export",
+                    true
+            );
+
+            activity.startActivity(intent);
+
+            activity.overridePendingTransition(
+                    0,
+                    0
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Export is not available",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // SETTINGS
+    // ============================================================
+
+    public static void settings(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            SettingsActivity.class
+                    );
+
+            activity.startActivity(intent);
+
+            activity.overridePendingTransition(
+                    0,
+                    0
+            );
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to open Settings",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // BACK
+    // ============================================================
+
+    public static void back(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        activity.finish();
+    }
+
+
+    // ============================================================
+    // BACK TO SETTINGS
+    // ============================================================
+
+    public static void backToSettings(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            activity,
+                            SettingsActivity.class
+                    );
+
+            activity.startActivity(intent);
+
+            activity.finish();
+
+        } catch (Exception e) {
+
+            activity.finish();
+        }
+    }
+
+
+    // ============================================================
+    // SAVE RECORD
+    // ============================================================
+
+    public static boolean saveRecord(
+            Activity activity,
+            EditText nameView,
+            EditText phoneView,
+            EditText addressView,
+            Spinner productSpinner,
+            CheckBox confirm
+    ) {
+
+        if (activity == null) {
+            return false;
+        }
+
+        if (
+                confirm == null
+                ||
+                !confirm.isChecked()
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "Please confirm and agree to save",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        String name = "";
+
+        if (
+                nameView != null
+                &&
+                nameView.getText() != null
+        ) {
+
+            name =
+                    nameView
+                            .getText()
+                            .toString()
+                            .trim();
+        }
+
+
+        String phone = "";
+
+        if (
+                phoneView != null
+                &&
+                phoneView.getText() != null
+        ) {
+
+            phone =
+                    phoneView
+                            .getText()
+                            .toString()
+                            .trim();
+        }
+
+
+        String address = "";
+
+        if (
+                addressView != null
+                &&
+                addressView.getText() != null
+        ) {
+
+            address =
+                    addressView
+                            .getText()
+                            .toString()
+                            .trim();
+        }
+
+
+        String product = "";
+
+        if (
+                productSpinner != null
+                &&
+                productSpinner.getSelectedItem() != null
+        ) {
+
+            product =
+                    productSpinner
+                            .getSelectedItem()
+                            .toString()
+                            .trim();
+        }
+
+
+        if (name.length() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "Please enter Name",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        if (phone.length() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "Please enter Phone",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        if (address.length() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "Please enter Address",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        if (
+                product.length() == 0
+                ||
+                product.equalsIgnoreCase(
+                        "Select Product"
+                )
+                ||
+                product.equalsIgnoreCase(
+                        "Select Products"
+                )
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "Please select Product",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+        }
+
+
+        String record =
+                name
+                        + " | "
+                        + phone
+                        + " | "
+                        + address
+                        + " | "
+                        + product
+                        + "\n";
+
+
+        FileOutputStream output = null;
+
+
+        try {
+
+            output =
+                    activity.openFileOutput(
+                            RECORDS_FILE,
+                            Context.MODE_APPEND
+                    );
+
+            output.write(
+                    record.getBytes("UTF-8")
+            );
+
+            output.flush();
+
+
+            Toast.makeText(
+                    activity,
+                    "Record saved successfully",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+            clearRecord(
+                    nameView,
+                    phoneView,
+                    addressView,
+                    productSpinner,
+                    confirm
+            );
+
+
+            return true;
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to save record",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return false;
+
+
+        } finally {
+
+            if (output != null) {
+
+                try {
+                    output.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+
+    // ============================================================
+    // CLEAR RECORD
+    // ============================================================
+
+    public static void clearRecord(
+            EditText nameView,
+            EditText phoneView,
+            EditText addressView,
+            Spinner productSpinner,
+            CheckBox confirm
+    ) {
+
+        if (nameView != null) {
+            nameView.setText("");
+        }
+
+        if (phoneView != null) {
+            phoneView.setText("");
+        }
+
+        if (addressView != null) {
+            addressView.setText("");
+        }
+
+
+        if (
+                productSpinner != null
+                &&
+                productSpinner.getAdapter() != null
+                &&
+                productSpinner.getAdapter().getCount() > 0
+        ) {
+
+            productSpinner.setSelection(0);
+        }
+
+
+        if (confirm != null) {
+            confirm.setChecked(false);
+        }
+    }
+
+
+    // ============================================================
+    // GET RECORDS
+    // ============================================================
+
+    public static ArrayList<String> getRecords(
+            Activity activity
+    ) {
+
+        ArrayList<String> records =
+                new ArrayList<String>();
+
+
+        if (activity == null) {
+            return records;
+        }
+
+
+        BufferedReader reader = null;
+
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+
+            reader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    input,
+                                    "UTF-8"
+                            )
+                    );
+
+
+            String line;
+
+
+            while (
+                    (line = reader.readLine()) != null
+            ) {
+
+                line =
+                        line.trim();
+
+
+                if (line.length() > 0) {
+
+                    records.add(line);
+                }
+            }
+
+
+        } catch (Exception e) {
+
+        } finally {
+
+            if (reader != null) {
+
+                try {
+                    reader.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+
+        return records;
+    }
+
+
+    // ============================================================
+    // SELECTION STATE
+    // ============================================================
+
+    private static class SelectionState {
+
+        final ArrayList<ArrayList<TextView>>
+                records;
+
+        final ArrayList<TextView>
+                cells;
+
+        final ArrayList<Integer>
+                cellRecordIndexes;
+
+
+        int firstIndex = -1;
+
+        int lastIndex = -1;
+
+        int firstRecord = -1;
+
+        int lastRecord = -1;
+
+
+        SelectionState(
+                ArrayList<ArrayList<TextView>>
+                        records
+        ) {
+
+            this.records =
+                    records;
+
+            this.cells =
+                    new ArrayList<TextView>();
+
+            this.cellRecordIndexes =
+                    new ArrayList<Integer>();
+
+
+            if (records == null) {
+                return;
+            }
+
+
+            for (
+                    int r = 0;
+                    r < records.size();
+                    r++
+            ) {
+
+                ArrayList<TextView> record =
+                        records.get(r);
+
+
+                if (record == null) {
+                    continue;
+                }
+
+
+                for (
+                        int c = 0;
+                        c < record.size();
+                        c++
+                ) {
+
+                    TextView cell =
+                            record.get(c);
+
+
+                    if (cell != null) {
+
+                        cells.add(cell);
+
+                        cellRecordIndexes.add(r);
+                    }
+                }
+            }
+        }
+    }
+
+
+    // ============================================================
+    // GET SELECTION STATE
+    // ============================================================
+
+    private static SelectionState getSelectionState(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+        return SELECTION_STATES.get(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // GET RECORD INDEX FOR CELL
+    // ============================================================
+
+    private static int getRecordIndexForCell(
+            SelectionState state,
+            int cellIndex
+    ) {
+
+        if (state == null) {
+            return -1;
+        }
+
+
+        if (
+                cellIndex < 0
+                ||
+                cellIndex >=
+                        state.cellRecordIndexes.size()
+        ) {
+
+            return -1;
+        }
+
+
+        return state.cellRecordIndexes.get(
+                cellIndex
+        );
+    }
+
+
+    // ============================================================
+    // GET RECORD INDEX FOR VIEW
+    // ============================================================
+
+    private static int getRecordIndexForView(
+            Activity activity,
+            TextView target
+    ) {
+
+        if (
+                activity == null
+                ||
+                target == null
+        ) {
+            return -1;
+        }
+
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return -1;
+        }
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                if (record.get(c) == target) {
+                    return r;
+                }
+            }
+        }
+
+
+        return -1;
+    }
+
+
+    // ============================================================
+    // GET CELL POSITION IN RECORD
+    // ============================================================
+
+    private static int getCellPositionInRecord(
+            SelectionState state,
+            int recordIndex,
+            TextView target
+    ) {
+
+        if (
+                state == null
+                ||
+                target == null
+                ||
+                recordIndex < 0
+                ||
+                recordIndex >= state.records.size()
+        ) {
+
+            return -1;
+        }
+
+
+        ArrayList<TextView> record =
+                state.records.get(
+                        recordIndex
+                );
+
+
+        if (record == null) {
+            return -1;
+        }
+
+
+        for (
+                int i = 0;
+                i < record.size();
+                i++
+        ) {
+
+            if (record.get(i) == target) {
+                return i;
+            }
+        }
+
+
+        return -1;
+    }
+
+
+    // ============================================================
+    // SET CELL SELECTED
+    // ============================================================
+
+    private static void setCellSelected(
+            TextView cell,
+            boolean selected
+    ) {
+
+        if (cell == null) {
+            return;
+        }
+
+
+        if (selected) {
+
+            cell.setBackgroundColor(
+                    SELECTED_COLOR
+            );
+
+            cell.setTextColor(
+                    WHITE
+            );
+
+        } else {
+
+            cell.setBackgroundColor(
+                    WHITE
+            );
+
+            cell.setTextColor(
+                    BLACK
+            );
+        }
+    }
+
+
+    // ============================================================
+    // SELECT RECORD
+    // ============================================================
+
+    private static void selectRecord(
+            ArrayList<TextView> record
+    ) {
+
+        if (record == null) {
+            return;
+        }
+
+
+        for (
+                int i = 0;
+                i < record.size();
+                i++
+        ) {
+
+            setCellSelected(
+                    record.get(i),
+                    true
+            );
+        }
+    }
+
+
+    // ============================================================
+    // CLEAR SELECTION
+    // ============================================================
+
+    private static void clearSelection(
+            SelectionState state
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            setCellSelected(
+                    state.cells.get(i),
+                    false
+            );
+        }
+    }
+
+
+    // ============================================================
+    // DESELECT STATE
+    // ============================================================
+
+    private static void deselectState(
+            SelectionState state
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        clearSelection(
+                state
+        );
+
+
+        state.firstIndex =
+                -1;
+
+        state.lastIndex =
+                -1;
+
+        state.firstRecord =
+                -1;
+
+        state.lastRecord =
+                -1;
+    }
+
+
+    // ============================================================
+    // SELECT RECORD RANGE
+    // ============================================================
+
+    private static void selectRecordRange(
+            SelectionState state,
+            int startRecord,
+            int endRecord
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        if (startRecord > endRecord) {
+
+            int temp =
+                    startRecord;
+
+            startRecord =
+                    endRecord;
+
+            endRecord =
+                    temp;
+        }
+
+
+        for (
+                int r = startRecord;
+                r <= endRecord;
+                r++
+        ) {
+
+            if (
+                    r < 0
+                    ||
+                    r >= state.records.size()
+            ) {
+
+                continue;
+            }
+
+
+            selectRecord(
+                    state.records.get(r)
+            );
+        }
+    }
+
+
+    // ============================================================
+    // SELECTION
+    // ============================================================
+
+    @SuppressWarnings("unchecked")
+    public static void selection(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final LinearLayout
+                selectionContainer =
+                activity.findViewById(
+                        R.id.recordsContainer
+                );
+
+
+        if (selectionContainer == null) {
+            return;
+        }
+
+
+        Object selectionObject =
+                selectionContainer.getTag();
+
+
+        if (!(selectionObject instanceof ArrayList)) {
+
+            SELECTION_STATES.remove(
+                    activity
+            );
+
+            return;
+        }
+
+
+        final ArrayList<ArrayList<TextView>>
+                selectionRecords =
+                (ArrayList<ArrayList<TextView>>)
+                        selectionObject;
+
+
+        if (selectionRecords.size() == 0) {
+
+            SELECTION_STATES.remove(
+                    activity
+            );
+
+            return;
+        }
+
+
+        final SelectionState state =
+                new SelectionState(
+                        selectionRecords
+                );
+
+
+        if (state.cells.size() == 0) {
+
+            SELECTION_STATES.remove(
+                    activity
+            );
+
+            return;
+        }
+
+
+        SELECTION_STATES.put(
+                activity,
+                state
+        );
+
+
+        clearSelection(
+                state
+        );
+
+
+        final EditSession editSession =
+                getEditSession(
+                        activity
+                );
+
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            final TextView cell =
+                    state.cells.get(i);
+
+
+            if (cell == null) {
+                continue;
+            }
+
+
+            final int index =
+                    i;
+
+
+            cell.setClickable(
+                    true
+            );
+
+
+            // ====================================================
+            // EDIT MODE
+            // ====================================================
+
+            if (
+                    editSession != null
+                    &&
+                    editSession.editMode
+            ) {
+
+                cell.setOnClickListener(
+                        new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(
+                                    View v
+                            ) {
+
+                                if (v instanceof EditText) {
+
+                                    EditText editText =
+                                            (EditText) v;
+
+                                    editSession.focusedCell =
+                                            editText;
+
+                                    editText.requestFocus();
+
+                                    editText.setSelection(
+                                            editText.length()
+                                    );
+                                }
+                            }
+                        }
+                );
+
+
+                cell.setOnLongClickListener(
+                        new View.OnLongClickListener() {
+
+                            @Override
+                            public boolean onLongClick(
+                                    View v
+                            ) {
+
+                                if (v instanceof EditText) {
+
+                                    EditText editText =
+                                            (EditText) v;
+
+                                    editSession.focusedCell =
+                                            editText;
+
+                                    editText.requestFocus();
+
+                                    editText.setSelection(
+                                            editText.length()
+                                    );
+                                }
+
+                                return true;
+                            }
+                        }
+                );
+
+                continue;
+            }
+
+
+            // ====================================================
+            // NORMAL SELECTION MODE
+            // ====================================================
+
+            cell.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            SelectionState currentState =
+                                    getSelectionState(
+                                            activity
+                                    );
+
+
+                            if (currentState == null) {
+                                return;
+                            }
+
+
+                            int tappedRecord =
+                                    getRecordIndexForCell(
+                                            currentState,
+                                            index
+                                    );
+
+
+                            if (tappedRecord < 0) {
+                                return;
+                            }
+
+
+                            if (
+                                    currentState.firstIndex
+                                            == -1
+                            ) {
+
+                                clearSelection(
+                                        currentState
+                                );
+
+
+                                setCellSelected(
+                                        cell,
+                                        true
+                                );
+
+
+                                currentState.firstIndex =
+                                        index;
+
+                                currentState.lastIndex =
+                                        index;
+
+                                currentState.firstRecord =
+                                        tappedRecord;
+
+                                currentState.lastRecord =
+                                        tappedRecord;
+
+
+                                return;
+                            }
+
+
+                            if (
+                                    currentState.firstIndex
+                                            ==
+                                            currentState.lastIndex
+                                    &&
+                                    index
+                                            ==
+                                            currentState.firstIndex
+                            ) {
+
+                                deselectState(
+                                        currentState
+                                );
+
+                                return;
+                            }
+
+
+                            int firstRecord =
+                                    currentState.firstRecord;
+
+
+                            if (firstRecord < 0) {
+
+                                firstRecord =
+                                        getRecordIndexForCell(
+                                                currentState,
+                                                currentState.firstIndex
+                                        );
+                            }
+
+
+                            if (
+                                    firstRecord
+                                            ==
+                                            tappedRecord
+                            ) {
+
+                                ArrayList<TextView>
+                                        record =
+                                        currentState.records
+                                                .get(
+                                                        tappedRecord
+                                                );
+
+
+                                int firstPosition =
+                                        getCellPositionInRecord(
+                                                currentState,
+                                                tappedRecord,
+                                                currentState.cells
+                                                        .get(
+                                                                currentState.firstIndex
+                                                        )
+                                        );
+
+
+                                int secondPosition =
+                                        getCellPositionInRecord(
+                                                currentState,
+                                                tappedRecord,
+                                                cell
+                                        );
+
+
+                                if (
+                                        firstPosition < 0
+                                        ||
+                                        secondPosition < 0
+                                ) {
+
+                                    return;
+                                }
+
+
+                                int start =
+                                        firstPosition;
+
+                                int end =
+                                        secondPosition;
+
+
+                                if (start > end) {
+
+                                    int temp =
+                                            start;
+
+                                    start =
+                                            end;
+
+                                    end =
+                                            temp;
+                                }
+
+
+                                clearSelection(
+                                        currentState
+                                );
+
+
+                                for (
+                                        int c = start;
+                                        c <= end;
+                                        c++
+                                ) {
+
+                                    if (
+                                            c >= 0
+                                            &&
+                                            c < record.size()
+                                    ) {
+
+                                        setCellSelected(
+                                                record.get(c),
+                                                true
+                                        );
+                                    }
+                                }
+
+
+                                currentState.firstRecord =
+                                        tappedRecord;
+
+                                currentState.lastRecord =
+                                        tappedRecord;
+
+                                currentState.firstIndex =
+                                        index;
+
+                                currentState.lastIndex =
+                                        index;
+
+
+                                return;
+                            }
+
+
+                            int startRecord =
+                                    firstRecord;
+
+                            int endRecord =
+                                    tappedRecord;
+
+
+                            if (
+                                    startRecord
+                                            >
+                                            endRecord
+                            ) {
+
+                                int temp =
+                                        startRecord;
+
+                                startRecord =
+                                        endRecord;
+
+                                endRecord =
+                                        temp;
+                            }
+
+
+                            clearSelection(
+                                    currentState
+                            );
+
+
+                            selectRecordRange(
+                                    currentState,
+                                    startRecord,
+                                    endRecord
+                            );
+
+
+                            currentState.firstRecord =
+                                    startRecord;
+
+                            currentState.lastRecord =
+                                    endRecord;
+
+                            currentState.firstIndex =
+                                    index;
+
+                            currentState.lastIndex =
+                                    index;
+                        }
+                    }
+            );
+
+
+            // ====================================================
+            // LONG PRESS → POPUP
+            // ====================================================
+
+            cell.setOnLongClickListener(
+                    new View.OnLongClickListener() {
+
+                        @Override
+                        public boolean onLongClick(
+                                View v
+                        ) {
+
+                            popupMenu(
+                                    activity
+                            );
+
+                            return true;
+                        }
+                    }
+            );
+        }
+
+
+        editMenu(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // SELECT ALL
+    // ============================================================
+
+    public static void selectAll(
+            Activity activity
+    ) {
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return;
+        }
+
+
+        if (state.cells.size() == 0) {
+            return;
+        }
+
+
+        clearSelection(
+                state
+        );
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            selectRecord(
+                    state.records.get(r)
+            );
+        }
+
+
+        state.firstRecord =
+                0;
+
+        state.lastRecord =
+                state.records.size() - 1;
+
+
+        state.firstIndex =
+                0;
+
+        state.lastIndex =
+                state.cells.size() - 1;
+    }
+
+
+    // ============================================================
+    // DESELECT ALL
+    // ============================================================
+
+    public static void deselectAll(
+            Activity activity
+    ) {
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return;
+        }
+
+
+        deselectState(
+                state
+        );
+    }
+
+
+    // ============================================================
+    // CHECK SELECTED
+    // ============================================================
+
+    private static boolean isSelected(
+            TextView cell
+    ) {
+
+        if (cell == null) {
+            return false;
+        }
+
+
+        if (
+                cell.getBackground()
+                        instanceof ColorDrawable
+        ) {
+
+            ColorDrawable background =
+                    (ColorDrawable)
+                            cell.getBackground();
+
+
+            return background.getColor()
+                    ==
+                    SELECTED_COLOR;
+        }
+
+
+        return false;
+    }
+
+
+    // ============================================================
+    // GET SELECTED TEXT
+    // ============================================================
+
+    private static String getSelectedText(
+            Activity activity
+    ) {
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return "";
+        }
+
+
+        StringBuilder selectedText =
+                new StringBuilder();
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            boolean recordSelected =
+                    false;
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView cell =
+                        record.get(c);
+
+
+                if (
+                        cell != null
+                        &&
+                        isSelected(cell)
+                ) {
+
+                    recordSelected =
+                            true;
+
+                    break;
+                }
+            }
+
+
+            if (!recordSelected) {
+                continue;
+            }
+
+
+            StringBuilder recordText =
+                    new StringBuilder();
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView cell =
+                        record.get(c);
+
+
+                if (cell == null) {
+                    continue;
+                }
+
+
+                if (
+                        recordText.length() > 0
+                ) {
+
+                    recordText.append(
+                            " | "
+                    );
+                }
+
+
+                recordText.append(
+                        cell.getText()
+                                .toString()
+                );
+            }
+
+
+            if (
+                    recordText.length() == 0
+            ) {
+
+                continue;
+            }
+
+
+            if (
+                    selectedText.length() > 0
+            ) {
+
+                selectedText.append(
+                        "\n"
+                );
+            }
+
+
+            selectedText.append(
+                    recordText.toString()
+            );
+        }
+
+
+        return selectedText.toString();
+    }
+
+
+    // ============================================================
+    // COPY
+    // ============================================================
+
+    public static void copy(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        String selectedText =
+                getSelectedText(
+                        activity
+                );
+
+
+        if (
+                selectedText == null
+                ||
+                selectedText.length() == 0
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        ClipboardManager clipboard =
+                (ClipboardManager)
+                        activity.getSystemService(
+                                Context.CLIPBOARD_SERVICE
+                        );
+
+
+        if (clipboard == null) {
+
+            Toast.makeText(
+                    activity,
+                    "Clipboard unavailable",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        clipboard.setPrimaryClip(
+                ClipData.newPlainText(
+                        "Selected Records",
+                        selectedText
+                )
+        );
+
+
+        Toast.makeText(
+                activity,
+                "Copied",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    // ============================================================
+    // SHARE
+    // ============================================================
+
+    public static void share(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        String selectedText =
+                getSelectedText(
+                        activity
+                );
+
+
+        if (
+                selectedText == null
+                ||
+                selectedText.length() == 0
+        ) {
+
+            Toast.makeText(
+                    activity,
+                    "No data selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        try {
+
+            Intent shareIntent =
+                    new Intent(
+                            Intent.ACTION_SEND
+                    );
+
+
+            shareIntent.setType(
+                    "text/plain"
+            );
+
+
+            shareIntent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    selectedText
+            );
+
+
+            activity.startActivity(
+                    Intent.createChooser(
+                            shareIntent,
+                            "Share"
+                    )
+            );
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to share",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // ============================================================
+    // EDIT
+    // ============================================================
+
+    public static void edit(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        LinearLayout container =
+                activity.findViewById(
+                        R.id.recordsContainer
+                );
+
+
+        if (container == null) {
+            return;
+        }
+
+
+        Object object =
+                container.getTag();
+
+
+        if (!(object instanceof ArrayList)) {
+
+            Toast.makeText(
+                    activity,
+                    "No records available",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        ArrayList<ArrayList<TextView>>
+                taggedRecords =
+                (ArrayList<ArrayList<TextView>>)
+                        object;
+
+
+        if (taggedRecords.size() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "No records available",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (session == null) {
+            return;
+        }
+
+
+        if (session.editMode) {
+
+            showEditPopup(
+                    activity
+            );
+
+            return;
+        }
+
+
+        session.editMode =
+                true;
+
+        session.deletedRows.clear();
+
+        session.removedCells.clear();
+
+        session.originalRecords.clear();
+
+        session.focusedCell =
+                null;
+
+
+        ArrayList<String> records =
+                getRecords(
+                        activity
+                );
+
+
+        session.originalRecords.addAll(
+                records
+        );
+
+
+        makeCellsEditable(
+                activity
+        );
+
+
+        SelectionState currentState =
+                getSelectionState(
+                        activity
+                );
+
+
+        clearSelection(
+                currentState
+        );
+
+
+        showEditPopup(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // MAKE CELLS EDITABLE
+    // ============================================================
+
+    @SuppressWarnings("unchecked")
+    private static void makeCellsEditable(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        LinearLayout container =
+                activity.findViewById(
+                        R.id.recordsContainer
+                );
+
+
+        if (container == null) {
+            return;
+        }
+
+
+        Object object =
+                container.getTag();
+
+
+        if (!(object instanceof ArrayList)) {
+            return;
+        }
+
+
+        ArrayList<ArrayList<TextView>>
+                records =
+                (ArrayList<ArrayList<TextView>>)
+                        object;
+
+
+        final EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        for (
+                int r = 0;
+                r < records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView oldCell =
+                        record.get(c);
+
+
+                if (oldCell == null) {
+                    continue;
+                }
+
+
+                if (
+                        oldCell instanceof EditText
+                ) {
+
+                    EditText existing =
+                            (EditText)
+                                    oldCell;
+
+
+                    configureEditTextInput(
+                            existing,
+                            c
+                    );
+
+
+                    existing.setFocusable(
+                            true
+                    );
+
+                    existing.setFocusableInTouchMode(
+                            true
+                    );
+
+                    existing.setCursorVisible(
+                            true
+                    );
+
+                    existing.setEnabled(
+                            true
+                    );
+
+
+                    final EditSession
+                            currentSession =
+                            session;
+
+
+                    existing.setOnFocusChangeListener(
+                            new View.OnFocusChangeListener() {
+
+                                @Override
+                                public void onFocusChange(
+                                        View v,
+                                        boolean hasFocus
+                                ) {
+
+                                    if (
+                                            hasFocus
+                                            &&
+                                            currentSession != null
+                                    ) {
+
+                                        currentSession.focusedCell =
+                                                (TextView) v;
+                                    }
+                                }
+                            }
+                    );
+
+                    continue;
+                }
+
+
+                ViewParent parentObject =
+                        oldCell.getParent();
+
+
+                if (!(parentObject instanceof ViewGroup)) {
+                    continue;
+                }
+
+
+                ViewGroup parent =
+                        (ViewGroup)
+                                parentObject;
+
+
+                int position =
+                        parent.indexOfChild(
+                                oldCell
+                        );
+
+
+                if (position < 0) {
+                    continue;
+                }
+
+
+                EditText editText =
+                        new EditText(
+                                activity
+                        );
+
+
+                editText.setText(
+                        oldCell.getText()
+                );
+
+
+                editText.setTextColor(
+                        BLACK
+                );
+
+
+                editText.setTextSize(
+                        android.util.TypedValue
+                                .COMPLEX_UNIT_PX,
+                        oldCell.getTextSize()
+                );
+
+
+                editText.setGravity(
+                        oldCell.getGravity()
+                );
+
+
+                editText.setPadding(
+                        oldCell.getPaddingLeft(),
+                        oldCell.getPaddingTop(),
+                        oldCell.getPaddingRight(),
+                        oldCell.getPaddingBottom()
+                );
+
+
+                editText.setTypeface(
+                        oldCell.getTypeface()
+                );
+
+
+                editText.setIncludeFontPadding(
+                        oldCell.getIncludeFontPadding()
+                );
+
+
+                editText.setMinHeight(
+                        oldCell.getMinHeight()
+                );
+
+
+                editText.setMinWidth(
+                        oldCell.getMinWidth()
+                );
+
+
+                editText.setBackground(
+                        oldCell.getBackground()
+                );
+
+
+                configureEditTextInput(
+                        editText,
+                        c
+                );
+
+
+                editText.setFocusable(
+                        true
+                );
+
+
+                editText.setFocusableInTouchMode(
+                        true
+                );
+
+
+                editText.setCursorVisible(
+                        true
+                );
+
+
+                editText.setEnabled(
+                        true
+                );
+
+
+                ViewGroup.LayoutParams
+                        params =
+                        oldCell.getLayoutParams();
+
+
+                editText.setLayoutParams(
+                        params
+                );
+
+
+                final EditSession
+                        currentSession =
+                        session;
+
+
+                editText.setOnFocusChangeListener(
+                        new View.OnFocusChangeListener() {
+
+                            @Override
+                            public void onFocusChange(
+                                    View v,
+                                    boolean hasFocus
+                            ) {
+
+                                if (
+                                        hasFocus
+                                        &&
+                                        currentSession != null
+                                ) {
+
+                                    currentSession.focusedCell =
+                                            (TextView) v;
+                                }
+                            }
+                        }
+                );
+
+
+                parent.removeViewAt(
+                        position
+                );
+
+
+                parent.addView(
+                        editText,
+                        position
+                );
+
+
+                record.set(
+                        c,
+                        editText
+                );
+            }
+        }
+
+
+        container.setTag(
+                records
+        );
+
+
+        selection(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // CONFIGURE EDIT TEXT INPUT
+    // ============================================================
+
+    private static void configureEditTextInput(
+            EditText editText,
+            int column
+    ) {
+
+        if (editText == null) {
+            return;
+        }
+
+
+        if (column == 0) {
+
+            editText.setInputType(
+                    InputType.TYPE_CLASS_TEXT
+                            |
+                            InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            );
+
+            editText.setSingleLine(
+                    true
+            );
+
+        }
+
+        else if (column == 1) {
+
+            editText.setInputType(
+                    InputType.TYPE_CLASS_PHONE
+            );
+
+            editText.setSingleLine(
+                    true
+            );
+
+        }
+
+        else if (column == 2) {
+
+            editText.setInputType(
+                    InputType.TYPE_CLASS_TEXT
+                            |
+                            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                            |
+                            InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            );
+
+            editText.setSingleLine(
+                    false
+            );
+
+        }
+
+        else {
+
+            editText.setInputType(
+                    InputType.TYPE_CLASS_TEXT
+                            |
+                            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            );
+
+            editText.setSingleLine(
+                    true
+            );
+        }
+    }
+
+
+    // ============================================================
+    // DISABLE EDITING
+    // ============================================================
+
+    private static void disableEditingOnCells(
+            SelectionState state
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            TextView cell =
+                    state.cells.get(i);
+
+
+            if (
+                    cell instanceof EditText
+            ) {
+
+                EditText editText =
+                        (EditText)
+                                cell;
+
+
+                editText.clearFocus();
+
+                editText.setCursorVisible(
+                        false
+                );
+
+                editText.setFocusable(
+                        false
+                );
+
+                editText.setFocusableInTouchMode(
+                        false
+                );
+
+                editText.setEnabled(
+                        true
+                );
+            }
+        }
+    }
+
+
+    // ============================================================
+    // SHOW EDIT POPUP
+    //
+    // Uses:
+    // res/layout/edit_popup_menu.xml
+    //
+    // ============================================================
+
+    private static void showEditPopup(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (session == null) {
+            return;
+        }
+
+
+        if (session.editPopupWindow != null) {
+
+            if (session.editPopupWindow.isShowing()) {
+
+                session.editPopupWindow.dismiss();
+            }
+
+            session.editPopupWindow =
+                    null;
+        }
+
+
+        final View popupView =
+                LayoutInflater
+                        .from(activity)
+                        .inflate(
+                                R.layout.edit_popup_menu,
+                                null
+                        );
+
+
+        if (popupView == null) {
+            return;
+        }
+
+
+        final PopupWindow popupWindow =
+                new PopupWindow(
+                        popupView,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+
+        session.editPopupWindow =
+                popupWindow;
+
+
+        popupWindow.setFocusable(
+                true
+        );
+
+
+        popupWindow.setOutsideTouchable(
+                true
+        );
+
+
+        popupWindow.setBackgroundDrawable(
+                new ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+
+        View editMenuButton =
+                popupView.findViewById(
+                        R.id.editMenuButton
+                );
+
+
+        View removeButton =
+                popupView.findViewById(
+                        R.id.removeButton
+                );
+
+
+        View deleteButton =
+                popupView.findViewById(
+                        R.id.deleteButton
+                );
+
+
+        View saveButton =
+                popupView.findViewById(
+                        R.id.saveButton
+                );
+
+
+        View closeButton =
+                popupView.findViewById(
+                        R.id.closeButton
+                );
+
+
+        // ========================================================
+        // EDIT MENU
+        // ========================================================
+
+        if (editMenuButton != null) {
+
+            editMenuButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            edit(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // REMOVE
+        // ========================================================
+
+        if (removeButton != null) {
+
+            removeButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            remove(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // DELETE
+        // ========================================================
+
+        if (deleteButton != null) {
+
+            deleteButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            delete(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // SAVE
+        // ========================================================
+
+        if (saveButton != null) {
+
+            saveButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            save(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // CLOSE
+        // ========================================================
+
+        if (closeButton != null) {
+
+            closeButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            closeEditSession(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        // ========================================================
+        // SHOW ON RIGHT SIDE
+        // ========================================================
+
+        popupWindow.showAtLocation(
+                activity.getWindow()
+                        .getDecorView(),
+                Gravity.TOP | Gravity.RIGHT,
+                dp(
+                        activity,
+                        POPUP_RIGHT_DP
+                ),
+                dp(
+                        activity,
+                        POPUP_TOP_DP
+                )
+        );
+    }
+
+
+    // ============================================================
+    // DISMISS EDIT POPUP
+    // ============================================================
+
+    private static void dismissEditPopup(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (session == null) {
+            return;
+        }
+
+
+        if (session.editPopupWindow != null) {
+
+            try {
+
+                if (
+                        session.editPopupWindow
+                                .isShowing()
+                ) {
+
+                    session.editPopupWindow.dismiss();
+                }
+
+            } catch (Exception ignored) {
+            }
+
+
+            session.editPopupWindow =
+                    null;
+        }
+    }
+
+
+    // ============================================================
+    // EDIT MENU CONNECTION
+    //
+    // MAIN Edit button is in:
+    // res/layout/myrecords.xml
+    //
+    // Popup controls are in:
+    // res/layout/edit_popup_menu.xml
+    //
+    // ============================================================
+
+    public static void editMenu(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final View editButton =
+                activity.findViewById(
+                        R.id.editButton
+                );
+
+
+        if (editButton == null) {
+            return;
+        }
+
+
+        final EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (session == null) {
+            return;
+        }
+
+
+        if (session.menuConnected) {
+            return;
+        }
+
+
+        session.menuConnected =
+                true;
+
+
+        editButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(
+                            View v
+                    ) {
+
+                        edit(
+                                activity
+                        );
+                    }
+                }
+        );
+    }
+
+
+    // ============================================================
+    // CLOSE EDIT SESSION
+    // ============================================================
+
+    private static void closeEditSession(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (
+                session == null
+                ||
+                !session.editMode
+        ) {
+
+            dismissEditPopup(
+                    activity
+            );
+
+            return;
+        }
+
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state != null) {
+
+            restoreOriginalRecords(
+                    activity,
+                    state,
+                    session.originalRecords
+            );
+
+
+            showAllRecordRows(
+                    state
+            );
+        }
+
+
+        session.editMode =
+                false;
+
+        session.deletedRows.clear();
+
+        session.removedCells.clear();
+
+        session.originalRecords.clear();
+
+        session.focusedCell =
+                null;
+
+
+        SelectionState newState =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (newState != null) {
+
+            disableEditingOnCells(
+                    newState
+            );
+
+            renumberVisibleSerialNumbers(
+                    activity,
+                    newState
+            );
+        }
+
+
+        selection(
+                activity
+        );
+
+
+        dismissEditPopup(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // RESTORE ORIGINAL RECORDS
+    //
+    // IMPORTANT FIX:
+    //
+    // When Close is pressed without Save, EditText cells are
+    // replaced with normal TextViews.
+    //
+    // This removes the EditText underline/red bottom line.
+    // ============================================================
+
+    private static void restoreOriginalRecords(
+            Activity activity,
+            SelectionState state,
+            ArrayList<String> originalRecords
+    ) {
+
+        if (
+                activity == null
+                ||
+                state == null
+                ||
+                originalRecords == null
+        ) {
+            return;
+        }
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            if (
+                    r >= originalRecords.size()
+            ) {
+                continue;
+            }
+
+
+            String original =
+                    originalRecords.get(r);
+
+
+            String[] parts =
+                    original.split(
+                            "\\s*\\|\\s*",
+                            -1
+                    );
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                String value = "";
+
+
+                if (
+                        c < parts.length
+                ) {
+
+                    value =
+                            parts[c].trim();
+                }
+
+
+                TextView oldCell =
+                        record.get(c);
+
+
+                if (oldCell == null) {
+                    continue;
+                }
+
+
+                /*
+                 * If it is already a normal TextView,
+                 * simply restore its text.
+                 */
+                if (
+                        !(oldCell instanceof EditText)
+                ) {
+
+                    oldCell.setText(
+                            value
+                    );
+
+                    continue;
+                }
+
+
+                ViewParent parentObject =
+                        oldCell.getParent();
+
+
+                if (!(parentObject instanceof ViewGroup)) {
+
+                    oldCell.setText(
+                            value
+                    );
+
+                    continue;
+                }
+
+
+                ViewGroup parent =
+                        (ViewGroup)
+                                parentObject;
+
+
+                int position =
+                        parent.indexOfChild(
+                                oldCell
+                        );
+
+
+                if (position < 0) {
+
+                    oldCell.setText(
+                            value
+                    );
+
+                    continue;
+                }
+
+
+                /*
+                 * Create a normal TextView with the same
+                 * visual properties as the EditText.
+                 */
+                TextView textView =
+                        new TextView(
+                                activity
+                        );
+
+
+                textView.setText(
+                        value
+                );
+
+
+                textView.setTextColor(
+                        BLACK
+                );
+
+
+                textView.setTextSize(
+                        android.util.TypedValue
+                                .COMPLEX_UNIT_PX,
+                        oldCell.getTextSize()
+                );
+
+
+                textView.setGravity(
+                        oldCell.getGravity()
+                );
+
+
+                textView.setPadding(
+                        oldCell.getPaddingLeft(),
+                        oldCell.getPaddingTop(),
+                        oldCell.getPaddingRight(),
+                        oldCell.getPaddingBottom()
+                );
+
+
+                textView.setTypeface(
+                        oldCell.getTypeface()
+                );
+
+
+                textView.setIncludeFontPadding(
+                        oldCell.getIncludeFontPadding()
+                );
+
+
+                textView.setMinHeight(
+                        oldCell.getMinHeight()
+                );
+
+
+                textView.setMinWidth(
+                        oldCell.getMinWidth()
+                );
+
+
+                Drawable background =
+                        oldCell.getBackground();
+
+
+                if (background != null) {
+
+                    textView.setBackground(
+                            background
+                    );
+                }
+
+
+                textView.setClickable(
+                        true
+                );
+
+
+                textView.setEnabled(
+                        true
+                );
+
+
+                ViewGroup.LayoutParams
+                        params =
+                        oldCell.getLayoutParams();
+
+
+                textView.setLayoutParams(
+                        params
+                );
+
+
+                parent.removeViewAt(
+                        position
+                );
+
+
+                parent.addView(
+                        textView,
+                        position
+                );
+
+
+                record.set(
+                        c,
+                        textView
+                );
+            }
+        }
+
+
+        LinearLayout container =
+                activity.findViewById(
+                        R.id.recordsContainer
+                );
+
+
+        if (container != null) {
+
+            container.setTag(
+                    state.records
+            );
+        }
+    }
+
+
+    // ============================================================
+    // SHOW ALL RECORD ROWS
+    // ============================================================
+
+    private static void showAllRecordRows(
+            SelectionState state
+    ) {
+
+        if (state == null) {
+            return;
+        }
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            showRecordRow(
+                    record
+            );
+        }
+    }
+
+
+    // ============================================================
+    // SHOW COMPLETE RECORD ROW
+    // ============================================================
+
+    private static void showRecordRow(
+            ArrayList<TextView> record
+    ) {
+
+        if (
+                record == null
+                ||
+                record.size() == 0
+        ) {
+
+            return;
+        }
+
+
+        TextView firstCell =
+                record.get(0);
+
+
+        if (firstCell == null) {
+            return;
+        }
+
+
+        ViewParent parent =
+                firstCell.getParent();
+
+
+        if (parent instanceof View) {
+
+            ((View) parent).setVisibility(
+                    View.VISIBLE
+            );
+        }
+    }
+
+
+    // ============================================================
+    // CLOSE EDIT MENU
+    // ============================================================
+
+    public static void closeEditMenu(
+            Activity activity
+    ) {
+
+        closeEditSession(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // REMOVE
+    // ============================================================
+
+    public static void remove(
+            Activity activity
+    ) {
+
+        removeFocusedCell(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    public static void delete(
+            Activity activity
+    ) {
+
+        deleteFocusedRow(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // SAVE
+    // ============================================================
+
+    public static void save(
+            Activity activity
+    ) {
+
+        saveEditedRecords(
+                activity
+        );
+    }
+
+
+    // ============================================================
+    // GET FOCUSED EDIT CELL
+    // ============================================================
+
+    private static TextView getFocusedEditCell(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+
+        EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (
+                session == null
+                ||
+                !session.editMode
+        ) {
+
+            return null;
+        }
+
+
+        if (
+                session.focusedCell != null
+                &&
+                session.focusedCell.getVisibility()
+                        != View.GONE
+        ) {
+
+            return session.focusedCell;
+        }
+
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return null;
+        }
+
+
+        for (
+                int i = 0;
+                i < state.cells.size();
+                i++
+        ) {
+
+            TextView cell =
+                    state.cells.get(i);
+
+
+            if (
+                    cell instanceof EditText
+                    &&
+                    cell.hasFocus()
+            ) {
+
+                session.focusedCell =
+                        cell;
+
+                return cell;
+            }
+        }
+
+
+        return null;
+    }
+
+
+    // ============================================================
+    // REMOVE FOCUSED CELL
+    // ============================================================
+
+    private static void removeFocusedCell(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (
+                session == null
+                ||
+                !session.editMode
+        ) {
+
+            return;
+        }
+
+
+        TextView cell =
+                getFocusedEditCell(
+                        activity
+                );
+
+
+        if (cell == null) {
+            return;
+        }
+
+
+        cell.setText("");
+
+
+        session.removedCells.add(
+                cell
+        );
+    }
+
+
+    // ============================================================
+    // DELETE FOCUSED ROW
+    // ============================================================
+
+    private static void deleteFocusedRow(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (
+                session == null
+                ||
+                !session.editMode
+        ) {
+
+            return;
+        }
+
+
+        final TextView focusedCell =
+                getFocusedEditCell(
+                        activity
+                );
+
+
+        if (focusedCell == null) {
+            return;
+        }
+
+
+        final int row =
+                getRecordIndexForView(
+                        activity,
+                        focusedCell
+                );
+
+
+        if (row < 0) {
+            return;
+        }
+
+
+        if (
+                session.deletedRows.contains(
+                        row
+                )
+        ) {
+            return;
+        }
+
+
+        String recordName =
+                "";
+
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (
+                state != null
+                &&
+                row >= 0
+                &&
+                row < state.records.size()
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(row);
+
+
+            if (
+                    record != null
+                    &&
+                    record.size() > 0
+                    &&
+                    record.get(0) != null
+            ) {
+
+                recordName =
+                        record.get(0)
+                                .getText()
+                                .toString()
+                                .trim();
+            }
+        }
+
+
+        final String message;
+
+
+        if (recordName.length() > 0) {
+
+            message =
+                    "Delete this complete record?\n\n"
+                            +
+                            recordName
+                            +
+                            "\n\n"
+                            +
+                            "Name, Phone, Address and Product will be removed.";
+
+        } else {
+
+            message =
+                    "Delete this complete record?\n\n"
+                            +
+                            "Name, Phone, Address and Product will be removed.";
+        }
+
+
+        new AlertDialog.Builder(
+                activity
+        )
+                .setTitle(
+                        "Delete Record"
+                )
+                .setMessage(
+                        message
+                )
+                .setNegativeButton(
+                        "Cancel",
+                        null
+                )
+                .setPositiveButton(
+                        "Delete",
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog,
+                                    int which
+                            ) {
+
+                                SelectionState currentState =
+                                        getSelectionState(
+                                                activity
+                                        );
+
+
+                                if (currentState == null) {
+                                    return;
+                                }
+
+
+                                session.deletedRows.add(
+                                        row
+                                );
+
+
+                                if (
+                                        row >= 0
+                                        &&
+                                        row < currentState.records.size()
+                                ) {
+
+                                    ArrayList<TextView>
+                                            record =
+                                            currentState.records.get(
+                                                    row
+                                            );
+
+
+                                    hideRecordRow(
+                                            record
+                                    );
+                                }
+
+
+                                session.focusedCell =
+                                        null;
+
+
+                                deselectState(
+                                        currentState
+                                );
+                            }
+                        }
+                )
+                .show();
+    }
+
+
+    // ============================================================
+    // HIDE COMPLETE RECORD ROW
+    // ============================================================
+
+    private static void hideRecordRow(
+            ArrayList<TextView> record
+    ) {
+
+        if (
+                record == null
+                ||
+                record.size() == 0
+        ) {
+
+            return;
+        }
+
+
+        TextView firstCell =
+                record.get(0);
+
+
+        if (firstCell == null) {
+            return;
+        }
+
+
+        ViewParent parent =
+                firstCell.getParent();
+
+
+        if (parent instanceof ViewGroup) {
+
+            ViewGroup row =
+                    (ViewGroup)
+                            parent;
+
+            row.setVisibility(
+                    View.GONE
+            );
+        }
+    }
+
+
+    // ============================================================
+    // SAVE EDITED RECORDS
+    // ============================================================
+
+    private static void saveEditedRecords(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        EditSession session =
+                getEditSession(
+                        activity
+                );
+
+
+        if (
+                session == null
+                ||
+                !session.editMode
+        ) {
+
+            return;
+        }
+
+
+        SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+            return;
+        }
+
+
+        ArrayList<String> updatedRecords =
+                new ArrayList<String>();
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            if (
+                    session.deletedRows.contains(
+                            r
+                    )
+            ) {
+
+                continue;
+            }
+
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            String name = "";
+
+            String phone = "";
+
+            String address = "";
+
+            String product = "";
+
+
+            if (
+                    record.size() > 0
+                    &&
+                    record.get(0) != null
+            ) {
+
+                name =
+                        record.get(0)
+                                .getText()
+                                .toString()
+                                .trim();
+            }
+
+
+            if (
+                    record.size() > 1
+                    &&
+                    record.get(1) != null
+            ) {
+
+                phone =
+                        record.get(1)
+                                .getText()
+                                .toString()
+                                .trim();
+            }
+
+
+            if (
+                    record.size() > 2
+                    &&
+                    record.get(2) != null
+            ) {
+
+                address =
+                        record.get(2)
+                                .getText()
+                                .toString()
+                                .trim();
+            }
+
+
+            if (
+                    record.size() > 3
+                    &&
+                    record.get(3) != null
+            ) {
+
+                product =
+                        record.get(3)
+                                .getText()
+                                .toString()
+                                .trim();
+            }
+
+
+            String finalLine =
+                    name
+                            + " | "
+                            + phone
+                            + " | "
+                            + address
+                            + " | "
+                            + product;
+
+
+            updatedRecords.add(
+                    finalLine
+            );
+        }
+
+
+        FileOutputStream output =
+                null;
+
+
+        try {
+
+            output =
+                    activity.openFileOutput(
+                            RECORDS_FILE,
+                            Context.MODE_PRIVATE
+                    );
+
+
+            for (
+                    int i = 0;
+                    i < updatedRecords.size();
+                    i++
+            ) {
+
+                String line =
+                        updatedRecords.get(i);
+
+
+                output.write(
+                        (
+                                line
+                                        +
+                                        "\n"
+                        ).getBytes("UTF-8")
+                );
+            }
+
+
+            output.flush();
+
+            output.close();
+
+            output = null;
+
+
+            session.editMode =
+                    false;
+
+            session.deletedRows.clear();
+
+            session.removedCells.clear();
+
+            session.originalRecords.clear();
+
+            session.focusedCell =
+                    null;
+
+
+            disableEditingOnCells(
+                    state
+            );
+
+
+            selection(
+                    activity
+            );
+
+
+            renumberVisibleSerialNumbers(
+                    activity,
+                    state
+            );
+
+
+            dismissEditPopup(
+                    activity
+            );
+
+
+            Toast.makeText(
+                    activity,
+                    "Data Update",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to update records",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+        } finally {
+
+            if (output != null) {
+
+                try {
+                    output.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+
+    // ============================================================
+    // RENUMBER VISIBLE SERIAL NUMBERS
+    // ============================================================
+
+    private static void renumberVisibleSerialNumbers(
+            Activity activity,
+            SelectionState state
+    ) {
+
+        if (
+                activity == null
+                ||
+                state == null
+        ) {
+            return;
+        }
+
+
+        int serialNumber =
+                1;
+
+
+        Set<TextView> recordCells =
+                new HashSet<TextView>();
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (record == null) {
+                continue;
+            }
+
+
+            for (
+                    int c = 0;
+                    c < record.size();
+                    c++
+            ) {
+
+                TextView cell =
+                        record.get(c);
+
+
+                if (cell != null) {
+
+                    recordCells.add(
+                            cell
+                    );
+                }
+            }
+        }
+
+
+        for (
+                int r = 0;
+                r < state.records.size();
+                r++
+        ) {
+
+            ArrayList<TextView> record =
+                    state.records.get(r);
+
+
+            if (
+                    record == null
+                    ||
+                    record.size() == 0
+            ) {
+                continue;
+            }
+
+
+            TextView firstCell =
+                    record.get(0);
+
+
+            if (firstCell == null) {
+                continue;
+            }
+
+
+            ViewParent parent =
+                    firstCell.getParent();
+
+
+            if (!(parent instanceof ViewGroup)) {
+                continue;
+            }
+
+
+            ViewGroup row =
+                    (ViewGroup)
+                            parent;
+
+
+            if (
+                    row.getVisibility()
+                            !=
+                            View.VISIBLE
+            ) {
+
+                continue;
+            }
+
+
+            TextView serialView =
+                    findSerialTextView(
+                            row,
+                            recordCells
+                    );
+
+
+            if (serialView != null) {
+
+                serialView.setText(
+                        String.valueOf(
+                                serialNumber
+                        )
+                );
+
+
+                serialNumber++;
+            }
+        }
+    }
+
+
+    // ============================================================
+    // FIND SERIAL TEXTVIEW
+    // ============================================================
+
+    private static TextView findSerialTextView(
+            ViewGroup row,
+            Set<TextView> recordCells
+    ) {
+
+        if (
+                row == null
+                ||
+                recordCells == null
+        ) {
+            return null;
+        }
+
+
+        for (
+                int i = 0;
+                i < row.getChildCount();
+                i++
+        ) {
+
+            View child =
+                    row.getChildAt(i);
+
+
+            if (
+                    child instanceof TextView
+                    &&
+                    !(child instanceof EditText)
+            ) {
+
+                TextView textView =
+                        (TextView)
+                                child;
+
+
+                if (
+                        !recordCells.contains(
+                                textView
+                        )
+                ) {
+
+                    return textView;
+                }
+            }
+        }
+
+
+        for (
+                int i = 0;
+                i < row.getChildCount();
+                i++
+        ) {
+
+            View child =
+                    row.getChildAt(i);
+
+
+            if (child instanceof ViewGroup) {
+
+                TextView found =
+                        findSerialTextView(
+                                (ViewGroup) child,
+                                recordCells
+                        );
+
+
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+
+
+        return null;
+    }
+
+
+    // ============================================================
+    // SET BUTTON SIZE
+    // ============================================================
+
+    private static void setButtonSize(
+            Activity activity,
+            View button
+    ) {
+
+        if (
+                activity == null
+                ||
+                button == null
+        ) {
+
+            return;
+        }
+
+
+        ViewGroup.LayoutParams
+                params =
+                button.getLayoutParams();
+
+
+        if (params == null) {
+
+            params =
+                    new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            dp(
+                                    activity,
+                                    BUTTON_HEIGHT_DP
+                            )
+                    );
+        }
+
+
+        if (
+                BUTTON_WIDTH_DP > 0
+        ) {
+
+            params.width =
+                    dp(
+                            activity,
+                            BUTTON_WIDTH_DP
+                    );
+
+        } else {
+
+            params.width =
+                    ViewGroup.LayoutParams.MATCH_PARENT;
+        }
+
+
+        params.height =
+                dp(
+                        activity,
+                        BUTTON_HEIGHT_DP
+                );
+
+
+        button.setLayoutParams(
+                params
+        );
+    }
+
+
+    // ============================================================
+    // POPUP MENU
+    // ============================================================
+
+    public static void popupMenu(
+            final Activity activity
+    ) {
+
+        if (activity == null) {
+            return;
+        }
+
+
+        final SelectionState state =
+                getSelectionState(
+                        activity
+                );
+
+
+        if (state == null) {
+
+            Toast.makeText(
+                    activity,
+                    "Selection is not initialized",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        final View popupView =
+                LayoutInflater
+                        .from(activity)
+                        .inflate(
+                                R.layout.popup_menu,
+                                null
+                        );
+
+
+        if (popupView == null) {
+            return;
+        }
+
+
+        final int popupWidth =
+                dp(
+                        activity,
+                        POPUP_WIDTH_DP
+                );
+
+
+        final PopupWindow popupWindow =
+                new PopupWindow(
+                        popupView,
+                        popupWidth,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+
+        popupWindow.setOutsideTouchable(
+                true
+        );
+
+
+        popupWindow.setFocusable(
+                true
+        );
+
+
+        popupWindow.setBackgroundDrawable(
+                new ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+
+        View copyButton =
+                popupView.findViewById(
+                        R.id.copyButton
+                );
+
+
+        View shareButton =
+                popupView.findViewById(
+                        R.id.shareButton
+                );
+
+
+        View exportButton =
+                popupView.findViewById(
+                        R.id.exportButton
+                );
+
+
+        View selectAllButton =
+                popupView.findViewById(
+                        R.id.selectAllButton
+                );
+
+
+        View deselectAllButton =
+                popupView.findViewById(
+                        R.id.deselectAllButton
+                );
+
+
+        setButtonSize(
+                activity,
+                copyButton
+        );
+
+
+        setButtonSize(
+                activity,
+                shareButton
+        );
+
+
+        setButtonSize(
+                activity,
+                exportButton
+        );
+
+
+        setButtonSize(
+                activity,
+                selectAllButton
+        );
+
+
+        setButtonSize(
+                activity,
+                deselectAllButton
+        );
+
+
+        int xOffset = 0;
+
+        int yOffset = 0;
+
+        int gravity =
+                POPUP_GRAVITY;
+
+
+        if (
+                POPUP_POSITION_MODE
+                        ==
+                        POSITION_TOP
+        ) {
+
+            gravity =
+                    Gravity.TOP
+                            |
+                            Gravity.CENTER_HORIZONTAL;
+
+            xOffset =
+                    dp(
+                            activity,
+                            POPUP_X_ADJUST_DP
+                    );
+
+            yOffset =
+                    dp(
+                            activity,
+                            POPUP_TOP_DP
+                    )
+                    +
+                    dp(
+                            activity,
+                            POPUP_Y_ADJUST_DP
+                    );
+        }
+
+
+        else if (
+                POPUP_POSITION_MODE
+                        ==
+                        POSITION_BOTTOM
+        ) {
+
+            gravity =
+                    Gravity.BOTTOM
+                            |
+                            Gravity.CENTER_HORIZONTAL;
+
+            xOffset =
+                    dp(
+                            activity,
+                            POPUP_X_ADJUST_DP
+                    );
+
+            yOffset =
+                    -dp(
+                            activity,
+                            POPUP_BOTTOM_DP
+                    )
+                    +
+                    dp(
+                            activity,
+                            POPUP_Y_ADJUST_DP
+                    );
+        }
+
+
+        else if (
+                POPUP_POSITION_MODE
+                        ==
+                        POSITION_LEFT
+        ) {
+
+            gravity =
+                    Gravity.CENTER_VERTICAL
+                            |
+                            Gravity.LEFT;
+
+            xOffset =
+                    dp(
+                            activity,
+                            POPUP_LEFT_DP
+                    )
+                    +
+                    dp(
+                            activity,
+                            POPUP_X_ADJUST_DP
+                    );
+
+            yOffset =
+                    dp(
+                            activity,
+                            POPUP_Y_ADJUST_DP
+                    );
+        }
+
+
+        else if (
+                POPUP_POSITION_MODE
+                        ==
+                        POSITION_RIGHT
+        ) {
+
+            gravity =
+                    Gravity.TOP
+                            |
+                            Gravity.RIGHT;
+
+            xOffset =
+                    dp(
+                            activity,
+                            POPUP_RIGHT_DP
+                    )
+                    +
+                    dp(
+                            activity,
+                            POPUP_X_ADJUST_DP
+                    );
+
+            yOffset =
+                    dp(
+                            activity,
+                            POPUP_TOP_DP
+                    )
+                    +
+                    dp(
+                            activity,
+                            POPUP_Y_ADJUST_DP
+                    );
+        }
+
+
+        else if (
+                POPUP_POSITION_MODE
+                        ==
+                        POSITION_CENTER
+        ) {
+
+            gravity =
+                    Gravity.CENTER;
+
+            xOffset =
+                    dp(
+                            activity,
+                            POPUP_X_ADJUST_DP
+                    );
+
+            yOffset =
+                    dp(
+                            activity,
+                            POPUP_Y_ADJUST_DP
+                    );
+        }
+
+
+        if (copyButton != null) {
+
+            copyButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            copy(
+                                    activity
+                            );
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        if (shareButton != null) {
+
+            shareButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            share(
+                                    activity
+                            );
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        if (exportButton != null) {
+
+            exportButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            export(
+                                    activity
+                            );
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        if (selectAllButton != null) {
+
+            selectAllButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            selectAll(
+                                    activity
+                            );
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        if (deselectAllButton != null) {
+
+            deselectAllButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(
+                                View v
+                        ) {
+
+                            deselectAll(
+                                    activity
+                            );
+
+                            popupWindow.dismiss();
+                        }
+                    }
+            );
+        }
+
+
+        popupWindow.showAtLocation(
+                activity.getWindow()
+                        .getDecorView(),
+                gravity,
+                xOffset,
+                yOffset
+        );
+    }
+
+
+    // ============================================================
+    // DP CONVERSION
+    // ============================================================
+
+    private static int dp(
+            Activity activity,
+            int value
+    ) {
+
+        if (activity == null) {
+            return value;
+        }
+
+
+        float density =
+                activity
+                        .getResources()
+                        .getDisplayMetrics()
+                        .density;
+
+
+        return (int)(
+                value
+                        * density
+                        + 0.5f
+        );
+    }
+
+
+    // ============================================================
+    // RECORD FILE EXISTS
+    // ============================================================
+
+    public static boolean recordsFileExists(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return false;
+        }
+
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+
+            input.close();
+
+
+            return true;
+
+
+        } catch (Exception e) {
+
+            return false;
+        }
+    }
+
+
+    // ============================================================
+    // GET FILE URI
+    // ============================================================
+
+    public static Uri getFileUri(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+
+        try {
+
+            return Uri.parse(
+                    activity
+                            .getFilesDir()
+                            .getAbsolutePath()
+            );
+
+
+        } catch (Exception e) {
+
+            return null;
+        }
+    }
+}
