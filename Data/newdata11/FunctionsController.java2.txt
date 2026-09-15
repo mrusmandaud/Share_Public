@@ -1,12 +1,183 @@
 package com.myrecords.onenewexperience.one;
 
 import android.app.Activity;
-
-
+import android.graphics.Color;
+import android.text.InputType;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 public class FunctionsController {
+    
+    
+   // ============================================================
+    // EDIT SESSION STATE
+    // ============================================================
+
+    private static final Map<Activity, EditSession>
+            EDIT_SESSIONS =
+            new WeakHashMap<Activity, EditSession>();
+
+    // ============================================================
+    // EDIT MENU ACTION CALLBACKS
+    // ============================================================
+    // ButtonsController only dispatches the popup button clicks.
+    // MyrecordsActivity.onCreate supplies the actual edit logic.
+    public interface EditMenuActions {
+        void onClear();
+        void onDelete();
+        void onSave();
+        void onClose();
+    }
+
+    private static final Map<Activity, EditMenuActions>
+            EDIT_MENU_ACTIONS =
+            new WeakHashMap<Activity, EditMenuActions>();
+
+    public static void setEditMenuActions(
+            Activity activity,
+            EditMenuActions actions
+    ) {
+        if (activity == null) return;
+        if (actions == null) {
+            EDIT_MENU_ACTIONS.remove(activity);
+        } else {
+            EDIT_MENU_ACTIONS.put(activity, actions);
+        }
+    }
+
+    private static EditMenuActions getEditMenuActions(
+            Activity activity
+    ) {
+        if (activity == null) return null;
+        return EDIT_MENU_ACTIONS.get(activity);
+    }
+
+
+    private FunctionsController() {
+}
+
+
+    // ============================================================
+    // EDIT SESSION
+    // ============================================================
+
+    private static class EditSession {
+
+        boolean editMode = false;
+
+        /*
+         * Rows waiting to be removed when Save is pressed.
+         * This is internal only. No "marked for deletion"
+         * message is shown to the user.
+         */
+        final Set<Integer> deletedRows =
+                new HashSet<Integer>();
+
+        final Set<TextView> removedCells =
+                new HashSet<TextView>();
+
+        final ArrayList<String> originalRecords =
+                new ArrayList<String>();
+
+        boolean menuConnected = false;
+
+        /*
+         * Cell currently being edited.
+         */
+        TextView focusedCell = null;
+
+        /*
+         * Cells selected before entering edit mode.
+         * Stored as "recordIndex:columnIndex" so the same
+         * selection can be restored after TextViews become EditTexts.
+         */
+        final Set<String> preEditSelectedCells =
+                new HashSet<String>();
+
+        /*
+         * Record-row layout state used only while Edit Mode is active.
+         * It prevents deleting weighted rows from making the remaining
+         * cells expand vertically. Original values are restored on Close.
+         */
+        final IdentityHashMap<View, Integer> originalRowHeights =
+                new IdentityHashMap<View, Integer>();
+
+        final IdentityHashMap<View, Float> originalRowWeights =
+                new IdentityHashMap<View, Float>();
+
+        boolean rowsFrozen = false;
+
+        /*
+         * External edit popup window.
+         */
+        View editPopupWindow = null;
+
+    }
+
+
+    // ============================================================
+    // GET EDIT SESSION
+    // ============================================================
+
+    /*
+
+     * ---------------------------------------------------------------
+
+     * SECTION: STATE / EDIT SESSION
+
+     * PURPOSE: Internal state accessor used by edit-mode features.
+
+     * ACTIVITY / VIEW CONNECTION: Activity: any Activity using edit mode. View/Button: none directly.
+
+     * WORK FLOW: Connection: edit() → getEditSession(); other edit helpers reuse the same Activity session.
+
+     * INPUT / OUTPUT: Inputs: Activity. Returns: EditSession for that Activity, or null when Activity is null.
+
+     * DETAILS: Keep this as an internal helper; no XML/More Block connection is required.
+
+     * ---------------------------------------------------------------
+
+     */
+
+    private static EditSession getEditSession(
+            Activity activity
+    ) {
+
+        if (activity == null) {
+            return null;
+        }
+
+        EditSession session =
+                EDIT_SESSIONS.get(activity);
+
+        if (session == null) {
+
+            session =
+                    new EditSession();
+
+            EDIT_SESSIONS.put(
+                    activity,
+                    session
+            );
+        }
+
+        return session;
+    }
+    
+    
 
 
 // ============================================================

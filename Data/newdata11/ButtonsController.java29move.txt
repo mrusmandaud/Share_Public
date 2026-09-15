@@ -2168,10 +2168,11 @@ public final class ButtonsController {
         }
 
 
-        editMenu(
-                activity
-        );
-    }
+        FunctionsController.editMenu(
+        activity
+);
+
+}
 
 
     // ============================================================
