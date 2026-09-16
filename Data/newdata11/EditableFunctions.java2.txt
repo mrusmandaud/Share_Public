@@ -1,0 +1,259 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.text.InputType;
+import android.view.View;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+public final class EditableFunctions {
+
+    private static Activity activity;
+
+    private static ArrayList<ArrayList<TextView>> selectionRecords;
+
+    private static boolean editMode = false;
+
+    private EditableFunctions() {
+        // No Activity.
+        // This class is only for Edit Menu functions.
+    }
+
+    // ============================================================
+    // CONNECT EXISTING RECORD DATA
+    // ============================================================
+
+    public static void connect(
+            Activity currentActivity,
+            ArrayList<ArrayList<TextView>> records
+    ) {
+        activity = currentActivity;
+        selectionRecords = records;
+
+        makeCellsNormal();
+    }
+
+    // ============================================================
+    // EDIT MENU ON / OFF
+    // ============================================================
+
+    public static void toggleEditMode() {
+
+        if (editMode) {
+            close();
+        } else {
+            open();
+        }
+    }
+
+    // ============================================================
+    // EDIT ON
+    // ============================================================
+
+    public static void open() {
+
+        editMode = true;
+
+        makeCellsEditable();
+    }
+
+    // ============================================================
+    // EDIT OFF
+    // ============================================================
+
+    public static void close() {
+
+        editMode = false;
+
+        makeCellsNormal();
+    }
+
+    // ============================================================
+    // MAKE EXISTING CELLS EDITABLE
+    // ============================================================
+
+    private static void makeCellsEditable() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell == null) {
+                    continue;
+                }
+
+                cell.setFocusable(true);
+                cell.setFocusableInTouchMode(true);
+                cell.setClickable(true);
+                cell.setLongClickable(true);
+
+                cell.setCursorVisible(true);
+
+                cell.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                );
+
+                cell.setBackgroundColor(
+                        Color.argb(
+                                18,
+                                0,
+                                150,
+                                136
+                        )
+                );
+            }
+        }
+    }
+
+    // ============================================================
+    // MAKE EXISTING CELLS NORMAL
+    // ============================================================
+
+    private static void makeCellsNormal() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell == null) {
+                    continue;
+                }
+
+                cell.setFocusable(false);
+                cell.setFocusableInTouchMode(false);
+
+                cell.setClickable(true);
+                cell.setLongClickable(true);
+
+                cell.setCursorVisible(false);
+
+                cell.setBackgroundColor(
+                        Color.TRANSPARENT
+                );
+            }
+        }
+    }
+
+    // ============================================================
+    // EDIT MODE STATUS
+    // ============================================================
+
+    public static boolean isEditMode() {
+        return editMode;
+    }
+
+    // ============================================================
+    // CLEAR
+    // ============================================================
+
+    public static void clear() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell != null) {
+                    cell.setText("");
+                }
+            }
+        }
+    }
+
+    // ============================================================
+    // SAVE
+    // ============================================================
+
+    public static void save() {
+
+        /*
+         * Save will be connected to the existing records system
+         * from MyrecordsActivity.
+         *
+         * No new record table is created here.
+         */
+
+        close();
+    }
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    public static void delete() {
+
+        /*
+         * Delete will use the existing Selection system from
+         * ButtonsController.
+         *
+         * Selection is NOT recreated here.
+         */
+    }
+
+    // ============================================================
+    // CONNECT EXISTING SELECTION
+    // ============================================================
+
+    public static void connectSelection() {
+
+        if (activity == null) {
+            return;
+        }
+
+        /*
+         * Use the existing Selection system.
+         * Do NOT create another SelectionState here.
+         */
+
+        ButtonsController.selection(
+                activity
+        );
+    }
+
+    // ============================================================
+    // DP
+    // ============================================================
+
+    private static int dp(
+            int value
+    ) {
+
+        if (activity == null) {
+            return value;
+        }
+
+        return (int) (
+                value *
+                activity.getResources()
+                        .getDisplayMetrics()
+                        .density
+                + 0.5f
+        );
+    }
+}

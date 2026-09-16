@@ -1,0 +1,871 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.text.InputType;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class EditableFunctions {
+
+    private static final String RECORDS_FILE = "myrecords.txt";
+
+    private static final int TEAL = Color.rgb(0, 150, 136);
+
+    private static Activity activity;
+
+    private static ArrayList<ArrayList<TextView>> selectionRecords;
+
+    private static PopupWindow editPopup;
+
+    private static boolean editMode = false;
+
+    private static View editMenuButton;
+
+    private static EditableFunctions() {
+    }
+
+    // ============================================================
+    // CONNECT EXISTING RECORD DATA
+    // ============================================================
+
+    public static void connect(
+            Activity currentActivity,
+            ArrayList<ArrayList<TextView>> records
+    ) {
+        activity = currentActivity;
+        selectionRecords = records;
+
+        if (activity == null) {
+            return;
+        }
+
+        editMenuButton =
+                activity.findViewById(
+                        activity.getResources()
+                                .getIdentifier(
+                                        "editMenuButton",
+                                        "id",
+                                        activity.getPackageName()
+                                )
+                );
+
+        if (editMenuButton != null) {
+            editMenuButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            toggleEditMode();
+                        }
+                    }
+            );
+        }
+    }
+
+    // ============================================================
+    // EDIT MENU ON / OFF
+    // ============================================================
+
+    public static void toggleEditMode() {
+
+        if (activity == null) {
+            return;
+        }
+
+        if (editMode) {
+            closeEditMode();
+        } else {
+            openEditMode();
+        }
+    }
+
+    private static void openEditMode() {
+
+        editMode = true;
+
+        makeCellsEditable();
+
+        showEditPopup();
+    }
+
+    private static void closeEditMode() {
+
+        editMode = false;
+
+        makeCellsNormal();
+
+        hideEditPopup();
+    }
+
+    // ============================================================
+    // MAKE EXISTING CELLS EDITABLE
+    // ============================================================
+
+    private static void makeCellsEditable() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell == null) {
+                    continue;
+                }
+
+                cell.setFocusable(true);
+                cell.setFocusableInTouchMode(true);
+                cell.setClickable(true);
+                cell.setLongClickable(true);
+
+                cell.setTextIsSelectable(true);
+
+                cell.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                );
+
+                cell.setCursorVisible(true);
+
+                cell.setBackgroundColor(
+                        Color.argb(18, 0, 150, 136)
+                );
+            }
+        }
+    }
+
+    // ============================================================
+    // MAKE EXISTING CELLS NORMAL
+    // ============================================================
+
+    private static void makeCellsNormal() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell == null) {
+                    continue;
+                }
+
+                cell.setFocusable(false);
+                cell.setFocusableInTouchMode(false);
+
+                cell.setClickable(true);
+                cell.setLongClickable(true);
+
+                cell.setTextIsSelectable(false);
+
+                cell.setCursorVisible(false);
+
+                cell.setBackgroundColor(Color.TRANSPARENT);
+            }
+        }
+    }
+
+    // ============================================================
+    // EDIT POPUP
+    // ============================================================
+
+    private static void showEditPopup() {
+
+        if (activity == null) {
+            return;
+        }
+
+        hideEditPopup();
+
+        LinearLayout root =
+                new LinearLayout(activity);
+
+        root.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        root.setGravity(
+                Gravity.CENTER
+        );
+
+        root.setPadding(
+                dp(1),
+                dp(1),
+                dp(1),
+                dp(1)
+        );
+
+        GradientDrawable background =
+                new GradientDrawable();
+
+        background.setColor(Color.WHITE);
+
+        background.setStroke(
+                dp(1),
+                Color.argb(80, 0, 0, 0)
+        );
+
+        root.setBackground(background);
+
+        // --------------------------------------------------------
+        // HEADER
+        // --------------------------------------------------------
+
+        LinearLayout header =
+                new LinearLayout(activity);
+
+        header.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        header.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+        TextView title =
+                new TextView(activity);
+
+        title.setText("Edit Menu");
+
+        title.setTextColor(Color.BLACK);
+
+        title.setTextSize(15);
+
+        title.setGravity(
+                Gravity.CENTER
+        );
+
+        title.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        LinearLayout.LayoutParams titleParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(44),
+                        1.0f
+                );
+
+        header.addView(
+                title,
+                titleParams
+        );
+
+        Button close =
+                new Button(activity);
+
+        close.setText("X");
+
+        close.setTextSize(14);
+
+        close.setTextColor(Color.BLACK);
+
+        close.setGravity(
+                Gravity.CENTER
+        );
+
+        close.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        LinearLayout.LayoutParams closeParams =
+                new LinearLayout.LayoutParams(
+                        dp(44),
+                        dp(44)
+                );
+
+        header.addView(
+                close,
+                closeParams
+        );
+
+        root.addView(header);
+
+        // --------------------------------------------------------
+        // SECOND ROW
+        // --------------------------------------------------------
+
+        LinearLayout actionRow =
+                new LinearLayout(activity);
+
+        actionRow.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        actionRow.setGravity(
+                Gravity.CENTER
+        );
+
+        Button clear =
+                new Button(activity);
+
+        clear.setText("Clear");
+
+        clear.setTextSize(12);
+
+        clear.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        Button delete =
+                new Button(activity);
+
+        delete.setText("Delete");
+
+        delete.setTextSize(12);
+
+        delete.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        actionRow.addView(
+                clear,
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(44),
+                        1.0f
+                )
+        );
+
+        actionRow.addView(
+                delete,
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(44),
+                        1.0f
+                )
+        );
+
+        root.addView(actionRow);
+
+        // --------------------------------------------------------
+        // SAVE
+        // --------------------------------------------------------
+
+        Button save =
+                new Button(activity);
+
+        save.setText("Save");
+
+        save.setTextSize(12);
+
+        save.setGravity(
+                Gravity.CENTER
+        );
+
+        save.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        root.addView(
+                save,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(44)
+                )
+        );
+
+        // --------------------------------------------------------
+        // BUTTON ACTIONS
+        // --------------------------------------------------------
+
+        clear.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        clearEditableCells();
+                    }
+                }
+        );
+
+        delete.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteSelectedRecords();
+                    }
+                }
+        );
+
+        save.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        saveEditedRecords();
+                    }
+                }
+        );
+
+        close.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        closeEditMode();
+                    }
+                }
+        );
+
+        // --------------------------------------------------------
+        // POPUP
+        // --------------------------------------------------------
+
+        editPopup =
+                new PopupWindow(
+                        root,
+                        dp(113),
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+        editPopup.setBackgroundDrawable(
+                new android.graphics.drawable.ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+        editPopup.setOutsideTouchable(false);
+
+        editPopup.setFocusable(true);
+
+        editPopup.setElevation(
+                dp(4)
+        );
+
+        if (editMenuButton != null) {
+
+            editPopup.showAsDropDown(
+                    editMenuButton,
+                    0,
+                    0
+            );
+
+        } else {
+
+            editPopup.showAtLocation(
+                    activity.getWindow()
+                            .getDecorView(),
+                    Gravity.CENTER,
+                    0,
+                    0
+            );
+        }
+    }
+
+    // ============================================================
+    // HIDE POPUP
+    // ============================================================
+
+    private static void hideEditPopup() {
+
+        if (editPopup != null) {
+
+            if (editPopup.isShowing()) {
+                editPopup.dismiss();
+            }
+
+            editPopup = null;
+        }
+    }
+
+    // ============================================================
+    // CLEAR
+    // ============================================================
+
+    private static void clearEditableCells() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell != null) {
+                    cell.setText("");
+                }
+            }
+        }
+
+        Toast.makeText(
+                activity,
+                "Editable data cleared",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    private static void deleteSelectedRecords() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        if (selectionRecords.size() == 0) {
+
+            Toast.makeText(
+                    activity,
+                    "No records to delete",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        ArrayList<String> remaining =
+                new ArrayList<String>();
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+            BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    input,
+                                    "UTF-8"
+                            )
+                    );
+
+            String line;
+
+            boolean firstLine = true;
+
+            while (
+                    (line = reader.readLine()) != null
+            ) {
+
+                if (firstLine) {
+
+                    remaining.add(line);
+
+                    firstLine = false;
+
+                    continue;
+                }
+
+                if (line.trim().length() > 0) {
+                    remaining.add(line);
+                }
+            }
+
+            reader.close();
+            input.close();
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to read records",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        /*
+         * The existing Selection controller remains responsible
+         * for selection. This class does not recreate SelectionState.
+         *
+         * Until ButtonsController exposes the selected record
+         * indexes, Delete does not guess which records are selected.
+         */
+
+        Toast.makeText(
+                activity,
+                "Delete is connected to the existing Selection system",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    // ============================================================
+    // SAVE
+    // ============================================================
+
+    private static void saveEditedRecords() {
+
+        if (activity == null ||
+                selectionRecords == null) {
+            return;
+        }
+
+        ArrayList<String> output =
+                new ArrayList<String>();
+
+        try {
+
+            FileInputStream input =
+                    activity.openFileInput(
+                            RECORDS_FILE
+                    );
+
+            BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    input,
+                                    "UTF-8"
+                            )
+                    );
+
+            String line;
+
+            boolean firstLine = true;
+
+            int recordIndex = 0;
+
+            while (
+                    (line = reader.readLine()) != null
+            ) {
+
+                if (firstLine) {
+
+                    output.add(line);
+
+                    firstLine = false;
+
+                    continue;
+                }
+
+                if (recordIndex <
+                        selectionRecords.size()) {
+
+                    ArrayList<TextView> cells =
+                            selectionRecords.get(
+                                    recordIndex
+                            );
+
+                    String name = "";
+                    String phone = "";
+                    String address = "";
+                    String product = "";
+
+                    if (cells.size() > 0 &&
+                            cells.get(0) != null) {
+
+                        name =
+                                cells.get(0)
+                                        .getText()
+                                        .toString()
+                                        .trim();
+                    }
+
+                    if (cells.size() > 1 &&
+                            cells.get(1) != null) {
+
+                        phone =
+                                cells.get(1)
+                                        .getText()
+                                        .toString()
+                                        .trim();
+                    }
+
+                    if (cells.size() > 2 &&
+                            cells.get(2) != null) {
+
+                        address =
+                                cells.get(2)
+                                        .getText()
+                                        .toString()
+                                        .trim();
+                    }
+
+                    if (cells.size() > 3 &&
+                            cells.get(3) != null) {
+
+                        product =
+                                cells.get(3)
+                                        .getText()
+                                        .toString()
+                                        .trim();
+                    }
+
+                    output.add(
+                            name
+                                    + " | "
+                                    + phone
+                                    + " | "
+                                    + address
+                                    + " | "
+                                    + product
+                    );
+
+                    recordIndex++;
+
+                } else {
+
+                    output.add(line);
+                }
+            }
+
+            reader.close();
+            input.close();
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to save records",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        try {
+
+            FileOutputStream outputFile =
+                    activity.openFileOutput(
+                            RECORDS_FILE,
+                            Activity.MODE_PRIVATE
+                    );
+
+            for (String line : output) {
+
+                outputFile.write(
+                        (
+                                line + "\n"
+                        ).getBytes("UTF-8")
+                );
+            }
+
+            outputFile.close();
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    activity,
+                    "Unable to save records",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        editMode = false;
+
+        makeCellsNormal();
+
+        hideEditPopup();
+
+        Toast.makeText(
+                activity,
+                "Records saved",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        activity.recreate();
+    }
+
+    // ============================================================
+    // CONNECT EXISTING SELECTION
+    // ============================================================
+
+    /*
+     * IMPORTANT:
+     *
+     * Selection is NOT recreated here.
+     *
+     * ButtonsController.selection(activity)
+     * remains responsible for:
+     *
+     * Copy
+     * Share
+     * Export
+     * Select All
+     * Deselect All
+     * Range selection
+     * Cell selection
+     */
+
+    public static void connectSelection(
+            Activity currentActivity
+    ) {
+
+        if (currentActivity == null) {
+            return;
+        }
+
+        ButtonsController.selection(
+                currentActivity
+        );
+    }
+
+    // ============================================================
+    // EDIT MODE STATUS
+    // ============================================================
+
+    public static boolean isEditMode() {
+        return editMode;
+    }
+
+    // ============================================================
+    // DP
+    // ============================================================
+
+    private static int dp(
+            int value
+    ) {
+
+        if (activity == null) {
+            return value;
+        }
+
+        return (int) (
+                value *
+                activity.getResources()
+                        .getDisplayMetrics()
+                        .density
+                + 0.5f
+        );
+    }
+}
