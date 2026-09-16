@@ -1,0 +1,278 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import java.util.ArrayList;
+
+public final class EditableFunctions {
+
+    private static Activity activity;
+    private static ArrayList<ArrayList<TextView>> records;
+    private static PopupWindow popup;
+    private static boolean editMode = false;
+
+    private EditableFunctions() {
+    }
+
+    public static void connect(final Activity a) {
+
+        if (a == null) return;
+
+        activity = a;
+
+        View container = a.findViewById(
+                R.id.recordsContainer
+        );
+
+        if (container != null &&
+                container.getTag() instanceof ArrayList) {
+
+            records =
+                    (ArrayList<ArrayList<TextView>>)
+                            container.getTag();
+        }
+
+        final View editMenuButton =
+                a.findViewById(
+                        R.id.editMenuButton
+                );
+
+        if (editMenuButton != null) {
+
+            editMenuButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            toggle();
+                        }
+                    }
+            );
+        }
+    }
+
+    private static void toggle() {
+
+        if (editMode) {
+            close();
+        } else {
+            edit();
+        }
+    }
+
+    private static void edit() {
+
+        editMode = true;
+
+        if (records == null) return;
+
+        for (ArrayList<TextView> row : records) {
+
+            if (row == null) continue;
+
+            for (TextView cell : row) {
+
+                if (cell == null) continue;
+
+                cell.setFocusable(true);
+                cell.setFocusableInTouchMode(true);
+                cell.setBackgroundColor(
+                        Color.TRANSPARENT
+                );
+            }
+        }
+
+        showPopup();
+    }
+
+    private static void showPopup() {
+
+        if (activity == null) return;
+
+        if (popup != null &&
+                popup.isShowing()) {
+            return;
+        }
+
+        View view =
+                LayoutInflater.from(activity)
+                        .inflate(
+                                R.layout.edit_popup_menu,
+                                null
+                        );
+
+        FrameLayout clearButton =
+                view.findViewById(
+                        R.id.clearButton
+                );
+
+        FrameLayout deleteButton =
+                view.findViewById(
+                        R.id.deleteButton
+                );
+
+        FrameLayout saveButton =
+                view.findViewById(
+                        R.id.saveButton
+                );
+
+        FrameLayout closeButton =
+                view.findViewById(
+                        R.id.closeButton
+                );
+
+        clearButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        clear();
+                    }
+                }
+        );
+
+        deleteButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        delete();
+                    }
+                }
+        );
+
+        saveButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        save();
+                    }
+                }
+        );
+
+        closeButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        close();
+                    }
+                }
+        );
+
+        popup =
+                new PopupWindow(
+                        view,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        dp(44),
+                        true
+                );
+
+        popup.setBackgroundDrawable(
+                new android.graphics.drawable.ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+        popup.setOutsideTouchable(false);
+
+        popup.showAsDropDown(
+                activity.findViewById(
+                        R.id.editMenuButton
+                ),
+                0,
+                0,
+                Gravity.CENTER
+        );
+    }
+
+    private static void clear() {
+
+        if (records == null) return;
+
+        for (ArrayList<TextView> row : records) {
+
+            if (row == null) continue;
+
+            for (TextView cell : row) {
+
+                if (cell != null) {
+                    cell.setText("");
+                }
+            }
+        }
+    }
+
+    private static void delete() {
+
+        /*
+         * Existing Selection belongs to
+         * ButtonsController.
+         *
+         * Selection connection will be added there
+         * without creating another Selection system.
+         */
+        ButtonsController.deselectAll(
+                activity
+        );
+    }
+
+    private static void save() {
+
+        /*
+         * Existing records are already displayed
+         * from recordsContainer.
+         *
+         * Save connection will use the existing
+         * myrecords.txt record system.
+         */
+        close();
+    }
+
+    private static void close() {
+
+        editMode = false;
+
+        if (popup != null &&
+                popup.isShowing()) {
+            popup.dismiss();
+        }
+
+        popup = null;
+
+        if (records == null) return;
+
+        for (ArrayList<TextView> row : records) {
+
+            if (row == null) continue;
+
+            for (TextView cell : row) {
+
+                if (cell == null) continue;
+
+                cell.setFocusable(false);
+                cell.setFocusableInTouchMode(false);
+            }
+        }
+    }
+
+    private static int dp(int value) {
+
+        if (activity == null) return value;
+
+        float density =
+                activity
+                        .getResources()
+                        .getDisplayMetrics()
+                        .density;
+
+        return (int)(
+                value * density
+                        + 0.5f
+        );
+    }
+}
