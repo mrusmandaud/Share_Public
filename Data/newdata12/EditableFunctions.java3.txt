@@ -1,0 +1,665 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.text.InputType;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public final class EditableFunctions {
+
+    private static Activity activity;
+
+    private static ArrayList<ArrayList<TextView>> selectionRecords;
+
+    private static boolean editMode = false;
+
+    private static PopupWindow editPopup;
+
+    private EditableFunctions() {
+    }
+
+    // ============================================================
+    // CONNECT EXISTING RECORD DATA
+    // ============================================================
+
+    public static void connect(
+            Activity currentActivity,
+            ArrayList<ArrayList<TextView>> records
+    ) {
+
+        activity = currentActivity;
+        selectionRecords = records;
+
+        makeCellsNormal();
+    }
+
+    // ============================================================
+    // EDIT MENU ON / OFF
+    // ============================================================
+
+    public static void toggleEditMode() {
+
+        if (editMode) {
+
+            close();
+
+        } else {
+
+            open();
+        }
+    }
+
+    // ============================================================
+    // EDIT ON
+    // ============================================================
+
+    public static void open() {
+
+        if (activity == null) {
+            return;
+        }
+
+        editMode = true;
+
+        makeCellsEditable();
+
+        showEditPopup();
+    }
+
+    // ============================================================
+    // EDIT OFF
+    // ============================================================
+
+    public static void close() {
+
+        editMode = false;
+
+        makeCellsNormal();
+
+        hideEditPopup();
+    }
+
+    // ============================================================
+    // MAKE CELLS EDITABLE
+    // ============================================================
+
+    private static void makeCellsEditable() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell == null) {
+                    continue;
+                }
+
+                cell.setFocusable(true);
+
+                cell.setFocusableInTouchMode(true);
+
+                cell.setClickable(true);
+
+                cell.setLongClickable(true);
+
+                cell.setCursorVisible(true);
+
+                cell.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                );
+
+                cell.setBackgroundColor(
+                        Color.argb(
+                                18,
+                                0,
+                                150,
+                                136
+                        )
+                );
+            }
+        }
+    }
+
+    // ============================================================
+    // MAKE CELLS NORMAL
+    // ============================================================
+
+    private static void makeCellsNormal() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell == null) {
+                    continue;
+                }
+
+                cell.setFocusable(false);
+
+                cell.setFocusableInTouchMode(false);
+
+                cell.setClickable(true);
+
+                cell.setLongClickable(true);
+
+                cell.setCursorVisible(false);
+
+                cell.setBackgroundColor(
+                        Color.TRANSPARENT
+                );
+            }
+        }
+    }
+
+    // ============================================================
+    // SHOW EDIT POPUP
+    // ============================================================
+
+    private static void showEditPopup() {
+
+        hideEditPopup();
+
+        LinearLayout root =
+                new LinearLayout(activity);
+
+        root.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        root.setGravity(
+                Gravity.CENTER
+        );
+
+        GradientDrawable background =
+                new GradientDrawable();
+
+        background.setColor(
+                Color.WHITE
+        );
+
+        background.setStroke(
+                dp(1),
+                Color.argb(
+                        100,
+                        0,
+                        0,
+                        0
+                )
+        );
+
+        root.setBackground(
+                background
+        );
+
+        // --------------------------------------------------------
+        // HEADER
+        // --------------------------------------------------------
+
+        LinearLayout header =
+                new LinearLayout(activity);
+
+        header.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        header.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+        TextView title =
+                new TextView(activity);
+
+        title.setText(
+                "Edit Menu"
+        );
+
+        title.setTextColor(
+                Color.BLACK
+        );
+
+        title.setTextSize(
+                15
+        );
+
+        title.setGravity(
+                Gravity.CENTER
+        );
+
+        title.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        header.addView(
+                title,
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(44),
+                        1
+                )
+        );
+
+        Button closeButton =
+                new Button(activity);
+
+        closeButton.setText(
+                "X"
+        );
+
+        closeButton.setTextColor(
+                Color.BLACK
+        );
+
+        closeButton.setTextSize(
+                14
+        );
+
+        closeButton.setGravity(
+                Gravity.CENTER
+        );
+
+        closeButton.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        header.addView(
+                closeButton,
+                new LinearLayout.LayoutParams(
+                        dp(44),
+                        dp(44)
+                )
+        );
+
+        root.addView(
+                header
+        );
+
+        // --------------------------------------------------------
+        // CLEAR + DELETE
+        // --------------------------------------------------------
+
+        LinearLayout actionRow =
+                new LinearLayout(activity);
+
+        actionRow.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        actionRow.setGravity(
+                Gravity.CENTER
+        );
+
+        Button clearButton =
+                new Button(activity);
+
+        clearButton.setText(
+                "Clear"
+        );
+
+        clearButton.setTextSize(
+                12
+        );
+
+        clearButton.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        Button deleteButton =
+                new Button(activity);
+
+        deleteButton.setText(
+                "Delete"
+        );
+
+        deleteButton.setTextSize(
+                12
+        );
+
+        deleteButton.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        actionRow.addView(
+                clearButton,
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(44),
+                        1
+                )
+        );
+
+        actionRow.addView(
+                deleteButton,
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(44),
+                        1
+                )
+        );
+
+        root.addView(
+                actionRow
+        );
+
+        // --------------------------------------------------------
+        // SAVE
+        // --------------------------------------------------------
+
+        Button saveButton =
+                new Button(activity);
+
+        saveButton.setText(
+                "Save"
+        );
+
+        saveButton.setTextSize(
+                12
+        );
+
+        saveButton.setGravity(
+                Gravity.CENTER
+        );
+
+        saveButton.setPadding(
+                0,
+                0,
+                0,
+                0
+        );
+
+        root.addView(
+                saveButton,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(44)
+                )
+        );
+
+        // ========================================================
+        // BUTTON ACTIONS
+        // ========================================================
+
+        closeButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        close();
+                    }
+                }
+        );
+
+        clearButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        clear();
+                    }
+                }
+        );
+
+        deleteButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        delete();
+                    }
+                }
+        );
+
+        saveButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        save();
+                    }
+                }
+        );
+
+        // ========================================================
+        // POPUP
+        // ========================================================
+
+        editPopup =
+                new PopupWindow(
+                        root,
+                        dp(113),
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+        editPopup.setBackgroundDrawable(
+                new ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+        editPopup.setOutsideTouchable(
+                false
+        );
+
+        editPopup.setFocusable(
+                true
+        );
+
+        editPopup.setElevation(
+                dp(4)
+        );
+
+        View editMenu =
+                activity.findViewById(
+                        activity.getResources()
+                                .getIdentifier(
+                                        "editMenuButton",
+                                        "id",
+                                        activity.getPackageName()
+                                )
+                );
+
+        if (editMenu != null) {
+
+            editPopup.showAsDropDown(
+                    editMenu,
+                    0,
+                    0
+            );
+
+        } else {
+
+            editPopup.showAtLocation(
+                    activity.getWindow()
+                            .getDecorView(),
+                    Gravity.CENTER,
+                    0,
+                    0
+            );
+        }
+    }
+
+    // ============================================================
+    // HIDE POPUP
+    // ============================================================
+
+    private static void hideEditPopup() {
+
+        if (editPopup != null) {
+
+            if (editPopup.isShowing()) {
+
+                editPopup.dismiss();
+            }
+
+            editPopup = null;
+        }
+    }
+
+    // ============================================================
+    // CLEAR
+    // ============================================================
+
+    public static void clear() {
+
+        if (selectionRecords == null) {
+            return;
+        }
+
+        for (ArrayList<TextView> record : selectionRecords) {
+
+            if (record == null) {
+                continue;
+            }
+
+            for (TextView cell : record) {
+
+                if (cell != null) {
+
+                    cell.setText("");
+                }
+            }
+        }
+
+        Toast.makeText(
+                activity,
+                "Data cleared",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+
+    public static void delete() {
+
+        /*
+         * IMPORTANT:
+         *
+         * The actual Selection system remains in
+         * ButtonsController.
+         *
+         * No new SelectionState is created here.
+         *
+         * Delete will be connected to the existing
+         * selected-record information next.
+         */
+
+        Toast.makeText(
+                activity,
+                "Delete uses existing Selection",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    // ============================================================
+    // SAVE
+    // ============================================================
+
+    public static void save() {
+
+        /*
+         * The edited TextViews are already the existing
+         * record cells.
+         *
+         * Actual file update will be connected to the
+         * existing record-saving system next.
+         */
+
+        close();
+
+        Toast.makeText(
+                activity,
+                "Edit mode closed",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    // ============================================================
+    // EXISTING SELECTION CONNECTION
+    // ============================================================
+
+    public static void connectSelection() {
+
+        if (activity == null) {
+            return;
+        }
+
+        /*
+         * DO NOT recreate Selection here.
+         *
+         * Use the existing ButtonsController Selection.
+         */
+
+        ButtonsController.selection(
+                activity
+        );
+    }
+
+    // ============================================================
+    // STATUS
+    // ============================================================
+
+    public static boolean isEditMode() {
+
+        return editMode;
+    }
+
+    // ============================================================
+    // DP
+    // ============================================================
+
+    private static int dp(
+            int value
+    ) {
+
+        if (activity == null) {
+            return value;
+        }
+
+        return (int) (
+                value *
+                activity.getResources()
+                        .getDisplayMetrics()
+                        .density
+                + 0.5f
+        );
+    }
+}
