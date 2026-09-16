@@ -1,0 +1,430 @@
+package com.myrecords.onenewexperience.one;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+
+public final class EditableFunctions {
+
+    private static Activity activity;
+    private static PopupWindow popup;
+    private static boolean editMode = false;
+
+    private EditableFunctions() {
+    }
+
+    public static void connect(final Activity a) {
+
+        if (a == null) return;
+
+        activity = a;
+
+        final View editMenuButton =
+                a.findViewById(
+                        R.id.editMenuButton
+                );
+
+        if (editMenuButton == null) return;
+
+        editMenuButton.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        toggle();
+                    }
+                }
+        );
+    }
+
+    private static void toggle() {
+
+        if (popup != null &&
+                popup.isShowing()) {
+
+            close();
+
+        } else {
+
+            editMode = true;
+
+            showPopup();
+        }
+    }
+
+    private static void showPopup() {
+
+        if (activity == null) return;
+
+        View editMenuButton =
+                activity.findViewById(
+                        R.id.editMenuButton
+                );
+
+        if (editMenuButton == null) return;
+
+        View popupView =
+                LayoutInflater
+                        .from(activity)
+                        .inflate(
+                                R.layout.edit_popup_menu,
+                                null
+                        );
+
+        if (popupView == null) return;
+
+
+        View clearButton =
+                popupView.findViewById(
+                        R.id.clearButton
+                );
+
+        if (clearButton != null) {
+
+            clearButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            ButtonsController.clearSelectedCells(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        View deleteButton =
+                popupView.findViewById(
+                        R.id.deleteButton
+                );
+
+        if (deleteButton != null) {
+
+            deleteButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            ButtonsController.deleteSelectedRows(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+        View saveButton =
+                popupView.findViewById(
+                        R.id.saveButton
+                );
+
+        if (saveButton != null) {
+
+            saveButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            EditableFunctions.save(
+                                    activity
+                            );
+                        }
+                    }
+            );
+        }
+
+
+        View closeButton =
+                popupView.findViewById(
+                        R.id.closeButton
+                );
+
+        if (closeButton != null) {
+
+            closeButton.setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            close();
+                        }
+                    }
+            );
+        }
+
+
+        popup =
+                new PopupWindow(
+                        popupView,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+        popup.setBackgroundDrawable(
+                new ColorDrawable(
+                        Color.TRANSPARENT
+                )
+        );
+
+        popup.setOutsideTouchable(false);
+
+        popup.showAsDropDown(
+                editMenuButton,
+                editMenuButton.getWidth(),
+                -editMenuButton.getHeight()
+        );
+    }
+
+
+    private static void close() {
+
+        editMode = false;
+
+        if (popup != null &&
+                popup.isShowing()) {
+
+            popup.dismiss();
+        }
+
+        popup = null;
+    }
+
+
+    public static void save(
+            Activity activity
+    ) {
+
+        if (activity == null) return;
+
+        try {
+
+            View container =
+                    activity.findViewById(
+                            R.id.recordsContainer
+                    );
+
+            if (container == null) return;
+
+            Object tag =
+                    container.getTag();
+
+            if (!(tag instanceof java.util.ArrayList)) {
+                return;
+            }
+
+
+            java.util.ArrayList<
+                    java.util.ArrayList<
+                            android.widget.TextView
+                    >
+            > records =
+                    (java.util.ArrayList<
+                            java.util.ArrayList<
+                                    android.widget.TextView
+                            >
+                    >) tag;
+
+
+            java.util.ArrayList<String> lines =
+                    new java.util.ArrayList<String>();
+
+
+            java.io.BufferedReader reader =
+                    new java.io.BufferedReader(
+                            new java.io.InputStreamReader(
+                                    activity.openFileInput(
+                                            "myrecords.txt"
+                                    ),
+                                    "UTF-8"
+                            )
+                    );
+
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                lines.add(line);
+            }
+
+            reader.close();
+
+
+            if (lines.size() == 0) {
+                return;
+            }
+
+
+            int recordIndex = 0;
+
+
+            for (int i = 1;
+                 i < lines.size();
+                 i++) {
+
+                String original =
+                        lines.get(i);
+
+
+                if (original == null ||
+                        original.trim().length() == 0) {
+
+                    continue;
+                }
+
+
+                if (recordIndex >= records.size()) {
+                    break;
+                }
+
+
+                java.util.ArrayList<
+                        android.widget.TextView
+                > record =
+                        records.get(
+                                recordIndex
+                        );
+
+
+                if (record == null ||
+                        record.size() < 4) {
+
+                    recordIndex++;
+                    continue;
+                }
+
+
+                String[] data =
+                        original.split(
+                                "\\s*\\|\\s*",
+                                -1
+                        );
+
+
+                if (data.length >= 5) {
+
+                    data[1] =
+                            record.get(0)
+                                    .getText()
+                                    .toString();
+
+                    data[2] =
+                            record.get(1)
+                                    .getText()
+                                    .toString();
+
+                    data[3] =
+                            record.get(2)
+                                    .getText()
+                                    .toString();
+
+                    data[4] =
+                            record.get(3)
+                                    .getText()
+                                    .toString();
+
+
+                    lines.set(
+                            i,
+                            android.text.TextUtils.join(
+                                    " | ",
+                                    data
+                            )
+                    );
+
+                } else if (data.length >= 4) {
+
+                    data[0] =
+                            record.get(0)
+                                    .getText()
+                                    .toString();
+
+                    data[1] =
+                            record.get(1)
+                                    .getText()
+                                    .toString();
+
+                    data[2] =
+                            record.get(2)
+                                    .getText()
+                                    .toString();
+
+                    data[3] =
+                            record.get(3)
+                                    .getText()
+                                    .toString();
+
+
+                    lines.set(
+                            i,
+                            android.text.TextUtils.join(
+                                    " | ",
+                                    data
+                            )
+                    );
+                }
+
+
+                recordIndex++;
+            }
+
+
+            java.io.FileOutputStream out =
+                    activity.openFileOutput(
+                            "myrecords.txt",
+                            Activity.MODE_PRIVATE
+                    );
+
+
+            for (int i = 0;
+                 i < lines.size();
+                 i++) {
+
+                out.write(
+                        (
+                                lines.get(i) + "\n"
+                        ).getBytes("UTF-8")
+                );
+            }
+
+
+            out.close();
+
+
+            android.widget.Toast.makeText(
+                    activity,
+                    "Records saved",
+                    android.widget.Toast.LENGTH_SHORT
+            ).show();
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            android.widget.Toast.makeText(
+                    activity,
+                    "Save failed",
+                    android.widget.Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    public static boolean isEditMode() {
+
+        return editMode;
+    }
+}
