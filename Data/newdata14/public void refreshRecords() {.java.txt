@@ -1,0 +1,412 @@
+public void refreshRecords() {
+
+    final android.widget.LinearLayout recordsContainer =
+            findViewById(R.id.recordsContainer);
+
+    final android.widget.TextView recordsCount =
+            findViewById(R.id.recordsCount);
+
+    if (recordsContainer == null ||
+            recordsCount == null) {
+        return;
+    }
+
+    // Read the NEW saved records
+    final java.util.ArrayList<String> allRecords =
+            new java.util.ArrayList<String>();
+
+    try {
+
+        java.io.BufferedReader reader =
+                new java.io.BufferedReader(
+                        new java.io.InputStreamReader(
+                                openFileInput("myrecords.txt"),
+                                "UTF-8"
+                        )
+                );
+
+        String line;
+        boolean firstLine = true;
+
+        while ((line = reader.readLine()) != null) {
+
+            line = line.trim();
+
+            if (firstLine) {
+                firstLine = false;
+                continue;
+            }
+
+            if (line.length() > 0) {
+                allRecords.add(line);
+            }
+        }
+
+        reader.close();
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+        return;
+    }
+
+    // Update Saved Records count immediately
+    recordsCount.setText(
+            String.valueOf(allRecords.size())
+    );
+
+    // Remove the OLD 8/9 rows from the CURRENT screen
+    recordsContainer.removeAllViews();
+
+    final float density =
+            getResources()
+                    .getDisplayMetrics()
+                    .density;
+
+    final int oneDp =
+            Math.max(
+                    1,
+                    (int)(density + 0.5f)
+            );
+
+    final int numberWidth =
+            (int)(34.0f * density + 0.5f);
+
+    final int gridColor =
+            android.graphics.Color.argb(
+                    102,
+                    0,
+                    0,
+                    0
+            );
+
+    // New selection list for the newly created cells
+    final java.util.ArrayList<
+            java.util.ArrayList<
+                    android.widget.TextView
+            >
+    > selectionRecords =
+            new java.util.ArrayList<
+                    java.util.ArrayList<
+                            android.widget.TextView
+                    >
+            >();
+
+    int recordNumber = 1;
+
+    for (String record : allRecords) {
+
+        String[] data =
+                record.split(
+                        "\\s*\\|\\s*",
+                        -1
+                );
+
+        String name = "";
+        String phone = "";
+        String address = "";
+        String product = "";
+
+        if (data.length >= 5) {
+
+            name = data[1].trim();
+            phone = data[2].trim();
+            address = data[3].trim();
+            product = data[4].trim();
+
+        } else {
+
+            if (data.length > 0) {
+                name = data[0].trim();
+            }
+
+            if (data.length > 1) {
+                phone = data[1].trim();
+            }
+
+            if (data.length > 2) {
+                address = data[2].trim();
+            }
+
+            if (data.length > 3) {
+                product = data[3].trim();
+            }
+        }
+
+        // -------------------------------------------------
+        // ROW
+        // -------------------------------------------------
+
+        android.widget.LinearLayout row =
+                new android.widget.LinearLayout(
+                        MyrecordsActivity.this
+                );
+
+        row.setOrientation(
+                android.widget.LinearLayout.HORIZONTAL
+        );
+
+        row.setGravity(
+                android.view.Gravity.CENTER_VERTICAL
+        );
+
+        row.setBackgroundColor(
+                android.graphics.Color.WHITE
+        );
+
+        row.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        (int)(52.0f * density + 0.5f)
+                )
+        );
+
+        // -------------------------------------------------
+        // NUMBER
+        // -------------------------------------------------
+
+        android.widget.TextView numberCell =
+                new android.widget.TextView(
+                        MyrecordsActivity.this
+                );
+
+        numberCell.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        numberWidth,
+                        (int)(52.0f * density + 0.5f)
+                )
+        );
+
+        numberCell.setGravity(
+                android.view.Gravity.CENTER
+        );
+
+        numberCell.setText(
+                String.valueOf(recordNumber)
+        );
+
+        numberCell.setTextColor(
+                android.graphics.Color.BLACK
+        );
+
+        numberCell.setTextSize(12);
+
+        row.addView(numberCell);
+
+        // -------------------------------------------------
+        // NAME
+        // -------------------------------------------------
+
+        android.widget.TextView nameCell =
+                new android.widget.TextView(
+                        MyrecordsActivity.this
+                );
+
+        nameCell.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        0,
+                        (int)(52.0f * density + 0.5f),
+                        1.0f
+                )
+        );
+
+        nameCell.setGravity(
+                android.view.Gravity.CENTER_VERTICAL |
+                android.view.Gravity.START
+        );
+
+        nameCell.setText(name);
+
+        nameCell.setTextColor(
+                android.graphics.Color.BLACK
+        );
+
+        nameCell.setTextSize(13);
+
+        nameCell.setPadding(
+                (int)(7 * density),
+                0,
+                (int)(5 * density),
+                0
+        );
+
+        row.addView(nameCell);
+
+        // -------------------------------------------------
+        // PHONE
+        // -------------------------------------------------
+
+        android.widget.TextView phoneCell =
+                new android.widget.TextView(
+                        MyrecordsActivity.this
+                );
+
+        phoneCell.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        0,
+                        (int)(52.0f * density + 0.5f),
+                        1.0f
+                )
+        );
+
+        phoneCell.setGravity(
+                android.view.Gravity.CENTER_VERTICAL |
+                android.view.Gravity.START
+        );
+
+        phoneCell.setText(phone);
+
+        phoneCell.setTextColor(
+                android.graphics.Color.BLACK
+        );
+
+        phoneCell.setTextSize(13);
+
+        phoneCell.setPadding(
+                (int)(7 * density),
+                0,
+                (int)(5 * density),
+                0
+        );
+
+        row.addView(phoneCell);
+
+        // -------------------------------------------------
+        // ADDRESS
+        // -------------------------------------------------
+
+        android.widget.TextView addressCell =
+                new android.widget.TextView(
+                        MyrecordsActivity.this
+                );
+
+        addressCell.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        0,
+                        (int)(52.0f * density + 0.5f),
+                        1.0f
+                )
+        );
+
+        addressCell.setGravity(
+                android.view.Gravity.CENTER_VERTICAL |
+                android.view.Gravity.START
+        );
+
+        addressCell.setText(address);
+
+        addressCell.setTextColor(
+                android.graphics.Color.BLACK
+        );
+
+        addressCell.setTextSize(13);
+
+        addressCell.setPadding(
+                (int)(7 * density),
+                0,
+                (int)(5 * density),
+                0
+        );
+
+        row.addView(addressCell);
+
+        // -------------------------------------------------
+        // PRODUCT
+        // -------------------------------------------------
+
+        android.widget.TextView productCell =
+                new android.widget.TextView(
+                        MyrecordsActivity.this
+                );
+
+        productCell.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        0,
+                        (int)(52.0f * density + 0.5f),
+                        1.0f
+                )
+        );
+
+        productCell.setGravity(
+                android.view.Gravity.CENTER_VERTICAL |
+                android.view.Gravity.START
+        );
+
+        productCell.setText(product);
+
+        productCell.setTextColor(
+                android.graphics.Color.BLACK
+        );
+
+        productCell.setTextSize(13);
+
+        productCell.setPadding(
+                (int)(7 * density),
+                0,
+                (int)(5 * density),
+                0
+        );
+
+        row.addView(productCell);
+
+        // -------------------------------------------------
+        // SELECTION
+        //
+        // # is NOT added.
+        // Only Name / Phone / Address / Product.
+        // -------------------------------------------------
+
+        java.util.ArrayList<
+                android.widget.TextView
+        > selectedCells =
+                new java.util.ArrayList<
+                        android.widget.TextView
+                >();
+
+        selectedCells.add(nameCell);
+        selectedCells.add(phoneCell);
+        selectedCells.add(addressCell);
+        selectedCells.add(productCell);
+
+        selectionRecords.add(selectedCells);
+
+        // -------------------------------------------------
+        // ADD ROW
+        // -------------------------------------------------
+
+        recordsContainer.addView(row);
+
+        // -------------------------------------------------
+        // GRID LINE
+        // -------------------------------------------------
+
+        android.view.View bottomLine =
+                new android.view.View(
+                        MyrecordsActivity.this
+                );
+
+        bottomLine.setLayoutParams(
+                new android.widget.LinearLayout.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        oneDp
+                )
+        );
+
+        bottomLine.setBackgroundColor(gridColor);
+
+        recordsContainer.addView(bottomLine);
+
+        // Next serial number
+        recordNumber++;
+    }
+
+    // Give the NEW cells to selection controller
+    recordsContainer.setTag(selectionRecords);
+
+    ButtonsController.selection(
+            MyrecordsActivity.this
+    );
+
+    recordsContainer.invalidate();
+    recordsContainer.requestLayout();
+}
