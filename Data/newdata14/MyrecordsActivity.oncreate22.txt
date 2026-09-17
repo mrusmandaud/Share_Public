@@ -1,5 +1,4 @@
 setContentView(R.layout.myrecords);
-
 // ============================================================
 // CUSTOM SCROLLBAR
 // ============================================================
@@ -347,22 +346,6 @@ row.setBackgroundColor(
 row.setMinimumHeight(
         (int)(52.0f * density + 0.5f)
 );
-
-    row.setOrientation(
-            android.widget.LinearLayout.HORIZONTAL
-    );
-
-    row.setGravity(
-            android.view.Gravity.CENTER_VERTICAL
-    );
-
-    row.setBackgroundColor(
-            android.graphics.Color.WHITE
-    );
-
-    row.setMinimumHeight(
-            (int)(52.0f * density + 0.5f)
-    );
 
 
     // ========================================================
