@@ -1,0 +1,6871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>HTML Color Studio Pro</title>
+
+<style>
+:root{
+  --bg:#f5f7fb;
+  --surface:#ffffff;
+  --surface2:#f7f9fc;
+  --surface3:#eef3fb;
+  --text:#172033;
+  --muted:#68758a;
+  --border:#dce4ef;
+  --primary:#1769ff;
+  --primary-dark:#0b4dcc;
+  --primary-soft:#eaf1ff;
+  --success:#07945b;
+  --warning:#c78300;
+  --danger:#d9364f;
+  --shadow:0 10px 28px rgba(25,54,95,.10);
+  --shadow2:0 18px 50px rgba(25,54,95,.14);
+  --radius:17px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* =========================================================
+   TOP PROJECT HEADER
+========================================================= */
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.topbar-main{
+  min-height:72px;
+  padding:10px 18px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.project-icon{
+  width:50px;
+  height:50px;
+  flex:0 0 50px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:26px;
+  background:linear-gradient(135deg,#1769ff,#653bff);
+  box-shadow:0 9px 22px rgba(23,105,255,.25);
+}
+
+.project-title{
+  min-width:0;
+  flex:1;
+}
+
+.project-title h1{
+  margin:0;
+  font-size:20px;
+  line-height:1.1;
+  font-weight:900;
+  letter-spacing:-.4px;
+}
+
+.project-title p{
+  margin:5px 0 0;
+  font-size:12px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.theme-select{
+  height:40px;
+  max-width:220px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:var(--surface);
+  color:var(--text);
+  padding:0 10px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.icon-btn{
+  width:40px;
+  height:40px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:var(--surface);
+  color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  transition:.18s;
+}
+
+.icon-btn:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+  transform:translateY(-1px);
+}
+
+.icon-btn:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.icon-btn.restore{
+  font-size:18px;
+}
+
+/* =========================================================
+   INFORMATION BANNER
+========================================================= */
+
+.info-banner{
+  margin:12px 18px 0;
+  padding:13px 15px;
+  display:flex;
+  gap:11px;
+  align-items:flex-start;
+  border:1px solid #c9d9fb;
+  background:linear-gradient(100deg,#eef4ff,#fbfdff);
+  border-radius:14px;
+}
+
+.info-icon{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--primary);
+  color:#fff;
+  font-weight:900;
+}
+
+.info-banner strong{
+  display:block;
+  font-size:13px;
+  margin-bottom:3px;
+}
+
+.info-banner span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* =========================================================
+   STAGE NAVIGATION
+========================================================= */
+
+.stage-wrap{
+  padding:14px 18px 0;
+}
+
+.stage-tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  padding-bottom:3px;
+}
+
+.stage-tabs::-webkit-scrollbar{
+  display:none;
+}
+
+.stage-tab{
+  flex:0 0 auto;
+  min-width:145px;
+  height:48px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:var(--surface);
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:0 13px;
+  font-weight:850;
+}
+
+.stage-tab .num{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  border-radius:8px;
+  background:var(--surface3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+}
+
+.stage-tab.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:white;
+}
+
+.stage-tab.active .num{
+  background:rgba(255,255,255,.20);
+  color:white;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main{
+  padding:14px 18px 32px;
+}
+
+.stage{
+  display:none;
+}
+
+.stage.active{
+  display:block;
+}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+
+.section-title{
+  margin:0 0 5px;
+  font-size:19px;
+  font-weight:900;
+  letter-spacing:-.2px;
+}
+
+.section-sub{
+  margin:0 0 14px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* =========================================================
+   PERSISTENT LIVE PREVIEW
+   ALWAYS ABOVE COLOR STUDIO
+========================================================= */
+
+.preview-shell{
+  margin-bottom:15px;
+  overflow:hidden;
+}
+
+.preview-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.preview-title-area{
+  flex:1;
+  min-width:180px;
+}
+
+.preview-title-area h2{
+  margin:0;
+  font-size:20px;
+  font-weight:900;
+}
+
+.preview-title-area p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.preview-controls{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.preview-btn{
+  height:35px;
+  padding:0 10px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:11px;
+  font-weight:850;
+}
+
+.preview-btn.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:white;
+}
+
+.preview-stage{
+  background:
+    radial-gradient(circle at 20% 10%,rgba(77,141,255,.18),transparent 32%),
+    #091426;
+  border-radius:16px;
+  padding:13px;
+  min-height:430px;
+  overflow:hidden;
+  position:relative;
+}
+
+.preview-device{
+  width:100%;
+  height:455px;
+  margin:auto;
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,.30);
+  transition:.2s;
+}
+
+.preview-device.tablet{
+  width:min(760px,100%);
+}
+
+.preview-device.mobile{
+  width:min(390px,100%);
+}
+
+.preview-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+  background:white;
+  transform-origin:top left;
+}
+
+.preview-bottom{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+}
+
+.preview-status{
+  min-height:48px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface2);
+  padding:9px 11px;
+}
+
+.preview-status strong{
+  display:block;
+  font-size:12px;
+}
+
+.preview-status span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:11px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.preview-actions{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.zoom-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  height:35px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:0 8px;
+  background:var(--surface);
+}
+
+.zoom-box span{
+  font-size:11px;
+  font-weight:850;
+}
+
+.zoom-box input{
+  width:80px;
+  accent-color:var(--primary);
+}
+
+/* =========================================================
+   SELECTED PREVIEW COLOR BAR
+========================================================= */
+
+.preview-colors{
+  margin-top:10px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:var(--surface2);
+  padding:11px;
+}
+
+.preview-colors-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.preview-colors-head strong{
+  flex:1;
+  font-size:12px;
+}
+
+.selected-color-list{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding-bottom:2px;
+}
+
+.selected-color-list::-webkit-scrollbar{
+  height:4px;
+}
+
+.preview-color-chip{
+  flex:0 0 auto;
+  min-width:110px;
+  height:43px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:5px 8px;
+  text-align:left;
+}
+
+.preview-color-chip .chip-swatch{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  border-radius:7px;
+  border:1px solid rgba(0,0,0,.12);
+}
+
+.preview-color-chip b{
+  display:block;
+  font-size:10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.preview-color-chip small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+}
+
+/* =========================================================
+   FILE BOX
+========================================================= */
+
+.file-box{
+  min-height:220px;
+  border:2px dashed #a9c5ff;
+  border-radius:18px;
+  background:linear-gradient(145deg,#f7faff,#ffffff);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px;
+  transition:.2s;
+}
+
+.file-box.drag{
+  border-color:var(--primary);
+  background:var(--primary-soft);
+}
+
+.file-box-icon{
+  width:66px;
+  height:66px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:31px;
+  margin-bottom:12px;
+}
+
+.file-box h3{
+  margin:0;
+  font-size:18px;
+}
+
+.file-box p{
+  margin:7px 0 15px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.file-input{
+  display:none;
+}
+
+.big-file-btn{
+  border:0;
+  border-radius:12px;
+  padding:12px 22px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:900;
+  box-shadow:0 8px 20px rgba(23,105,255,.22);
+}
+
+.file-meta{
+  width:100%;
+  margin-top:15px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:8px;
+}
+
+.meta{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px;
+  text-align:left;
+}
+
+.meta small{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.meta strong{
+  display:block;
+  margin-top:3px;
+  font-size:12px;
+  word-break:break-word;
+}
+
+/* =========================================================
+   GENERAL BUTTONS
+========================================================= */
+
+.tool-btn{
+  min-height:39px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  padding:0 11px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:850;
+  transition:.18s;
+}
+
+.tool-btn:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+}
+
+.tool-btn.primary{
+  background:var(--primary);
+  color:white;
+  border-color:var(--primary);
+}
+
+.tool-btn.danger{
+  color:var(--danger);
+}
+
+.tool-btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+/* =========================================================
+   COLOR STUDIO
+========================================================= */
+
+.studio-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(320px,.65fr);
+  gap:15px;
+}
+
+.studio-toolbar{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.search{
+  flex:1;
+  min-width:190px;
+  height:40px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  padding:0 11px;
+  outline:none;
+}
+
+.color-filter-bar{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  margin-bottom:12px;
+  scrollbar-width:none;
+}
+
+.color-filter-bar::-webkit-scrollbar{
+  display:none;
+}
+
+.filter-btn{
+  flex:0 0 auto;
+  height:33px;
+  padding:0 10px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:850;
+}
+
+.filter-btn.active{
+  background:var(--primary-soft);
+  border-color:#a9c5ff;
+  color:var(--primary);
+}
+
+.color-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.color-row{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:7px;
+  background:var(--surface);
+  transition:.16s;
+}
+
+.color-row:hover{
+  border-color:#a9c5ff;
+  box-shadow:0 5px 15px rgba(23,105,255,.07);
+}
+
+.row-swatch{
+  width:54px;
+  height:45px;
+  border-radius:9px;
+  border:1px solid rgba(0,0,0,.12);
+}
+
+.row-main{
+  min-width:0;
+}
+
+.row-main strong{
+  display:block;
+  font-size:12px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.row-main span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.row-main .usage{
+  color:var(--primary);
+  font-weight:800;
+}
+
+.row-actions{
+  display:flex;
+  gap:4px;
+  align-items:center;
+}
+
+.small-btn{
+  min-width:32px;
+  height:31px;
+  padding:0 7px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:10px;
+  font-weight:850;
+}
+
+.small-btn.active{
+  background:#fff7df;
+  color:#e19a00;
+  border-color:#f0cb72;
+}
+
+/* =========================================================
+   ADVANCED EDITOR
+========================================================= */
+
+.editor{
+  position:sticky;
+  top:88px;
+}
+
+.editor-color-preview{
+  height:105px;
+  border-radius:13px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+  position:relative;
+  overflow:hidden;
+}
+
+.editor-color-preview span{
+  position:absolute;
+  bottom:8px;
+  left:8px;
+  padding:5px 8px;
+  border-radius:7px;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+}
+
+.picker{
+  width:100%;
+  height:170px;
+  border-radius:13px;
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(to top,#000,transparent),
+    linear-gradient(to right,#fff,transparent),
+    hsl(0,100%,50%);
+  cursor:crosshair;
+  margin-bottom:12px;
+}
+
+.picker-cursor{
+  position:absolute;
+  width:16px;
+  height:16px;
+  border:2px solid white;
+  border-radius:50%;
+  box-shadow:0 0 0 1px #222;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+
+.field{
+  margin-bottom:8px;
+}
+
+.field label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:850;
+  margin-bottom:4px;
+}
+
+.field input{
+  width:100%;
+  height:37px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--surface);
+  color:var(--text);
+  padding:0 9px;
+  outline:none;
+}
+
+.slider-row{
+  display:grid;
+  grid-template-columns:70px 1fr 48px;
+  gap:7px;
+  align-items:center;
+  margin:8px 0;
+}
+
+.slider-row span{
+  font-size:10px;
+  font-weight:850;
+}
+
+.slider-row output{
+  color:var(--muted);
+  font-size:10px;
+  text-align:right;
+}
+
+.editor-buttons{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:11px;
+}
+
+.editor-details{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+  margin-top:11px;
+}
+
+.detail{
+  min-width:0;
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--surface2);
+}
+
+.detail small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+}
+
+.detail strong{
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  word-break:break-word;
+}
+
+/* =========================================================
+   MY COLORS
+========================================================= */
+
+.my-color-list{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.my-color{
+  height:39px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--surface);
+  padding:4px 8px 4px 4px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  font-weight:850;
+}
+
+.my-color-swatch{
+  width:29px;
+  height:29px;
+  border-radius:6px;
+  border:1px solid rgba(0,0,0,.12);
+}
+
+/* =========================================================
+   INSPECT / ANALYZE
+========================================================= */
+
+.inspect-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.element-details{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.match-list{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.analysis-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.summary-box{
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:10px;
+  background:var(--surface2);
+}
+
+.summary-box small{
+  color:var(--muted);
+  font-size:10px;
+}
+
+.summary-box strong{
+  display:block;
+  margin-top:3px;
+  font-size:18px;
+}
+
+.table-wrap{
+  overflow:auto;
+  margin-top:13px;
+}
+
+.analysis-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+}
+
+.analysis-table th,
+.analysis-table td{
+  padding:8px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  vertical-align:top;
+}
+
+.analysis-table th{
+  color:var(--muted);
+  background:var(--surface2);
+}
+
+/* =========================================================
+   CONFIRM
+========================================================= */
+
+.confirm-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:8px;
+}
+
+.before-after{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+
+.palette{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.palette-item{
+  width:40px;
+  height:40px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,.12);
+}
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+.destination-box{
+  margin-bottom:13px;
+}
+
+.filename{
+  width:100%;
+  height:43px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  padding:0 12px;
+  margin-top:6px;
+  outline:none;
+}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  min-height:28px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#e8f8f0;
+  color:var(--success);
+  font-size:10px;
+  font-weight:900;
+}
+
+.status.warn{
+  background:#fff4d9;
+  color:var(--warning);
+}
+
+.save-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+/* =========================================================
+   FOOTER / TOAST
+========================================================= */
+
+.footer{
+  padding:18px;
+  text-align:center;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  z-index:5000;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  background:#111827;
+  color:white;
+  padding:11px 16px;
+  border-radius:11px;
+  font-size:12px;
+  font-weight:800;
+  transition:.22s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* =========================================================
+   WHITE NORMAL RESPONSIVE UI
+========================================================= */
+
+body.white-theme{
+  --bg:#f5f7fb;
+  --surface:#ffffff;
+  --surface2:#f7f9fc;
+  --surface3:#eef3fb;
+  --text:#172033;
+  --muted:#68758a;
+  --border:#dce4ef;
+  --primary:#1769ff;
+  --primary-dark:#0b4dcc;
+  --primary-soft:#eaf1ff;
+}
+
+/* =========================================================
+   RESPONSIVE BLUE UI
+========================================================= */
+
+body.blue-theme{
+  --bg:#071426;
+  --surface:#0d1d34;
+  --surface2:#11243f;
+  --surface3:#172d4d;
+  --text:#edf4ff;
+  --muted:#9db0c9;
+  --border:#263c59;
+  --primary:#4d8dff;
+  --primary-dark:#2e6fd9;
+  --primary-soft:#17345e;
+  --shadow:0 12px 34px rgba(0,0,0,.24);
+  --shadow2:0 18px 50px rgba(0,0,0,.30);
+}
+
+body.blue-theme .file-box{
+  background:linear-gradient(145deg,#0e213d,#122947);
+  border-color:#31588e;
+}
+
+body.blue-theme .info-banner{
+  background:#102744;
+  border-color:#2a4e7f;
+}
+
+body.blue-theme .preview-stage{
+  background:
+    radial-gradient(circle at 20% 10%,rgba(77,141,255,.24),transparent 32%),
+    #020b18;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:950px){
+
+  .studio-layout,
+  .inspect-layout{
+    grid-template-columns:1fr;
+  }
+
+  .editor{
+    position:static;
+  }
+}
+
+@media(max-width:680px){
+
+  .topbar-main{
+    flex-wrap:wrap;
+    align-items:flex-start;
+  }
+
+  .project-title h1{
+    font-size:17px;
+  }
+
+  .project-title p{
+    white-space:normal;
+  }
+
+  .top-actions{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .theme-select{
+    flex:1;
+    max-width:none;
+  }
+
+  .info-banner{
+    margin-left:10px;
+    margin-right:10px;
+  }
+
+  .stage-wrap{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .main{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .preview-bottom{
+    grid-template-columns:1fr;
+  }
+
+  .preview-actions{
+    justify-content:flex-start;
+  }
+
+  .analysis-summary{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .before-after{
+    grid-template-columns:1fr;
+  }
+
+  .element-details,
+  .editor-details{
+    grid-template-columns:1fr;
+  }
+
+  .color-row{
+    grid-template-columns:45px minmax(0,1fr);
+  }
+
+  .row-swatch{
+    width:45px;
+    height:42px;
+  }
+
+  .row-actions{
+    grid-column:1 / -1;
+    justify-content:flex-end;
+  }
+}
+</style>
+</head>
+
+<body class="white-theme">
+
+<div class="app">
+
+<!-- =========================================================
+     TOP
+========================================================= -->
+
+<header class="topbar">
+
+  <div class="topbar-main">
+
+    <div class="project-icon">🎨</div>
+
+    <div class="project-title">
+      <h1>HTML Color Studio Pro</h1>
+      <p>Advanced HTML color inspection, live editing, analysis and export</p>
+    </div>
+
+    <div class="top-actions">
+
+      <select id="themeSelect" class="theme-select">
+        <option value="white">White Normal Responsive UI</option>
+        <option value="blue">Responsive Blue UI</option>
+      </select>
+
+      <!-- ICON ONLY -->
+      <button
+        id="undoBtn"
+        class="icon-btn"
+        title="Undo"
+        aria-label="Undo">↶</button>
+
+      <button
+        id="redoBtn"
+        class="icon-btn"
+        title="Redo"
+        aria-label="Redo">↷</button>
+
+      <button
+        id="restoreBtn"
+        class="icon-btn restore"
+        title="Restore"
+        aria-label="Restore">⟳</button>
+
+    </div>
+
+  </div>
+
+  <div class="info-banner">
+
+    <div class="info-icon">i</div>
+
+    <div>
+
+      <strong>HTML Color Studio Pro</strong>
+
+      <span>
+        Load an HTML file, inspect its real color sources, select preview
+        elements, edit HEX/RGB/RGBA/HSL/HSLA/HSV values, replace colors
+        instantly, analyze usage and save the finished HTML.
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="stage-wrap">
+
+    <div class="stage-tabs">
+
+      <button class="stage-tab active" data-stage="1">
+        <span class="num">1</span>
+        <span>Pick File</span>
+      </button>
+
+      <button class="stage-tab" data-stage="2">
+        <span class="num">2</span>
+        <span>Colors Studio</span>
+      </button>
+
+      <button class="stage-tab" data-stage="3">
+        <span class="num">3</span>
+        <span>Inspect & Analyze</span>
+      </button>
+
+      <button class="stage-tab" data-stage="4">
+        <span class="num">4</span>
+        <span>Confirm</span>
+      </button>
+
+      <button class="stage-tab" data-stage="5">
+        <span class="num">5</span>
+        <span>Save</span>
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="main">
+
+<!-- =========================================================
+     LIVE PREVIEW — ALWAYS ABOVE COLOR STUDIO
+========================================================= -->
+
+<section class="card preview-shell">
+
+  <div class="preview-top">
+
+    <div class="preview-title-area">
+
+      <h2>Live Preview</h2>
+
+      <p>
+        Click any text, button, image, link or other element to inspect
+        its real computed colors.
+      </p>
+
+    </div>
+
+    <div class="preview-controls">
+
+      <button class="preview-btn active" data-device="desktop">
+        Desktop
+      </button>
+
+      <button class="preview-btn" data-device="tablet">
+        Tablet
+      </button>
+
+      <button class="preview-btn" data-device="mobile">
+        Mobile
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="preview-stage">
+
+    <div id="previewDevice" class="preview-device">
+
+      <iframe
+        id="previewFrame"
+        class="preview-frame"
+        sandbox="allow-scripts allow-forms allow-modals"
+        title="HTML Live Preview">
+      </iframe>
+
+    </div>
+
+  </div>
+
+
+  <div class="preview-bottom">
+
+    <div class="preview-status">
+
+      <strong id="selectedElementStatus">
+        No preview element selected
+      </strong>
+
+      <span id="selectedElementSub">
+        Enable Live Click, then click an element in the preview.
+      </span>
+
+    </div>
+
+    <div class="preview-actions">
+
+      <button id="liveClickBtn" class="preview-btn">
+        🎯 Live Click
+      </button>
+
+      <button id="changesBtn" class="preview-btn">
+        🎨 Changes
+      </button>
+
+      <button id="refreshPreviewBtn" class="preview-btn">
+        ↻ Refresh
+      </button>
+
+      <button id="fitPreviewBtn" class="preview-btn">
+        Fit
+      </button>
+
+      <button id="fullscreenBtn" class="preview-btn">
+        ⛶
+      </button>
+
+      <div class="zoom-box">
+
+        <span>Zoom</span>
+
+        <input
+          id="zoomRange"
+          type="range"
+          min="50"
+          max="150"
+          value="100">
+
+        <span id="zoomValue">100%</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- COLORS FOUND FROM THE SELECTED PREVIEW ELEMENT -->
+
+  <div class="preview-colors">
+
+    <div class="preview-colors-head">
+
+      <strong>
+        Colors from selected preview element
+      </strong>
+
+      <span id="previewColorCount" class="status">
+        0 colors
+      </span>
+
+    </div>
+
+    <div id="selectedColorList" class="selected-color-list">
+
+      <span class="section-sub" style="margin:0">
+        Select an element to show its matching source colors here.
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     STAGE 1
+========================================================= -->
+
+<section id="stage1" class="stage active">
+
+  <div class="card">
+
+    <h2 class="section-title">Pick HTML File</h2>
+
+    <p class="section-sub">
+      Choose an HTML file or drag it into the large selection box.
+      The Live Preview rebuilds immediately after loading.
+    </p>
+
+    <div id="dropZone" class="file-box">
+
+      <div class="file-box-icon">📄</div>
+
+      <h3>Select your HTML file</h3>
+
+      <p>
+        HTML and HTM files are supported.
+      </p>
+
+      <input
+        id="fileInput"
+        class="file-input"
+        type="file"
+        accept=".html,.htm,text/html">
+
+      <button id="chooseFileBtn" class="big-file-btn">
+        Choose HTML File
+      </button>
+
+      <div class="file-meta">
+
+        <div class="meta">
+          <small>File Name</small>
+          <strong id="fileName">No file</strong>
+        </div>
+
+        <div class="meta">
+          <small>Size</small>
+          <strong id="fileSize">—</strong>
+        </div>
+
+        <div class="meta">
+          <small>Lines</small>
+          <strong id="fileLines">—</strong>
+        </div>
+
+        <div class="meta">
+          <small>Elements</small>
+          <strong id="fileElements">—</strong>
+        </div>
+
+        <div class="meta">
+          <small>Style Blocks</small>
+          <strong id="styleBlocks">—</strong>
+        </div>
+
+        <div class="meta">
+          <small>HTML Structure</small>
+          <strong id="htmlStructure">—</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px">
+
+      <button id="replaceFileBtn" class="tool-btn">
+        Replace / Reopen
+      </button>
+
+      <button id="resetWorkspaceBtn" class="tool-btn danger">
+        Reset Workspace
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     STAGE 2 — COLORS STUDIO
+========================================================= -->
+
+<section id="stage2" class="stage">
+
+  <div class="studio-layout">
+
+    <div class="card">
+
+      <h2 class="section-title">Colors Studio</h2>
+
+      <p class="section-sub">
+        All detected source colors are shown in rows. Search, sort,
+        favorite, pin, inspect, copy, replace and edit them.
+      </p>
+
+      <div class="studio-toolbar">
+
+        <input
+          id="colorSearch"
+          class="search"
+          placeholder="Search color, HEX, RGB, HSL, variable, location...">
+
+        <select id="sortColors" class="theme-select">
+
+          <option value="usage">Most Used</option>
+          <option value="name">Name</option>
+          <option value="original">Original</option>
+          <option value="changed">Changed</option>
+
+        </select>
+
+        <button id="addColorBtn" class="tool-btn">
+          ＋ My Color
+        </button>
+
+        <button id="importColorsBtn" class="tool-btn">
+          Import
+        </button>
+
+        <button id="exportColorsBtn" class="tool-btn">
+          Export
+        </button>
+
+        <button id="backupColorsBtn" class="tool-btn">
+          Backup
+        </button>
+
+        <button id="resetColorsBtn" class="tool-btn">
+          Reset
+        </button>
+
+      </div>
+
+      <input
+        id="paletteImport"
+        type="file"
+        accept=".json,.txt,.csv"
+        style="display:none">
+
+      <div class="color-filter-bar">
+
+        <button class="filter-btn active" data-filter="all">
+          All
+        </button>
+
+        <button class="filter-btn" data-filter="favorites">
+          ★ Favorites
+        </button>
+
+        <button class="filter-btn" data-filter="pinned">
+          📌 Pinned
+        </button>
+
+        <button class="filter-btn" data-filter="changed">
+          Changed
+        </button>
+
+        <button class="filter-btn" data-filter="recent">
+          Recent
+        </button>
+
+        <button class="filter-btn" data-filter="custom">
+          My Colors
+        </button>
+
+      </div>
+
+      <div id="colorList" class="color-list">
+
+        <div class="section-sub">
+          Load an HTML file to detect colors.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ADVANCED COLOR EDITOR -->
+
+    <div class="card editor">
+
+      <h2 class="section-title">Advanced Color Editor</h2>
+
+      <p class="section-sub">
+        Select a color from Colors Studio or directly from Live Preview.
+      </p>
+
+      <div id="editorColorPreview" class="editor-color-preview">
+        <span id="editorPreviewText">No color selected</span>
+      </div>
+
+
+      <div id="picker" class="picker">
+
+        <div id="pickerCursor" class="picker-cursor"></div>
+
+      </div>
+
+
+      <div class="field">
+        <label>HEX</label>
+        <input id="hexInput" placeholder="#009688">
+      </div>
+
+      <div class="field">
+        <label>RGB / RGBA</label>
+        <input id="rgbInput" placeholder="rgb(0, 150, 136)">
+      </div>
+
+      <div class="field">
+        <label>HSL / HSLA</label>
+        <input id="hslInput" placeholder="hsl(174, 100%, 27%)">
+      </div>
+
+      <div class="field">
+        <label>HSV</label>
+        <input id="hsvInput" readonly>
+      </div>
+
+
+      <div class="slider-row">
+        <span>Hue</span>
+        <input id="hueSlider" type="range" min="0" max="360" value="0">
+        <output id="hueValue">0°</output>
+      </div>
+
+      <div class="slider-row">
+        <span>Saturation</span>
+        <input id="satSlider" type="range" min="0" max="100" value="0">
+        <output id="satValue">0%</output>
+      </div>
+
+      <div class="slider-row">
+        <span>Value</span>
+        <input id="valSlider" type="range" min="0" max="100" value="0">
+        <output id="valValue">0%</output>
+      </div>
+
+      <div class="slider-row">
+        <span>Alpha</span>
+        <input id="alphaSlider" type="range" min="0" max="100" value="100">
+        <output id="alphaValue">100%</output>
+      </div>
+
+
+      <div class="editor-details">
+
+        <div class="detail">
+          <small>Original</small>
+          <strong id="originalColor">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Current</small>
+          <strong id="currentColor">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Usage Count</small>
+          <strong id="usageCount">0</strong>
+        </div>
+
+        <div class="detail">
+          <small>Source Locations</small>
+          <strong id="locationCount">0</strong>
+        </div>
+
+        <div class="detail">
+          <small>Type</small>
+          <strong id="colorType">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Changed</small>
+          <strong id="colorChanged">No</strong>
+        </div>
+
+      </div>
+
+
+      <div class="editor-buttons">
+
+        <button id="applyColorBtn" class="tool-btn primary">
+          Apply
+        </button>
+
+        <button id="replaceAllBtn" class="tool-btn">
+          Replace All
+        </button>
+
+        <button id="resetEditorBtn" class="tool-btn">
+          Reset
+        </button>
+
+        <button id="copyColorBtn" class="tool-btn">
+          Copy
+        </button>
+
+        <button id="whereUsedBtn" class="tool-btn">
+          Where Used
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- MY COLORS -->
+
+  <div class="card" style="margin-top:15px">
+
+    <h2 class="section-title">My Colors</h2>
+
+    <p class="section-sub">
+      Custom colors, favorites, recent colors, imported palettes and
+      reusable color collections.
+    </p>
+
+    <div id="myColors" class="my-color-list"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     STAGE 3 — INSPECT & ANALYZE
+========================================================= -->
+
+<section id="stage3" class="stage">
+
+  <div class="inspect-layout">
+
+    <div class="card">
+
+      <h2 class="section-title">Inspect</h2>
+
+      <p class="section-sub">
+        Inspect the currently selected Live Preview element.
+      </p>
+
+      <div class="element-details">
+
+        <div class="detail">
+          <small>Tag</small>
+          <strong id="inspectTag">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>ID</small>
+          <strong id="inspectId">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Class</small>
+          <strong id="inspectClass">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Text</small>
+          <strong id="inspectText">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Text Color</small>
+          <strong id="inspectTextColor">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Background</small>
+          <strong id="inspectBackground">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Border</small>
+          <strong id="inspectBorder">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Font Family</small>
+          <strong id="inspectFontFamily">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Font Size</small>
+          <strong id="inspectFontSize">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Font Weight</small>
+          <strong id="inspectFontWeight">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>Dimensions</small>
+          <strong id="inspectDimensions">—</strong>
+        </div>
+
+        <div class="detail">
+          <small>CSS Variables</small>
+          <strong id="inspectVariables">—</strong>
+        </div>
+
+      </div>
+
+      <h3 style="font-size:13px;margin:15px 0 7px">
+        Matching Source Colors
+      </h3>
+
+      <div id="inspectColors" class="match-list">
+        <span class="section-sub">
+          No element selected.
+        </span>
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2 class="section-title">Analyze</h2>
+
+      <p class="section-sub">
+        Complete source and color analysis.
+      </p>
+
+      <div class="analysis-summary">
+
+        <div class="summary-box">
+          <small>Unique</small>
+          <strong id="analysisUnique">0</strong>
+        </div>
+
+        <div class="summary-box">
+          <small>Usages</small>
+          <strong id="analysisUsage">0</strong>
+        </div>
+
+        <div class="summary-box">
+          <small>Changed</small>
+          <strong id="analysisChanged">0</strong>
+        </div>
+
+        <div class="summary-box">
+          <small>Variables</small>
+          <strong id="analysisVariables">0</strong>
+        </div>
+
+      </div>
+
+      <div class="table-wrap">
+
+        <table class="analysis-table">
+
+          <thead>
+
+            <tr>
+              <th>Original</th>
+              <th>Current</th>
+              <th>Uses</th>
+              <th>Type</th>
+              <th>Locations</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="analysisTable"></tbody>
+
+        </table>
+
+      </div>
+
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px">
+
+        <button id="colorReportBtn" class="tool-btn">
+          Color Report
+        </button>
+
+        <button id="sourceAnalysisBtn" class="tool-btn">
+          Source Analysis
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card" style="margin-top:15px">
+
+    <h2 class="section-title">Before / After Analysis</h2>
+
+    <div id="beforeAfterAnalysis" class="section-sub">
+      No analysis available yet.
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     STAGE 4 — CONFIRM
+========================================================= -->
+
+<section id="stage4" class="stage">
+
+  <div class="card">
+
+    <h2 class="section-title">Confirm</h2>
+
+    <p class="section-sub">
+      Complete information about what changed before saving.
+    </p>
+
+    <span id="confirmStatus" class="status">
+      ✓ Ready to Save
+    </span>
+
+
+    <div class="confirm-grid" style="margin-top:13px">
+
+      <div class="summary-box">
+        <small>Filename</small>
+        <strong id="confirmFile">—</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Size</small>
+        <strong id="confirmSize">—</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Lines</small>
+        <strong id="confirmLines">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Elements</small>
+        <strong id="confirmElements">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Style Blocks</small>
+        <strong id="confirmStyles">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>CSS Colors</small>
+        <strong id="confirmCssColors">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Unique Colors</small>
+        <strong id="confirmUnique">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Changed Colors</small>
+        <strong id="confirmChanged">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Total Usages</small>
+        <strong id="confirmUsages">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Custom</small>
+        <strong id="confirmCustom">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Favorites</small>
+        <strong id="confirmFavorites">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Pinned</small>
+        <strong id="confirmPinned">0</strong>
+      </div>
+
+    </div>
+
+
+    <div class="card" style="margin-top:14px;background:var(--surface2)">
+
+      <h3 style="margin:0 0 9px;font-size:14px">
+        Technical Checks
+      </h3>
+
+      <div id="technicalChecks"></div>
+
+    </div>
+
+
+    <div class="before-after">
+
+      <div class="card">
+
+        <h3 style="margin:0 0 10px;font-size:14px">
+          Before Palette
+        </h3>
+
+        <div id="beforePalette" class="palette"></div>
+
+      </div>
+
+      <div class="card">
+
+        <h3 style="margin:0 0 10px;font-size:14px">
+          After Palette
+        </h3>
+
+        <div id="afterPalette" class="palette"></div>
+
+      </div>
+
+    </div>
+
+
+    <div style="margin-top:15px">
+
+      <h3 style="font-size:14px">
+        Complete Color Changes
+      </h3>
+
+      <div class="table-wrap">
+
+        <table class="analysis-table">
+
+          <thead>
+            <tr>
+              <th>Original</th>
+              <th>New</th>
+              <th>Usage</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="confirmChangesTable"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <div style="display:flex;justify-content:flex-end;margin-top:15px">
+
+      <button id="continueSaveBtn" class="tool-btn primary">
+        Continue to Save →
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     STAGE 5 — SAVE
+========================================================= -->
+
+<section id="stage5" class="stage">
+
+  <div class="card">
+
+    <h2 class="section-title">Save</h2>
+
+    <p class="section-sub">
+      The original filename is used automatically. You can edit the name,
+      and the .html extension is added automatically when needed.
+    </p>
+
+
+    <!-- ONE DESTINATION BOX ONLY -->
+
+    <div id="destinationBox" class="file-box destination-box">
+
+      <div class="file-box-icon">💾</div>
+
+      <h3>Save Destination</h3>
+
+      <p>
+        Choose the folder where the finished HTML file will be saved.
+      </p>
+
+      <button id="chooseDestinationBtn" class="big-file-btn">
+        Choose Destination Folder
+      </button>
+
+      <div class="file-meta">
+
+        <div class="meta">
+          <small>Destination</small>
+          <strong id="destinationPath">Not selected</strong>
+        </div>
+
+        <div class="meta">
+          <small>Filename</small>
+          <strong id="saveFileNamePreview">index.html</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <label style="font-size:11px;font-weight:850">
+      Filename
+    </label>
+
+    <input
+      id="saveFileName"
+      class="filename"
+      value="index.html"
+      placeholder="filename.html">
+
+
+    <div class="save-actions">
+
+      <button id="saveHtmlBtn" class="tool-btn primary">
+        💾 Save HTML
+      </button>
+
+      <button id="exportFinalColorsBtn" class="tool-btn">
+        Export Colors JSON
+      </button>
+
+      <button id="exportAnalysisBtn" class="tool-btn">
+        Export Analysis
+      </button>
+
+      <button id="exportColorReportBtn" class="tool-btn">
+        Export Color Report
+      </button>
+
+      <button id="backupOnlyBtn" class="tool-btn">
+        Backup Colors
+      </button>
+
+    </div>
+
+
+    <div class="confirm-grid" style="margin-top:14px">
+
+      <div class="summary-box">
+        <small>Final Filename</small>
+        <strong id="saveSummaryName">index.html</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Colors Changed</small>
+        <strong id="saveSummaryChanged">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Usages Changed</small>
+        <strong id="saveSummaryUsages">0</strong>
+      </div>
+
+      <div class="summary-box">
+        <small>Final Size</small>
+        <strong id="saveSummarySize">0 B</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer class="footer">
+  HTML Color Studio Pro • 5-Stage Advanced HTML Color Workflow
+</footer>
+
+<div id="toast" class="toast"></div>
+
+</div>
+
+
+<script>
+/* =========================================================
+   CORE STATE
+========================================================= */
+
+const state={
+  sourceHTML:'',
+  colorMap:{},
+  selectedColorKey:null,
+
+  myColors:[],
+  favorites:[],
+  pinned:[],
+  recentColors:[],
+
+  fileName:'',
+  fileSize:0,
+  destination:'',
+
+  stage:1,
+
+  previewMode:'desktop',
+  zoom:100,
+
+  inspectMode:false,
+  liveColorTool:false,
+  changesTool:false,
+
+  theme:localStorage.getItem('hcsp_theme') || 'white',
+
+  selectedPreviewColors:[],
+  selectedElement:null,
+
+  colorFilter:'all'
+};
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+let historyStack=[];
+let historyIndex=-1;
+
+
+/* =========================================================
+   DETECTED COLORS
+========================================================= */
+
+let detectedColors=[];
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const $=id=>document.getElementById(id);
+
+const fileInput=$('fileInput');
+const dropZone=$('dropZone');
+const previewFrame=$('previewFrame');
+const previewDevice=$('previewDevice');
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function applyTheme(theme){
+
+  state.theme=theme;
+
+  document.body.classList.remove(
+    'white-theme',
+    'blue-theme'
+  );
+
+  document.body.classList.add(
+    theme==='blue'
+      ? 'blue-theme'
+      : 'white-theme'
+  );
+
+  $('themeSelect').value=theme;
+
+  localStorage.setItem(
+    'hcsp_theme',
+    theme
+  );
+}
+
+$('themeSelect').addEventListener(
+  'change',
+  e=>applyTheme(e.target.value)
+);
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function saveMeta(){
+
+  localStorage.setItem(
+    'hcsp_myColors',
+    JSON.stringify(state.myColors)
+  );
+
+  localStorage.setItem(
+    'hcsp_favorites',
+    JSON.stringify(state.favorites)
+  );
+
+  localStorage.setItem(
+    'hcsp_pinned',
+    JSON.stringify(state.pinned)
+  );
+
+  localStorage.setItem(
+    'hcsp_recent',
+    JSON.stringify(state.recentColors)
+  );
+
+  localStorage.setItem(
+    'hcsp_filename',
+    state.fileName || ''
+  );
+
+  localStorage.setItem(
+    'hcsp_destination',
+    state.destination || ''
+  );
+}
+
+function loadMeta(){
+
+  try{
+
+    state.myColors=
+      JSON.parse(
+        localStorage.getItem('hcsp_myColors')||'[]'
+      );
+
+    state.favorites=
+      JSON.parse(
+        localStorage.getItem('hcsp_favorites')||'[]'
+      );
+
+    state.pinned=
+      JSON.parse(
+        localStorage.getItem('hcsp_pinned')||'[]'
+      );
+
+    state.recentColors=
+      JSON.parse(
+        localStorage.getItem('hcsp_recent')||'[]'
+      );
+
+    state.fileName=
+      localStorage.getItem('hcsp_filename')||'';
+
+    state.destination=
+      localStorage.getItem('hcsp_destination')||'';
+
+  }catch(e){
+
+    state.myColors=[];
+    state.favorites=[];
+    state.pinned=[];
+    state.recentColors=[];
+  }
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function toast(message){
+
+  const el=$('toast');
+
+  el.textContent=message;
+
+  el.classList.add('show');
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(
+    ()=>el.classList.remove('show'),
+    2400
+  );
+}
+
+
+/* =========================================================
+   STAGES
+========================================================= */
+
+function goStage(number){
+
+  state.stage=number;
+
+  document.querySelectorAll('.stage')
+    .forEach(stage=>{
+      stage.classList.toggle(
+        'active',
+        stage.id==='stage'+number
+      );
+    });
+
+  document.querySelectorAll('.stage-tab')
+    .forEach(tab=>{
+      tab.classList.toggle(
+        'active',
+        Number(tab.dataset.stage)===number
+      );
+    });
+
+  if(number===2){
+    renderColors();
+    renderMyColors();
+  }
+
+  if(number===3){
+    updateAnalysis();
+  }
+
+  if(number===4){
+    updateConfirm();
+  }
+
+  if(number===5){
+    updateSaveSummary();
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
+}
+
+document.querySelectorAll('.stage-tab')
+  .forEach(tab=>{
+    tab.addEventListener(
+      'click',
+      ()=>goStage(Number(tab.dataset.stage))
+    );
+  });
+
+
+/* =========================================================
+   FILE PICKING
+========================================================= */
+
+$('chooseFileBtn').onclick=
+  ()=>fileInput.click();
+
+$('replaceFileBtn').onclick=
+  ()=>fileInput.click();
+
+fileInput.addEventListener(
+  'change',
+  e=>{
+    if(e.target.files[0]){
+      loadFile(e.target.files[0]);
+    }
+  }
+);
+
+dropZone.addEventListener(
+  'dragover',
+  e=>{
+    e.preventDefault();
+    dropZone.classList.add('drag');
+  }
+);
+
+dropZone.addEventListener(
+  'dragleave',
+  ()=>{
+    dropZone.classList.remove('drag');
+  }
+);
+
+dropZone.addEventListener(
+  'drop',
+  e=>{
+    e.preventDefault();
+
+    dropZone.classList.remove('drag');
+
+    const file=e.dataTransfer.files[0];
+
+    if(file){
+      loadFile(file);
+    }
+  }
+);
+
+function loadFile(file){
+
+  if(!/\.html?$/i.test(file.name)){
+
+    toast(
+      'Please select an HTML or HTM file.'
+    );
+
+    return;
+  }
+
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+
+    state.sourceHTML=
+      String(reader.result||'');
+
+    state.colorMap={};
+
+    state.selectedColorKey=null;
+
+    state.selectedPreviewColors=[];
+
+    state.selectedElement=null;
+
+    state.fileName=file.name;
+
+    state.fileSize=file.size;
+
+    historyStack=[];
+    historyIndex=-1;
+
+    analyzeDocument();
+
+    pushHistory();
+
+    $('fileName').textContent=file.name;
+    $('fileSize').textContent=
+      formatBytes(file.size);
+
+    $('fileLines').textContent=
+      countLines(state.sourceHTML);
+
+    refreshFileStats();
+
+    saveMeta();
+
+    rebuildPreview();
+
+    clearPreviewSelection();
+
+    toast('HTML loaded successfully.');
+
+    /* Immediately show the preview */
+    goStage(1);
+  };
+
+  reader.readAsText(file);
+}
+
+
+/* =========================================================
+   SOURCE + COLOR MAP ARCHITECTURE
+========================================================= */
+
+/*
+  IMPORTANT:
+  The sourceHTML is NEVER repeatedly modified.
+
+  Every preview/save operation starts from sourceHTML
+  and applies colorMap.
+
+  This prevents chained replacement errors such as:
+
+  #009688 -> #2196F3 -> another replacement accidentally
+  replacing the newly generated color.
+*/
+
+function getWorkingHTML(){
+
+  let html=state.sourceHTML;
+
+  if(!html) return '';
+
+  Object.keys(state.colorMap)
+    .forEach(original=>{
+
+      const replacement=
+        state.colorMap[original];
+
+      if(
+        !replacement ||
+        original.toLowerCase()===
+        String(replacement).toLowerCase()
+      ){
+        return;
+      }
+
+      const escaped=
+        escapeRegExp(original);
+
+      html=html.replace(
+        new RegExp(
+          escaped,
+          'gi'
+        ),
+        replacement
+      );
+    });
+
+  return html;
+}
+
+
+/* =========================================================
+   COLOR UTILITIES
+========================================================= */
+
+function escapeRegExp(value){
+
+  return String(value)
+    .replace(
+      /[.*+?^${}()|[\]\\]/g,
+      '\\$&'
+    );
+}
+
+function normalizeHex(value){
+
+  let h=String(value||'')
+    .trim()
+    .toLowerCase();
+
+  if(/^#[0-9a-f]{3}$/i.test(h)){
+
+    return '#'+
+      h[1]+h[1]+
+      h[2]+h[2]+
+      h[3]+h[3];
+  }
+
+  if(/^#[0-9a-f]{6}$/i.test(h)){
+    return h;
+  }
+
+  if(/^#[0-9a-f]{8}$/i.test(h)){
+    return h;
+  }
+
+  return null;
+}
+
+function rgbToHex(r,g,b){
+
+  return '#'+
+    [r,g,b]
+      .map(
+        x=>Math.max(
+          0,
+          Math.min(
+            255,
+            Math.round(x)
+          )
+        )
+        .toString(16)
+        .padStart(2,'0')
+      )
+      .join('');
+}
+
+function parseColor(value){
+
+  if(!value) return null;
+
+  const original=
+    String(value).trim();
+
+  const hex=
+    normalizeHex(original);
+
+  if(hex){
+
+    const h=hex.slice(1);
+
+    const r=
+      parseInt(
+        h.slice(0,2),
+        16
+      );
+
+    const g=
+      parseInt(
+        h.slice(2,4),
+        16
+      );
+
+    const b=
+      parseInt(
+        h.slice(4,6),
+        16
+      );
+
+    const a=
+      h.length===8
+        ?parseInt(
+          h.slice(6,8),
+          16
+        )/255
+        :1;
+
+    return rgbaObject(
+      r,g,b,a,original
+    );
+  }
+
+  const rgb=
+    original.match(
+      /^rgba?\(\s*([0-9.]+)(?:\s*,\s*|\s+)([0-9.]+)(?:\s*,\s*|\s+)([0-9.]+)(?:\s*(?:,|\/)\s*([0-9.]+))?\s*\)$/i
+    );
+
+  if(rgb){
+
+    let a=
+      rgb[4]===undefined
+        ?1
+        :Number(rgb[4]);
+
+    if(a>1){
+      a=a/100;
+    }
+
+    return rgbaObject(
+      Number(rgb[1]),
+      Number(rgb[2]),
+      Number(rgb[3]),
+      a,
+      original
+    );
+  }
+
+  const hsl=
+    original.match(
+      /^hsla?\(\s*([0-9.+-]+)(?:deg)?(?:\s*,\s*|\s+)([0-9.]+)%?(?:\s*,\s*|\s+)([0-9.]+)%?(?:\s*(?:,|\/)\s*([0-9.]+))?\s*\)$/i
+    );
+
+  if(hsl){
+
+    let h=Number(hsl[1]);
+
+    let s=Number(hsl[2]);
+    let l=Number(hsl[3]);
+
+    let a=
+      hsl[4]===undefined
+        ?1
+        :Number(hsl[4]);
+
+    if(a>1){
+      a/=100;
+    }
+
+    const rgb2=
+      hslToRgb(
+        h,
+        s,
+        l
+      );
+
+    return rgbaObject(
+      rgb2.r,
+      rgb2.g,
+      rgb2.b,
+      a,
+      original
+    );
+  }
+
+  return null;
+}
+
+function rgbaObject(
+  r,
+  g,
+  b,
+  a,
+  original
+){
+
+  r=Math.round(r);
+  g=Math.round(g);
+  b=Math.round(b);
+
+  a=Math.max(
+    0,
+    Math.min(
+      1,
+      Number(a)
+    )
+  );
+
+  const hsv=
+    rgbToHsv(r,g,b);
+
+  const hsl=
+    rgbToHsl(r,g,b);
+
+  return{
+
+    r,
+    g,
+    b,
+    a,
+
+    original,
+
+    hex:rgbToHex(
+      r,g,b
+    ),
+
+    rgba:
+      a<1
+        ?`rgba(${r}, ${g}, ${b}, ${Number(a.toFixed(3))})`
+        :`rgb(${r}, ${g}, ${b})`,
+
+    hsl:
+      `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)`,
+
+    hsla:
+      `hsla(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%, ${Number(a.toFixed(3))})`,
+
+    hsv:
+      `hsv(${Math.round(hsv.h)}, ${Math.round(hsv.s)}%, ${Math.round(hsv.v)}%)`
+  };
+}
+
+function rgbToHsv(r,g,b){
+
+  r/=255;
+  g/=255;
+  b/=255;
+
+  const max=
+    Math.max(r,g,b);
+
+  const min=
+    Math.min(r,g,b);
+
+  const d=max-min;
+
+  let h=0;
+
+  if(d){
+
+    if(max===r){
+      h=60*((g-b)/d%6);
+    }else if(max===g){
+      h=60*((b-r)/d+2);
+    }else{
+      h=60*((r-g)/d+4);
+    }
+
+    if(h<0) h+=360;
+  }
+
+  const s=
+    max===0
+      ?0
+      :d/max;
+
+  return{
+    h,
+    s:s*100,
+    v:max*100
+  };
+}
+
+function rgbToHsl(r,g,b){
+
+  r/=255;
+  g/=255;
+  b/=255;
+
+  const max=
+    Math.max(r,g,b);
+
+  const min=
+    Math.min(r,g,b);
+
+  const d=max-min;
+
+  let h=0;
+  let s=0;
+
+  const l=
+    (max+min)/2;
+
+  if(d){
+
+    s=
+      d/
+      (
+        1-
+        Math.abs(
+          2*l-1
+        )
+      );
+
+    if(max===r){
+      h=60*((g-b)/d%6);
+    }else if(max===g){
+      h=60*((b-r)/d+2);
+    }else{
+      h=60*((r-g)/d+4);
+    }
+
+    if(h<0) h+=360;
+  }
+
+  return{
+    h,
+    s:s*100,
+    l:l*100
+  };
+}
+
+function hslToRgb(h,s,l){
+
+  h=((h%360)+360)%360;
+  s=Math.max(0,Math.min(100,s))/100;
+  l=Math.max(0,Math.min(100,l))/100;
+
+  const c=
+    (1-Math.abs(2*l-1))*s;
+
+  const x=
+    c*
+    (1-Math.abs((h/60)%2-1));
+
+  const m=l-c/2;
+
+  let r=0;
+  let g=0;
+  let b=0;
+
+  if(h<60){
+    r=c;
+    g=x;
+  }else if(h<120){
+    r=x;
+    g=c;
+  }else if(h<180){
+    g=c;
+    b=x;
+  }else if(h<240){
+    g=x;
+    b=c;
+  }else if(h<300){
+    r=x;
+    b=c;
+  }else{
+    r=c;
+    b=x;
+  }
+
+  return{
+    r:Math.round((r+m)*255),
+    g:Math.round((g+m)*255),
+    b:Math.round((b+m)*255)
+  };
+}
+
+function hsvToRgb(h,s,v){
+
+  s/=100;
+  v/=100;
+
+  const c=v*s;
+  const x=
+    c*
+    (1-Math.abs((h/60)%2-1));
+
+  const m=v-c;
+
+  let r=0;
+  let g=0;
+  let b=0;
+
+  if(h<60){
+    r=c;
+    g=x;
+  }else if(h<120){
+    r=x;
+    g=c;
+  }else if(h<180){
+    g=c;
+    b=x;
+  }else if(h<240){
+    g=x;
+    b=c;
+  }else if(h<300){
+    r=x;
+    b=c;
+  }else{
+    r=c;
+    b=x;
+  }
+
+  return{
+    r:Math.round((r+m)*255),
+    g:Math.round((g+m)*255),
+    b:Math.round((b+m)*255)
+  };
+}
+
+
+/* =========================================================
+   DETECT COLORS
+========================================================= */
+
+function analyzeDocument(){
+
+  detectedColors=[];
+
+  if(!state.sourceHTML){
+    return;
+  }
+
+  const source=
+    state.sourceHTML;
+
+  const map={};
+
+  const patterns=[
+
+    {
+      type:'HEX',
+      re:/#[0-9a-f]{3,8}\b/gi
+    },
+
+    {
+      type:'RGB/RGBA',
+      re:/\brgba?\([^)]*\)/gi
+    },
+
+    {
+      type:'HSL/HSLA',
+      re:/\bhsla?\([^)]*\)/gi
+    }
+
+  ];
+
+  patterns.forEach(pattern=>{
+
+    const matches=
+      source.match(pattern.re)||[];
+
+    matches.forEach(raw=>{
+
+      const parsed=
+        parseColor(raw);
+
+      if(!parsed) return;
+
+      const key=
+        raw.toLowerCase();
+
+      if(!map[key]){
+
+        map[key]={
+
+          key,
+
+          original:raw,
+
+          count:0,
+
+          type:pattern.type,
+
+          parsed,
+
+          locations:findColorLocations(
+            raw
+          )
+        };
+      }
+
+      map[key].count++;
+    });
+  });
+
+
+  /*
+    CSS VARIABLES
+
+    Keep variable information separately.
+    The actual color token is still detected and editable.
+  */
+
+  const variableMatches=
+    source.match(
+      /--[a-zA-Z0-9_-]+\s*:\s*([^;}\n]+)/g
+    )||[];
+
+  variableMatches.forEach(raw=>{
+
+    const value=
+      raw.replace(
+        /^--[a-zA-Z0-9_-]+\s*:\s*/,
+        ''
+      ).trim();
+
+    const parsed=
+      parseColor(value);
+
+    if(parsed){
+
+      const key=
+        value.toLowerCase();
+
+      if(!map[key]){
+
+        map[key]={
+
+          key,
+
+          original:value,
+
+          count:0,
+
+          type:'CSS Variable',
+
+          parsed,
+
+          locations:
+            findColorLocations(value)
+        };
+      }
+
+      map[key].count++;
+    }
+  });
+
+
+  detectedColors=
+    Object.values(map);
+
+  detectedColors.forEach(c=>{
+
+    c.locations=
+      findColorLocations(
+        c.original
+      );
+
+    c.count=
+      Math.max(
+        c.count,
+        c.locations.length
+      );
+  });
+
+  refreshFileStats();
+}
+
+
+/* =========================================================
+   SOURCE LOCATIONS
+========================================================= */
+
+function findColorLocations(color){
+
+  if(!state.sourceHTML){
+    return[];
+  }
+
+  const lines=
+    state.sourceHTML.split(/\r?\n/);
+
+  const locations=[];
+
+  lines.forEach(
+    (line,index)=>{
+
+      if(
+        new RegExp(
+          escapeRegExp(color),
+          'i'
+        ).test(line)
+      ){
+
+        let type='Source';
+
+        if(
+          /style\s*=/i.test(line)
+        ){
+          type='Inline Style';
+        }else if(
+          /<style[\s>]/i.test(line)
+        ){
+          type='Style Block';
+        }else if(
+          /--[a-zA-Z0-9_-]+\s*:/i.test(line)
+        ){
+          type='CSS Variable';
+        }else if(
+          /<svg\b/i.test(line)
+        ){
+          type='SVG';
+        }
+
+        locations.push({
+          line:index+1,
+          source:line.trim(),
+          type
+        });
+      }
+    }
+  );
+
+  return locations;
+}
+
+
+/* =========================================================
+   COLOR USAGE
+========================================================= */
+
+function getColorUsage(color){
+
+  if(!state.sourceHTML){
+    return 0;
+  }
+
+  return(
+    state.sourceHTML.match(
+      new RegExp(
+        escapeRegExp(color),
+        'gi'
+      )
+    )||[]
+  ).length;
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+document.querySelectorAll('.filter-btn')
+  .forEach(btn=>{
+
+    btn.addEventListener(
+      'click',
+      ()=>{
+
+        state.colorFilter=
+          btn.dataset.filter;
+
+        document.querySelectorAll('.filter-btn')
+          .forEach(x=>{
+            x.classList.toggle(
+              'active',
+              x===btn
+            );
+          });
+
+        renderColors();
+      }
+    );
+  });
+
+
+/* =========================================================
+   RENDER COLORS IN ROWS
+========================================================= */
+
+function renderColors(){
+
+  const list=$('colorList');
+
+  if(!detectedColors.length){
+
+    list.innerHTML=
+      '<div class="section-sub">No colors detected yet.</div>';
+
+    return;
+  }
+
+  const search=
+    ($('colorSearch').value||'')
+      .toLowerCase();
+
+  let colors=
+    detectedColors.filter(c=>{
+
+      const current=
+        state.colorMap[c.key]||
+        c.original;
+
+      const matchesSearch=
+        c.original.toLowerCase()
+          .includes(search) ||
+
+        current.toLowerCase()
+          .includes(search) ||
+
+        c.type.toLowerCase()
+          .includes(search);
+
+      if(!matchesSearch){
+        return false;
+      }
+
+      if(
+        state.colorFilter==='favorites' &&
+        !state.favorites.includes(c.key)
+      ){
+        return false;
+      }
+
+      if(
+        state.colorFilter==='pinned' &&
+        !state.pinned.includes(c.key)
+      ){
+        return false;
+      }
+
+      if(
+        state.colorFilter==='changed' &&
+        !isColorChanged(c.key)
+      ){
+        return false;
+      }
+
+      if(
+        state.colorFilter==='recent' &&
+        !state.recentColors.includes(c.key)
+      ){
+        return false;
+      }
+
+      return true;
+    });
+
+
+  const sort=
+    $('sortColors').value;
+
+  if(sort==='name'){
+
+    colors.sort(
+      (a,b)=>
+        a.original.localeCompare(
+          b.original
+        )
+    );
+
+  }else if(sort==='original'){
+
+    colors.sort(
+      (a,b)=>
+        a.key.localeCompare(
+          b.key
+        )
+    );
+
+  }else if(sort==='changed'){
+
+    colors.sort(
+      (a,b)=>
+        Number(
+          isColorChanged(b.key)
+        )-
+        Number(
+          isColorChanged(a.key)
+        )
+    );
+
+  }else{
+
+    colors.sort(
+      (a,b)=>
+        b.count-a.count
+    );
+  }
+
+
+  /* pinned always rise to top */
+
+  colors.sort(
+    (a,b)=>
+      Number(
+        state.pinned.includes(b.key)
+      )-
+      Number(
+        state.pinned.includes(a.key)
+      )
+  );
+
+
+  if(!colors.length){
+
+    list.innerHTML=
+      '<div class="section-sub">No colors match this filter.</div>';
+
+    return;
+  }
+
+
+  list.innerHTML=
+    colors.map(
+      colorRowHTML
+    ).join('');
+}
+
+function colorRowHTML(c){
+
+  const current=
+    state.colorMap[c.key]||
+    c.original;
+
+  const fav=
+    state.favorites.includes(
+      c.key
+    );
+
+  const pin=
+    state.pinned.includes(
+      c.key
+    );
+
+  const changed=
+    isColorChanged(c.key);
+
+  return`
+
+    <div class="color-row">
+
+      <div
+        class="row-swatch"
+        style="background:${escapeHtmlAttr(current)}">
+      </div>
+
+      <div class="row-main">
+
+        <strong>
+          ${escapeHtml(c.original)}
+          ${pin?' 📌':''}
+          ${fav?' ★':''}
+        </strong>
+
+        <span>
+          Current:
+          ${escapeHtml(current)}
+          •
+          <span class="usage">
+            ${c.count} usage(s)
+          </span>
+          •
+          ${escapeHtml(c.type)}
+          ${changed?' • CHANGED':''}
+        </span>
+
+      </div>
+
+      <div class="row-actions">
+
+        <button
+          class="small-btn"
+          onclick="selectColorEncoded('${encodeURIComponent(c.key)}')"
+          title="Edit">
+          Edit
+        </button>
+
+        <button
+          class="small-btn ${fav?'active':''}"
+          onclick="toggleFavoriteEncoded('${encodeURIComponent(c.key)}')"
+          title="Favorite">
+          ★
+        </button>
+
+        <button
+          class="small-btn ${pin?'active':''}"
+          onclick="togglePinEncoded('${encodeURIComponent(c.key)}')"
+          title="Pin">
+          📌
+        </button>
+
+        <button
+          class="small-btn"
+          onclick="copyColorEncoded('${encodeURIComponent(current)}')"
+          title="Copy">
+          Copy
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   GLOBAL COLOR ACTIONS
+========================================================= */
+
+function isColorChanged(key){
+
+  return(
+    Object.prototype.hasOwnProperty.call(
+      state.colorMap,
+      key
+    ) &&
+    state.colorMap[key]!==key
+  );
+}
+
+window.selectColorEncoded=
+  encoded=>{
+    selectColor(
+      decodeURIComponent(encoded)
+    );
+  };
+
+window.toggleFavoriteEncoded=
+  encoded=>{
+    toggleFavorite(
+      decodeURIComponent(encoded)
+    );
+  };
+
+window.togglePinEncoded=
+  encoded=>{
+    togglePin(
+      decodeURIComponent(encoded)
+    );
+  };
+
+window.copyColorEncoded=
+  encoded=>{
+    copyText(
+      decodeURIComponent(encoded)
+    );
+  };
+
+
+function selectColor(key){
+
+  const item=
+    detectedColors.find(
+      x=>x.key===key
+    );
+
+  if(!item){
+    return;
+  }
+
+  state.selectedColorKey=
+    key;
+
+  const current=
+    state.colorMap[key]||
+    item.original;
+
+  const parsed=
+    parseColor(current);
+
+  if(!parsed){
+
+    toast(
+      'This source color cannot be opened in the numeric editor.'
+    );
+
+    return;
+  }
+
+  loadEditorFromColor(
+    parsed,
+    item
+  );
+
+  state.recentColors=[
+    key,
+    ...state.recentColors.filter(
+      x=>x!==key
+    )
+  ].slice(0,20);
+
+  saveMeta();
+
+  renderColors();
+
+  toast(
+    'Color selected in Advanced Editor.'
+  );
+}
+
+
+/* =========================================================
+   LOAD EDITOR
+========================================================= */
+
+function loadEditorFromColor(
+  parsed,
+  item
+){
+
+  $('editorColorPreview').style.background=
+    parsed.rgba;
+
+  $('editorPreviewText').textContent=
+    parsed.hex;
+
+  $('hexInput').value=
+    parsed.hex;
+
+  $('rgbInput').value=
+    parsed.rgba;
+
+  $('hslInput').value=
+    parsed.a<1
+      ?parsed.hsla
+      :parsed.hsl;
+
+  $('hsvInput').value=
+    parsed.hsv;
+
+  const hsv=
+    rgbToHsv(
+      parsed.r,
+      parsed.g,
+      parsed.b
+    );
+
+  $('hueSlider').value=
+    hsv.h;
+
+  $('satSlider').value=
+    hsv.s;
+
+  $('valSlider').value=
+    hsv.v;
+
+  $('alphaSlider').value=
+    parsed.a*100;
+
+  $('hueValue').textContent=
+    Math.round(hsv.h)+'°';
+
+  $('satValue').textContent=
+    Math.round(hsv.s)+'%';
+
+  $('valValue').textContent=
+    Math.round(hsv.v)+'%';
+
+  $('alphaValue').textContent=
+    Math.round(parsed.a*100)+'%';
+
+  $('originalColor').textContent=
+    item.original;
+
+  $('currentColor').textContent=
+    state.colorMap[item.key]||
+    item.original;
+
+  $('usageCount').textContent=
+    item.count;
+
+  $('locationCount').textContent=
+    item.locations.length;
+
+  $('colorType').textContent=
+    item.type;
+
+  $('colorChanged').textContent=
+    isColorChanged(item.key)
+      ?'Yes'
+      :'No';
+
+  updatePickerCursor(
+    hsv.h,
+    hsv.s,
+    hsv.v
+  );
+}
+
+
+/* =========================================================
+   FAVORITES / PIN
+========================================================= */
+
+function toggleFavorite(key){
+
+  if(
+    state.favorites.includes(key)
+  ){
+
+    state.favorites=
+      state.favorites.filter(
+        x=>x!==key
+      );
+
+  }else{
+
+    state.favorites.push(key);
+  }
+
+  saveMeta();
+  renderColors();
+
+  toast(
+    state.favorites.includes(key)
+      ?'Added to Favorites.'
+      :'Removed from Favorites.'
+  );
+}
+
+function togglePin(key){
+
+  if(
+    state.pinned.includes(key)
+  ){
+
+    state.pinned=
+      state.pinned.filter(
+        x=>x!==key
+      );
+
+  }else{
+
+    state.pinned.push(key);
+  }
+
+  saveMeta();
+  renderColors();
+
+  toast(
+    state.pinned.includes(key)
+      ?'Color pinned to top.'
+      :'Color unpinned.'
+  );
+}
+
+
+/* =========================================================
+   ADVANCED COLOR SLIDERS
+========================================================= */
+
+function updateEditorFromSliders(){
+
+  if(!state.selectedColorKey){
+    return;
+  }
+
+  const h=
+    Number(
+      $('hueSlider').value
+    );
+
+  const s=
+    Number(
+      $('satSlider').value
+    );
+
+  const v=
+    Number(
+      $('valSlider').value
+    );
+
+  const a=
+    Number(
+      $('alphaSlider').value
+    )/100;
+
+  const rgb=
+    hsvToRgb(
+      h,s,v
+    );
+
+  const parsed=
+    rgbaObject(
+      rgb.r,
+      rgb.g,
+      rgb.b,
+      a,
+      ''
+    );
+
+  const value=
+    a<1
+      ?`rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Number(a.toFixed(3))})`
+      :parsed.hex;
+
+  $('hexInput').value=
+    parsed.hex;
+
+  $('rgbInput').value=
+    value;
+
+  $('hslInput').value=
+    a<1
+      ?parsed.hsla
+      :parsed.hsl;
+
+  $('hsvInput').value=
+    parsed.hsv;
+
+  $('editorColorPreview').style.background=
+    value;
+
+  $('editorPreviewText').textContent=
+    value;
+
+  $('hueValue').textContent=
+    Math.round(h)+'°';
+
+  $('satValue').textContent=
+    Math.round(s)+'%';
+
+  $('valValue').textContent=
+    Math.round(v)+'%';
+
+  $('alphaValue').textContent=
+    Math.round(a*100)+'%';
+
+  updatePickerCursor(
+    h,s,v
+  );
+}
+
+[
+  'hueSlider',
+  'satSlider',
+  'valSlider',
+  'alphaSlider'
+].forEach(
+  id=>{
+    $(id).addEventListener(
+      'input',
+      updateEditorFromSliders
+    );
+  }
+);
+
+
+/* =========================================================
+   COLOR PICKER
+========================================================= */
+
+function updatePickerBackground(hue){
+
+  $('picker').style.background=
+    `
+    linear-gradient(to top,#000,transparent),
+    linear-gradient(to right,#fff,transparent),
+    hsl(${hue},100%,50%)
+    `;
+}
+
+function updatePickerCursor(
+  h,
+  s,
+  v
+){
+
+  const picker=
+    $('picker');
+
+  const cursor=
+    $('pickerCursor');
+
+  const x=
+    Math.max(
+      0,
+      Math.min(
+        100,
+        s
+      )
+    );
+
+  const y=
+    100-
+    Math.max(
+      0,
+      Math.min(
+        100,
+        v
+      )
+    );
+
+  cursor.style.left=
+    x+'%';
+
+  cursor.style.top=
+    y+'%';
+
+  updatePickerBackground(h);
+}
+
+$('picker').addEventListener(
+  'pointerdown',
+  e=>{
+    if(!state.selectedColorKey){
+      toast('Select a color first.');
+      return;
+    }
+
+    updatePickerFromPointer(e);
+  }
+);
+
+$('picker').addEventListener(
+  'pointermove',
+  e=>{
+    if(
+      e.buttons &&
+      state.selectedColorKey
+    ){
+      updatePickerFromPointer(e);
+    }
+  }
+);
+
+function updatePickerFromPointer(e){
+
+  const rect=
+    $('picker').getBoundingClientRect();
+
+  const x=
+    Math.max(
+      0,
+      Math.min(
+        rect.width,
+        e.clientX-rect.left
+      )
+    );
+
+  const y=
+    Math.max(
+      0,
+      Math.min(
+        rect.height,
+        e.clientY-rect.top
+      )
+    );
+
+  const s=
+    x/rect.width*100;
+
+  const v=
+    (1-y/rect.height)*100;
+
+  $('satSlider').value=s;
+  $('valSlider').value=v;
+
+  updateEditorFromSliders();
+}
+
+
+/* =========================================================
+   APPLY COLOR
+========================================================= */
+
+function getEditorColor(){
+
+  const hex=
+    normalizeHex(
+      $('hexInput').value
+    );
+
+  if(hex){
+    return hex;
+  }
+
+  const rgb=
+    $('rgbInput').value.trim();
+
+  if(parseColor(rgb)){
+    return rgb;
+  }
+
+  const hsl=
+    $('hslInput').value.trim();
+
+  if(parseColor(hsl)){
+    return hsl;
+  }
+
+  return null;
+}
+
+$('applyColorBtn').onclick=
+  applySelectedColor;
+
+$('replaceAllBtn').onclick=
+  applySelectedColor;
+
+function applySelectedColor(){
+
+  if(!state.selectedColorKey){
+
+    toast(
+      'Select a color from Colors Studio or Live Preview first.'
+    );
+
+    return;
+  }
+
+  const value=
+    getEditorColor();
+
+  if(!value){
+
+    toast(
+      'Enter a valid HEX, RGB/RGBA or HSL/HSLA value.'
+    );
+
+    return;
+  }
+
+  /*
+    One history state for the complete color-map change.
+  */
+
+  pushHistory();
+
+  state.colorMap[
+    state.selectedColorKey
+  ]=value;
+
+  rebuildPreview();
+
+  renderColors();
+
+  updateAnalysis();
+
+  updateConfirm();
+
+  updateSaveSummary();
+
+  /*
+    Re-open selected color so editor shows the new value.
+  */
+
+  const item=
+    detectedColors.find(
+      x=>x.key===state.selectedColorKey
+    );
+
+  if(item){
+
+    const parsed=
+      parseColor(value);
+
+    if(parsed){
+      loadEditorFromColor(
+        parsed,
+        item
+      );
+    }
+  }
+
+  toast(
+    'Color changed — Live Preview updated.'
+  );
+}
+
+
+/* =========================================================
+   RESET CURRENT COLOR
+========================================================= */
+
+$('resetEditorBtn').onclick=()=>{
+
+  if(!state.selectedColorKey){
+
+    toast(
+      'Select a color first.'
+    );
+
+    return;
+  }
+
+  pushHistory();
+
+  delete state.colorMap[
+    state.selectedColorKey
+  ];
+
+  rebuildPreview();
+
+  renderColors();
+
+  updateAnalysis();
+
+  updateConfirm();
+
+  updateSaveSummary();
+
+  const item=
+    detectedColors.find(
+      x=>x.key===
+      state.selectedColorKey
+    );
+
+  if(item){
+
+    const parsed=
+      parseColor(item.original);
+
+    if(parsed){
+      loadEditorFromColor(
+        parsed,
+        item
+      );
+    }
+  }
+
+  toast(
+    'Original color restored.'
+  );
+};
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+$('copyColorBtn').onclick=()=>{
+
+  const value=
+    getEditorColor();
+
+  if(value){
+    copyText(value);
+  }
+};
+
+async function copyText(value){
+
+  try{
+
+    await navigator.clipboard.writeText(
+      String(value)
+    );
+
+    toast('Copied.');
+
+  }catch(e){
+
+    const ta=
+      document.createElement('textarea');
+
+    ta.value=String(value);
+
+    document.body.appendChild(ta);
+
+    ta.select();
+
+    document.execCommand('copy');
+
+    ta.remove();
+
+    toast('Copied.');
+  }
+}
+
+
+/* =========================================================
+   WHERE USED
+========================================================= */
+
+$('whereUsedBtn').onclick=()=>{
+
+  if(!state.selectedColorKey){
+
+    toast(
+      'Select a color first.'
+    );
+
+    return;
+  }
+
+  const item=
+    detectedColors.find(
+      x=>x.key===
+      state.selectedColorKey
+    );
+
+  if(!item) return;
+
+  const locations=
+    findColorLocations(
+      item.original
+    );
+
+  if(!locations.length){
+
+    alert(
+      'No source locations found.'
+    );
+
+    return;
+  }
+
+  alert(
+    'WHERE USED\\n\\n'+
+    item.original+
+    '\\n\\n'+
+    locations.map(
+      x=>
+        `Line ${x.line} [${x.type}]\\n${x.source}`
+    ).join('\\n\\n')
+  );
+};
+
+
+/* =========================================================
+   PERSISTENT LIVE PREVIEW
+========================================================= */
+
+function rebuildPreview(){
+
+  if(!state.sourceHTML){
+
+    previewFrame.srcdoc=`
+      <!DOCTYPE html>
+      <html>
+      <body style="font-family:system-ui;padding:40px">
+        <h2>Live Preview</h2>
+        <p>Load an HTML file to preview it here.</p>
+      </body>
+      </html>
+    `;
+
+    return;
+  }
+
+  const working=
+    getWorkingHTML();
+
+  /*
+    Reliable delegated event system.
+
+    It is injected after every srcdoc rebuild.
+    It communicates through postMessage.
+  */
+
+  const toolScript=`
+
+<script>
+(function(){
+
+  function collectColorProperties(el){
+
+    const cs=getComputedStyle(el);
+
+    return {
+
+      textColor:cs.color,
+
+      backgroundColor:
+        cs.backgroundColor,
+
+      borderTop:
+        cs.borderTopColor,
+
+      borderRight:
+        cs.borderRightColor,
+
+      borderBottom:
+        cs.borderBottomColor,
+
+      borderLeft:
+        cs.borderLeftColor,
+
+      outlineColor:
+        cs.outlineColor,
+
+      fill:
+        cs.fill,
+
+      stroke:
+        cs.stroke
+    };
+  }
+
+
+  function collectVariables(el){
+
+    const result=[];
+
+    try{
+
+      const cs=getComputedStyle(el);
+
+      for(
+        let i=0;
+        i<document.styleSheets.length;
+        i++
+      ){
+
+        let rules;
+
+        try{
+          rules=
+            document.styleSheets[i].cssRules;
+        }catch(e){
+          continue;
+        }
+
+        if(!rules) continue;
+
+        for(
+          let j=0;
+          j<rules.length;
+          j++
+        ){
+
+          const rule=rules[j];
+
+          if(
+            rule.style &&
+            rule.style.cssText &&
+            rule.style.cssText.includes('--')
+          ){
+
+            const text=
+              rule.style.cssText;
+
+            const matches=
+              text.match(
+                /--[a-zA-Z0-9_-]+\\s*:\\s*[^;]+/g
+              )||[];
+
+            matches.forEach(x=>{
+              if(!result.includes(x)){
+                result.push(x);
+              }
+            });
+          }
+        }
+      }
+
+    }catch(e){}
+
+    return result;
+  }
+
+
+  function sendElement(el){
+
+    if(!el) return;
+
+    const cs=
+      getComputedStyle(el);
+
+    const rect=
+      el.getBoundingClientRect();
+
+    const data={
+
+      tag:
+        el.tagName||'',
+
+      id:
+        el.id||'',
+
+      className:
+        typeof el.className==='string'
+          ?el.className
+          :'',
+
+      text:
+        (
+          el.innerText||
+          el.textContent||
+          ''
+        )
+        .trim()
+        .replace(/\\s+/g,' ')
+        .slice(0,180),
+
+      colors:
+        collectColorProperties(el),
+
+      variables:
+        collectVariables(el),
+
+      fontFamily:
+        cs.fontFamily,
+
+      fontSize:
+        cs.fontSize,
+
+      fontWeight:
+        cs.fontWeight,
+
+      lineHeight:
+        cs.lineHeight,
+
+      width:
+        Math.round(rect.width),
+
+      height:
+        Math.round(rect.height),
+
+      top:
+        Math.round(rect.top),
+
+      left:
+        Math.round(rect.left)
+    };
+
+    window.parent.postMessage(
+      {
+        source:'HCSP_PREVIEW',
+        type:'ELEMENT_SELECTED',
+        data:data
+      },
+      '*'
+    );
+  }
+
+
+  function active(){
+
+    return !!window.__HCSP_TOOL;
+  }
+
+
+  document.addEventListener(
+    'pointerdown',
+    function(e){
+
+      if(!active()) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      sendElement(
+        e.target.closest('*')
+      );
+
+    },
+    true
+  );
+
+
+  document.addEventListener(
+    'click',
+    function(e){
+
+      if(!active()) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      sendElement(
+        e.target.closest('*')
+      );
+
+    },
+    true
+  );
+
+
+  window.addEventListener(
+    'message',
+    function(e){
+
+      if(
+        e.source!==window.parent
+      ){
+        return;
+      }
+
+      if(
+        e.data &&
+        e.data.type==='HCSP_TOOL_STATE'
+      ){
+
+        window.__HCSP_TOOL=
+          !!e.data.enabled;
+      }
+
+    }
+  );
+
+
+  window.parent.postMessage(
+    {
+      source:'HCSP_PREVIEW',
+      type:'READY'
+    },
+    '*'
+  );
+
+})();
+<\/script>
+`;
+
+  let html=working;
+
+  if(
+    /<\/body>/i.test(html)
+  ){
+
+    html=
+      html.replace(
+        /<\/body>/i,
+        toolScript+
+        '</body>'
+      );
+
+  }else{
+
+    html+=toolScript;
+  }
+
+  previewFrame.srcdoc=html;
+
+  /*
+    Re-inject tool state after every rebuild.
+  */
+
+  setTimeout(
+    sendPreviewToolState,
+    120
+  );
+}
+
+function sendPreviewToolState(){
+
+  try{
+
+    previewFrame.contentWindow.postMessage(
+      {
+        type:'HCSP_TOOL_STATE',
+        enabled:
+          state.inspectMode||
+          state.changesTool
+      },
+      '*'
+    );
+
+  }catch(e){}
+}
+
+
+/* =========================================================
+   RECEIVE PREVIEW ELEMENT
+========================================================= */
+
+window.addEventListener(
+  'message',
+  e=>{
+
+    if(
+      e.source!==
+      previewFrame.contentWindow
+    ){
+      return;
+    }
+
+    if(
+      !e.data ||
+      e.data.source!=='HCSP_PREVIEW'
+    ){
+      return;
+    }
+
+    if(
+      e.data.type===
+      'ELEMENT_SELECTED'
+    ){
+
+      handlePreviewElement(
+        e.data.data
+      );
+    }
+  }
+);
+
+
+/* =========================================================
+   HANDLE SELECTED ELEMENT
+========================================================= */
+
+function handlePreviewElement(data){
+
+  state.selectedElement=data;
+
+  showElementDetails(data);
+
+  const sourceColors=
+    findMatchingSourceColors(
+      data
+    );
+
+  state.selectedPreviewColors=
+    sourceColors;
+
+  renderSelectedPreviewColors();
+
+  /*
+    Automatically move the selected element's
+    relevant colors into Colors Studio view.
+  */
+
+  renderColors();
+
+  /*
+    The most relevant color is selected automatically,
+    but the user can choose ANY color chip below.
+  */
+
+  if(sourceColors.length){
+
+    selectColor(
+      sourceColors[0].key
+    );
+
+    toast(
+      `${sourceColors.length} matching color(s) found — choose any below.`
+    );
+
+  }else{
+
+    toast(
+      'Element selected. No source color token matched.'
+    );
+  }
+}
+
+
+/* =========================================================
+   FIND SOURCE COLORS MATCHING PREVIEW
+========================================================= */
+
+function findMatchingSourceColors(data){
+
+  const values=[];
+
+  const candidates=[
+
+    data.colors?.textColor,
+    data.colors?.backgroundColor,
+    data.colors?.borderTop,
+    data.colors?.borderRight,
+    data.colors?.borderBottom,
+    data.colors?.borderLeft,
+    data.colors?.outlineColor,
+    data.colors?.fill,
+    data.colors?.stroke
+  ];
+
+  candidates.forEach(value=>{
+
+    const parsed=
+      parseColor(value);
+
+    if(!parsed) return;
+
+    const hex=
+      parsed.hex.toLowerCase();
+
+    detectedColors.forEach(c=>{
+
+      const current=
+        state.colorMap[c.key]||
+        c.original;
+
+      const p=
+        parseColor(current);
+
+      if(!p) return;
+
+      if(
+        p.hex.toLowerCase()===
+        hex
+      ){
+
+        if(
+          !values.some(
+            x=>x.key===c.key
+          )
+        ){
+
+          values.push(c);
+        }
+      }
+    });
+  });
+
+  /*
+    CSS variable values can also be matched
+    by searching variable declarations.
+  */
+
+  if(data.variables){
+
+    data.variables.forEach(variable=>{
+
+      const match=
+        variable.match(
+          /:\s*(.+)$/
+        );
+
+      if(!match) return;
+
+      const p=
+        parseColor(
+          match[1].trim()
+        );
+
+      if(!p) return;
+
+      detectedColors.forEach(c=>{
+
+        const cp=
+          parseColor(
+            state.colorMap[c.key]||
+            c.original
+          );
+
+        if(
+          cp &&
+          cp.hex.toLowerCase()===
+          p.hex.toLowerCase() &&
+          !values.some(
+            x=>x.key===c.key
+          )
+        ){
+
+          values.push(c);
+        }
+      });
+    });
+  }
+
+  return values;
+}
+
+
+/* =========================================================
+   SELECTED PREVIEW COLOR CHIPS
+========================================================= */
+
+function renderSelectedPreviewColors(){
+
+  const list=
+    $('selectedColorList');
+
+  const colors=
+    state.selectedPreviewColors;
+
+  $('previewColorCount').textContent=
+    colors.length+
+    (colors.length===1
+      ?' color'
+      :' colors');
+
+  if(!colors.length){
+
+    list.innerHTML=
+      `<span class="section-sub" style="margin:0">
+        No matching source colors found.
+      </span>`;
+
+    return;
+  }
+
+  list.innerHTML=
+    colors.map(c=>{
+
+      const current=
+        state.colorMap[c.key]||
+        c.original;
+
+      return`
+
+        <button
+          class="preview-color-chip"
+          onclick="selectPreviewColor('${encodeURIComponent(c.key)}')">
+
+          <span
+            class="chip-swatch"
+            style="background:${escapeHtmlAttr(current)}">
+          </span>
+
+          <span style="min-width:0">
+
+            <b>
+              ${escapeHtml(current)}
+            </b>
+
+            <small>
+              ${c.count} use(s)
+            </small>
+
+          </span>
+
+        </button>
+      `;
+
+    }).join('');
+}
+
+window.selectPreviewColor=
+  encoded=>{
+
+    const key=
+      decodeURIComponent(
+        encoded
+      );
+
+    selectColor(key);
+
+    /*
+      Put user on Colors Studio without
+      losing the persistent Live Preview.
+    */
+
+    goStage(2);
+
+    setTimeout(
+      ()=>{
+        const studio=
+          $('colorList');
+
+        if(studio){
+          studio.scrollIntoView({
+            behavior:'smooth',
+            block:'center'
+          });
+        }
+      },
+      100
+    );
+  };
+
+
+/* =========================================================
+   PREVIEW TOOL BUTTONS
+========================================================= */
+
+$('liveClickBtn').onclick=()=>{
+
+  state.inspectMode=
+    !state.inspectMode;
+
+  $('liveClickBtn')
+    .classList.toggle(
+      'active',
+      state.inspectMode
+    );
+
+  sendPreviewToolState();
+
+  toast(
+    state.inspectMode
+      ?'Live Click enabled — click any preview element.'
+      :'Live Click disabled.'
+  );
+};
+
+$('changesBtn').onclick=()=>{
+
+  state.changesTool=
+    !state.changesTool;
+
+  $('changesBtn')
+    .classList.toggle(
+      'active',
+      state.changesTool
+    );
+
+  sendPreviewToolState();
+
+  toast(
+    state.changesTool
+      ?'Changes tool enabled.'
+      :'Changes tool disabled.'
+  );
+};
+
+
+/* =========================================================
+   PREVIEW DEVICES
+========================================================= */
+
+document.querySelectorAll(
+  '[data-device]'
+).forEach(btn=>{
+
+  btn.addEventListener(
+    'click',
+    ()=>{
+
+      state.previewMode=
+        btn.dataset.device;
+
+      document.querySelectorAll(
+        '[data-device]'
+      ).forEach(x=>{
+        x.classList.toggle(
+          'active',
+          x===btn
+        );
+      });
+
+      previewDevice.className=
+        'preview-device '+
+        state.previewMode;
+    }
+  );
+});
+
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
+$('zoomRange').addEventListener(
+  'input',
+  e=>{
+
+    state.zoom=
+      Number(e.target.value);
+
+    $('zoomValue').textContent=
+      state.zoom+'%';
+
+    const scale=
+      state.zoom/100;
+
+    previewFrame.style.transform=
+      `scale(${scale})`;
+
+    previewFrame.style.transformOrigin=
+      'top left';
+
+    previewFrame.style.width=
+      `${100/scale}%`;
+
+    previewFrame.style.height=
+      `${100/scale}%`;
+  }
+);
+
+$('fitPreviewBtn').onclick=()=>{
+
+  state.zoom=100;
+
+  $('zoomRange').value=100;
+
+  $('zoomValue').textContent=
+    '100%';
+
+  previewFrame.style.transform=
+    'none';
+
+  previewFrame.style.width=
+    '100%';
+
+  previewFrame.style.height=
+    '100%';
+};
+
+$('refreshPreviewBtn').onclick=()=>{
+
+  rebuildPreview();
+
+  toast(
+    'Preview refreshed.'
+  );
+};
+
+$('fullscreenBtn').onclick=
+  async()=>{
+
+    const target=
+      $('.preview-stage');
+
+    try{
+
+      if(document.fullscreenElement){
+
+        await document.exitFullscreen();
+
+      }else{
+
+        await target.requestFullscreen();
+      }
+
+    }catch(e){
+
+      toast(
+        'Fullscreen is not available.'
+      );
+    }
+  };
+
+
+/* =========================================================
+   INSPECT DETAILS
+========================================================= */
+
+function showElementDetails(data){
+
+  $('selectedElementStatus').textContent=
+    `${data.tag}${
+      data.id
+        ?' #'+data.id
+        :''
+    }${
+      data.className
+        ?' .'+
+          data.className
+            .split(/\s+/)[0]
+        :''
+    } selected`;
+
+  $('selectedElementSub').textContent=
+    data.text||
+    'Element selected';
+
+  $('inspectTag').textContent=
+    data.tag||'—';
+
+  $('inspectId').textContent=
+    data.id||'—';
+
+  $('inspectClass').textContent=
+    data.className||'—';
+
+  $('inspectText').textContent=
+    data.text||'—';
+
+  $('inspectTextColor').textContent=
+    data.colors?.textColor||
+    '—';
+
+  $('inspectBackground').textContent=
+    data.colors?.backgroundColor||
+    '—';
+
+  $('inspectBorder').textContent=
+    [
+      data.colors?.borderTop,
+      data.colors?.borderRight,
+      data.colors?.borderBottom,
+      data.colors?.borderLeft
+    ]
+    .filter(Boolean)
+    .join(' / ')||
+    '—';
+
+  $('inspectFontFamily').textContent=
+    data.fontFamily||'—';
+
+  $('inspectFontSize').textContent=
+    data.fontSize||'—';
+
+  $('inspectFontWeight').textContent=
+    data.fontWeight||'—';
+
+  $('inspectDimensions').textContent=
+    `${data.width||0}px × ${data.height||0}px`;
+
+  $('inspectVariables').textContent=
+    data.variables?.length
+      ?data.variables.join(' | ')
+      :'—';
+
+  const matches=
+    findMatchingSourceColors(
+      data
+    );
+
+  $('inspectColors').innerHTML=
+    matches.length
+      ?matches.map(c=>`
+
+        <button
+          class="small-btn"
+          onclick="selectPreviewColor('${encodeURIComponent(c.key)}')">
+
+          ${escapeHtml(
+            state.colorMap[c.key]||
+            c.original
+          )}
+          (${c.count})
+
+        </button>
+
+      `).join('')
+      :
+      '<span class="section-sub">No matching source color.</span>';
+}
+
+
+/* =========================================================
+   CLEAR PREVIEW SELECTION
+========================================================= */
+
+function clearPreviewSelection(){
+
+  state.selectedElement=null;
+  state.selectedPreviewColors=[];
+
+  $('selectedElementStatus').textContent=
+    'No preview element selected';
+
+  $('selectedElementSub').textContent=
+    'Enable Live Click, then click an element in the preview.';
+
+  $('selectedColorList').innerHTML=
+    `<span class="section-sub" style="margin:0">
+      Select an element to show its matching source colors here.
+    </span>`;
+
+  $('previewColorCount').textContent=
+    '0 colors';
+}
+
+
+/* =========================================================
+   MY COLORS
+========================================================= */
+
+function renderMyColors(){
+
+  const el=
+    $('myColors');
+
+  if(!state.myColors.length){
+
+    el.innerHTML=
+      '<span class="section-sub">No custom colors yet.</span>';
+
+    return;
+  }
+
+  el.innerHTML=
+    state.myColors.map(
+      color=>`
+
+        <button
+          class="my-color"
+          onclick="useCustomColor('${encodeURIComponent(color)}')">
+
+          <span
+            class="my-color-swatch"
+            style="background:${escapeHtmlAttr(color)}">
+          </span>
+
+          ${escapeHtml(color)}
+
+        </button>
+      `
+    ).join('');
+}
+
+window.useCustomColor=
+  encoded=>{
+
+    const color=
+      decodeURIComponent(
+        encoded
+      );
+
+    const parsed=
+      parseColor(color);
+
+    if(!parsed){
+
+      toast(
+        'Custom color is not recognized.'
+      );
+
+      return;
+    }
+
+    /*
+      Load custom color into editor
+      without requiring an existing source key.
+    */
+
+    $('editorColorPreview').style.background=
+      parsed.rgba;
+
+    $('editorPreviewText').textContent=
+      parsed.hex;
+
+    $('hexInput').value=
+      parsed.hex;
+
+    $('rgbInput').value=
+      parsed.rgba;
+
+    $('hslInput').value=
+      parsed.hsl;
+
+    $('hsvInput').value=
+      parsed.hsv;
+
+    toast(
+      'Custom color loaded into editor.'
+    );
+  };
+
+$('addColorBtn').onclick=()=>{
+
+  const value=
+    prompt(
+      'Enter HEX, RGB/RGBA or HSL/HSLA:',
+      '#1769ff'
+    );
+
+  if(!value) return;
+
+  const parsed=
+    parseColor(value);
+
+  if(!parsed){
+
+    toast(
+      'Invalid color.'
+    );
+
+    return;
+  }
+
+  state.myColors=[
+    value.trim(),
+    ...state.myColors.filter(
+      x=>x!==value.trim()
+    )
+  ];
+
+  saveMeta();
+
+  renderMyColors();
+
+  toast(
+    'Custom color added.'
+  );
+};
+
+
+/* =========================================================
+   IMPORT COLORS
+========================================================= */
+
+$('importColorsBtn').onclick=
+  ()=>$('paletteImport').click();
+
+$('paletteImport').addEventListener(
+  'change',
+  e=>{
+
+    const file=
+      e.target.files[0];
+
+    if(!file) return;
+
+    const reader=
+      new FileReader();
+
+    reader.onload=()=>{
+
+      try{
+
+        const text=
+          String(reader.result||'');
+
+        let values=[];
+
+        if(
+          file.name
+            .toLowerCase()
+            .endsWith('.json')
+        ){
+
+          const json=
+            JSON.parse(text);
+
+          values=[
+            ...(json.myColors||[]),
+            ...(json.colors||[]),
+            ...(json.palette||[])
+          ];
+
+        }else{
+
+          values=
+            text
+              .split(/[\r\n,]+/)
+              .map(
+                x=>x.trim()
+              )
+              .filter(Boolean);
+        }
+
+        values=
+          values.filter(
+            x=>parseColor(x)
+          );
+
+        state.myColors=[
+          ...new Set(
+            [
+              ...state.myColors,
+              ...values
+            ]
+          )
+        ];
+
+        saveMeta();
+
+        renderMyColors();
+
+        toast(
+          values.length+
+          ' color(s) imported.'
+        );
+
+      }catch(err){
+
+        toast(
+          'Could not import palette.'
+        );
+      }
+    };
+
+    reader.readAsText(file);
+  }
+);
+
+
+/* =========================================================
+   EXPORT COLORS
+========================================================= */
+
+$('exportColorsBtn').onclick=
+  ()=>exportColors(
+    'colors.json'
+  );
+
+$('backupColorsBtn').onclick=
+  ()=>exportColors(
+    'colors-backup.json'
+  );
+
+$('exportFinalColorsBtn').onclick=
+  ()=>exportColors(
+    'html-color-studio-colors.json'
+  );
+
+$('backupOnlyBtn').onclick=
+  ()=>exportColors(
+    'colors-backup.json'
+  );
+
+function exportColors(filename){
+
+  const data={
+
+    project:
+      'HTML Color Studio Pro',
+
+    exported:
+      new Date().toISOString(),
+
+    file:
+      state.fileName,
+
+    colorMap:
+      state.colorMap,
+
+    myColors:
+      state.myColors,
+
+    favorites:
+      state.favorites,
+
+    pinned:
+      state.pinned,
+
+    recentColors:
+      state.recentColors
+  };
+
+  downloadBlob(
+    new Blob(
+      [
+        JSON.stringify(
+          data,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+          'application/json'
+      }
+    ),
+    filename
+  );
+}
+
+
+/* =========================================================
+   ANALYSIS
+========================================================= */
+
+function updateAnalysis(){
+
+  const total=
+    detectedColors.reduce(
+      (sum,c)=>
+        sum+c.count,
+      0
+    );
+
+  const changed=
+    detectedColors.filter(
+      c=>isColorChanged(c.key)
+    );
+
+  const variables=
+    (
+      state.sourceHTML.match(
+        /--[a-zA-Z0-9_-]+\s*:/g
+      )||[]
+    ).length;
+
+  $('analysisUnique').textContent=
+    detectedColors.length;
+
+  $('analysisUsage').textContent=
+    total;
+
+  $('analysisChanged').textContent=
+    changed.length;
+
+  $('analysisVariables').textContent=
+    variables;
+
+
+  $('analysisTable').innerHTML=
+    detectedColors.map(
+      c=>{
+
+        const current=
+          state.colorMap[c.key]||
+          c.original;
+
+        const locations=
+          findColorLocations(
+            c.original
+          );
+
+        return`
+
+          <tr>
+
+            <td>
+              ${escapeHtml(c.original)}
+            </td>
+
+            <td>
+              ${escapeHtml(current)}
+            </td>
+
+            <td>
+              ${c.count}
+            </td>
+
+            <td>
+              ${escapeHtml(c.type)}
+            </td>
+
+            <td>
+              ${locations
+                .slice(0,8)
+                .map(
+                  x=>
+                    `L${x.line} ${x.type}`
+                )
+                .join(', ')
+              }
+              ${
+                locations.length>8
+                  ?' …'
+                  :''
+              }
+            </td>
+
+          </tr>
+        `;
+      }
+    ).join('');
+
+
+  $('beforeAfterAnalysis').innerHTML=
+    `
+      <strong>
+        Original colors:
+      </strong>
+      ${detectedColors.length}
+
+      &nbsp; →
+
+      <strong>
+        Changed colors:
+      </strong>
+      ${changed.length}
+
+      &nbsp; →
+
+      <strong>
+        Total usages:
+      </strong>
+      ${total}
+
+      <br><br>
+
+      The final HTML is always generated from the original
+      source plus the current color replacement map.
+    `;
+
+  renderColors();
+}
+
+
+/* =========================================================
+   CONFIRM
+========================================================= */
+
+function updateConfirm(){
+
+  if(!state.sourceHTML){
+    return;
+  }
+
+  const html=
+    getWorkingHTML();
+
+  const doc=
+    parseHTML(html);
+
+  const changed=
+    detectedColors.filter(
+      c=>isColorChanged(c.key)
+    );
+
+  const totalUsage=
+    detectedColors.reduce(
+      (sum,c)=>
+        sum+c.count,
+      0
+    );
+
+  $('confirmFile').textContent=
+    state.fileName||
+    'No file';
+
+  $('confirmSize').textContent=
+    formatBytes(
+      new Blob([html]).size
+    );
+
+  $('confirmLines').textContent=
+    countLines(html);
+
+  $('confirmElements').textContent=
+    doc.querySelectorAll('*').length;
+
+  $('confirmStyles').textContent=
+    doc.querySelectorAll('style').length;
+
+  $('confirmCssColors').textContent=
+    detectedColors.length;
+
+  $('confirmUnique').textContent=
+    detectedColors.length;
+
+  $('confirmChanged').textContent=
+    changed.length;
+
+  $('confirmUsages').textContent=
+    totalUsage;
+
+  $('confirmCustom').textContent=
+    state.myColors.length;
+
+  $('confirmFavorites').textContent=
+    state.favorites.length;
+
+  $('confirmPinned').textContent=
+    state.pinned.length;
+
+
+  $('confirmChangesTable').innerHTML=
+    changed.map(
+      c=>`
+
+        <tr>
+
+          <td>
+            ${escapeHtml(c.original)}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              state.colorMap[c.key]
+            )}
+          </td>
+
+          <td>
+            ${c.count}
+          </td>
+
+          <td>
+            <span class="status">
+              ✓ Changed
+            </span>
+          </td>
+
+        </tr>
+      `
+    ).join('');
+
+
+  renderPalette(
+    'beforePalette',
+    detectedColors.map(
+      c=>c.original
+    )
+  );
+
+  renderPalette(
+    'afterPalette',
+    detectedColors.map(
+      c=>
+        state.colorMap[c.key]||
+        c.original
+    )
+  );
+
+
+  const checks=[];
+
+  checks.push(
+    technicalCheck(
+      /<!DOCTYPE\s+html/i.test(
+        state.sourceHTML
+      ),
+      'DOCTYPE'
+    )
+  );
+
+  checks.push(
+    technicalCheck(
+      /<html[\s>]/i.test(
+        state.sourceHTML
+      ),
+      'HTML element'
+    )
+  );
+
+  checks.push(
+    technicalCheck(
+      /<head[\s>]/i.test(
+        state.sourceHTML
+      ),
+      'HEAD element'
+    )
+  );
+
+  checks.push(
+    technicalCheck(
+      /<body[\s>]/i.test(
+        state.sourceHTML
+      ),
+      'BODY element'
+    )
+  );
+
+  checks.push(
+    technicalCheck(
+      /<title[\s>]/i.test(
+        state.sourceHTML
+      ),
+      'TITLE element'
+    )
+  );
+
+  checks.push(
+    technicalCheck(
+      /<meta[^>]+viewport/i.test(
+        state.sourceHTML
+      ),
+      'Viewport meta'
+    )
+  );
+
+  checks.push(
+    technicalCheck(
+      /<style[\s>]/i.test(
+        state.sourceHTML
+      ),
+      'CSS presence'
+    )
+  );
+
+  $('technicalChecks').innerHTML=
+    checks.join('<br>');
+
+
+  $('confirmStatus').textContent=
+    changed.length
+      ?`✓ ${changed.length} color change(s) ready to save`
+      :'✓ No color changes — original source ready to save';
+}
+
+function technicalCheck(ok,label){
+
+  return`
+
+    <span class="status ${ok?'':'warn'}">
+
+      ${ok?'✓':'⚠'}
+
+      ${label}
+
+    </span>
+  `;
+}
+
+function renderPalette(id,colors){
+
+  $(id).innerHTML=
+    colors
+      .slice(0,80)
+      .map(
+        c=>`
+
+          <div
+            class="palette-item"
+            title="${escapeHtmlAttr(c)}"
+            style="background:${escapeHtmlAttr(c)}">
+          </div>
+        `
+      ).join('');
+}
+
+
+/* =========================================================
+   SOURCE ANALYSIS EXPORT
+========================================================= */
+
+$('sourceAnalysisBtn').onclick=
+  ()=>{
+
+    if(!state.sourceHTML){
+      toast('Load an HTML file first.');
+      return;
+    }
+
+    downloadBlob(
+      new Blob(
+        [createAnalysisReport()],
+        {
+          type:
+            'text/plain;charset=utf-8'
+        }
+      ),
+      'html-color-analysis.txt'
+    );
+  };
+
+$('exportAnalysisBtn').onclick=
+  ()=>$('sourceAnalysisBtn').click();
+
+
+function createAnalysisReport(){
+
+  let out=
+    'HTML COLOR STUDIO PRO\\n'+
+    'SOURCE + COLOR ANALYSIS\\n'+
+    '====================================\\n\\n';
+
+  out+=
+    'File: '+
+    (state.fileName||'Unknown')+
+    '\\n';
+
+  out+=
+    'Lines: '+
+    countLines(state.sourceHTML)+
+    '\\n';
+
+  out+=
+    'Unique Colors: '+
+    detectedColors.length+
+    '\\n\\n';
+
+
+  detectedColors.forEach(
+    c=>{
+
+      out+=
+        'Original: '+
+        c.original+
+        '\\n';
+
+      out+=
+        'Current: '+
+        (
+          state.colorMap[c.key]||
+          c.original
+        )+
+        '\\n';
+
+      out+=
+        'Type: '+
+        c.type+
+        '\\n';
+
+      out+=
+        'Usage: '+
+        c.count+
+        '\\n';
+
+      out+=
+        'Locations:\\n';
+
+      findColorLocations(
+        c.original
+      ).forEach(
+        x=>{
+          out+=
+            `  Line ${x.line} [${x.type}]: ${x.source}\\n`;
+        }
+      );
+
+      out+='\\n';
+    }
+  );
+
+  return out;
+}
+
+
+/* =========================================================
+   COLOR REPORT
+========================================================= */
+
+$('colorReportBtn').onclick=
+  ()=>
+    downloadBlob(
+      new Blob(
+        [createColorReport()],
+        {
+          type:
+            'text/plain;charset=utf-8'
+        }
+      ),
+      'color-report.txt'
+    );
+
+$('exportColorReportBtn').onclick=
+  ()=>$('colorReportBtn').click();
+
+
+function createColorReport(){
+
+  let out=
+    'HTML COLOR STUDIO PRO\\n'+
+    'COLOR REPORT\\n'+
+    '====================================\\n\\n';
+
+  detectedColors.forEach(
+    c=>{
+
+      out+=
+        `Original: ${c.original}\\n`;
+
+      out+=
+        `Current: ${
+          state.colorMap[c.key]||
+          c.original
+        }\\n`;
+
+      out+=
+        `Type: ${c.type}\\n`;
+
+      out+=
+        `Usage: ${c.count}\\n`;
+
+      out+=
+        'Locations: '+
+        findColorLocations(
+          c.original
+        )
+        .map(
+          x=>
+            `L${x.line} (${x.type})`
+        )
+        .join(', ')+
+        '\\n\\n';
+    }
+  );
+
+  return out;
+}
+
+
+/* =========================================================
+   HISTORY — UNDO / REDO
+========================================================= */
+
+function historySnapshot(){
+
+  return JSON.stringify(
+    state.colorMap
+  );
+}
+
+function pushHistory(){
+
+  const snapshot=
+    historySnapshot();
+
+  if(
+    historyIndex>=0 &&
+    historyStack[historyIndex]===
+    snapshot
+  ){
+
+    updateHistoryButtons();
+
+    return;
+  }
+
+  historyStack=
+    historyStack.slice(
+      0,
+      historyIndex+1
+    );
+
+  historyStack.push(
+    snapshot
+  );
+
+  historyIndex=
+    historyStack.length-1;
+
+  updateHistoryButtons();
+}
+
+function applyHistory(snapshot){
+
+  try{
+
+    state.colorMap=
+      JSON.parse(
+        snapshot||'{}'
+      );
+
+  }catch(e){
+
+    state.colorMap={};
+  }
+
+  rebuildPreview();
+
+  renderColors();
+
+  updateAnalysis();
+
+  updateConfirm();
+
+  updateSaveSummary();
+
+  updateHistoryButtons();
+}
+
+$('undoBtn').onclick=
+  ()=>{
+
+    if(historyIndex<=0){
+      return;
+    }
+
+    historyIndex--;
+
+    applyHistory(
+      historyStack[
+        historyIndex
+      ]
+    );
+
+    toast('Undo');
+  };
+
+$('redoBtn').onclick=
+  ()=>{
+
+    if(
+      historyIndex>=
+      historyStack.length-1
+    ){
+      return;
+    }
+
+    historyIndex++;
+
+    applyHistory(
+      historyStack[
+        historyIndex
+      ]
+    );
+
+    toast('Redo');
+  };
+
+$('restoreBtn').onclick=
+  ()=>{
+
+    if(!state.sourceHTML){
+
+      toast(
+        'Load an HTML file first.'
+      );
+
+      return;
+    }
+
+    pushHistory();
+
+    state.colorMap={};
+
+    rebuildPreview();
+
+    renderColors();
+
+    updateAnalysis();
+
+    updateConfirm();
+
+    updateSaveSummary();
+
+    toast(
+      'All color changes restored to original.'
+    );
+  };
+
+function updateHistoryButtons(){
+
+  $('undoBtn').disabled=
+    historyIndex<=0;
+
+  $('redoBtn').disabled=
+    historyIndex<0 ||
+    historyIndex>=
+    historyStack.length-1;
+}
+
+
+/* =========================================================
+   SAVE FILENAME
+========================================================= */
+
+function sanitizeFileName(name){
+
+  let value=
+    String(
+      name||
+      'index.html'
+    )
+    .trim()
+    .replace(
+      /[<>:"/\\|?*\x00-\x1F]/g,
+      '_'
+    );
+
+  if(!value){
+    value='index.html';
+  }
+
+  if(
+    !value
+      .toLowerCase()
+      .endsWith('.html')
+  ){
+
+    /*
+      If user types .htm, convert it to .html
+      so the saved result always has .html.
+    */
+
+    value=
+      value.replace(
+        /\.htm$/i,
+        ''
+      )+
+      '.html';
+  }
+
+  return value;
+}
+
+function updateSaveSummary(){
+
+  const filename=
+    sanitizeFileName(
+      $('saveFileName').value||
+      state.fileName||
+      'index.html'
+    );
+
+  const html=
+    getWorkingHTML();
+
+  $('saveFileNamePreview').textContent=
+    filename;
+
+  $('saveSummaryName').textContent=
+    filename;
+
+  const changed=
+    detectedColors.filter(
+      c=>isColorChanged(c.key)
+    );
+
+  $('saveSummaryChanged').textContent=
+    changed.length;
+
+  $('saveSummaryUsages').textContent=
+    changed.reduce(
+      (sum,c)=>
+        sum+c.count,
+      0
+    );
+
+  $('saveSummarySize').textContent=
+    formatBytes(
+      new Blob([html]).size
+    );
+
+  $('destinationPath').textContent=
+    state.destination||
+    'Not selected';
+}
+
+$('saveFileName').addEventListener(
+  'input',
+  ()=>{
+    const value=
+      $('saveFileName').value;
+
+    /*
+      Do not force extension while the user
+      is actively deleting/editing the name.
+    */
+
+    $('saveFileNamePreview').textContent=
+      value||'index.html';
+
+    updateSaveSummary();
+  }
+);
+
+$('saveFileName').addEventListener(
+  'blur',
+  ()=>{
+    $('saveFileName').value=
+      sanitizeFileName(
+        $('saveFileName').value||
+        state.fileName||
+        'index.html'
+      );
+
+    updateSaveSummary();
+
+    saveMeta();
+  }
+);
+
+
+/* =========================================================
+   ANDROID DESTINATION BRIDGE
+========================================================= */
+
+window.setDestinationFolder=
+  function(path){
+
+    state.destination=
+      String(path||'');
+
+    $('destinationPath').textContent=
+      state.destination||
+      'Not selected';
+
+    saveMeta();
+
+    toast(
+      state.destination
+        ?'Destination selected.'
+        :'Destination cleared.'
+    );
+  };
+
+
+$('chooseDestinationBtn').onclick=
+  async()=>{
+
+    /*
+      Native Android bridge first.
+    */
+
+    if(
+      window.Android &&
+      typeof window.Android.chooseDestination===
+      'function'
+    ){
+
+      try{
+
+        window.Android.chooseDestination();
+
+      }catch(e){
+
+        toast(
+          'Android destination chooser failed.'
+        );
+      }
+
+      return;
+    }
+
+
+    /*
+      Browser directory picker fallback.
+    */
+
+    if(
+      typeof window.showDirectoryPicker===
+      'function'
+    ){
+
+      try{
+
+        const handle=
+          await window.showDirectoryPicker();
+
+        state.destination=
+          handle.name||
+          'Selected folder';
+
+        $('destinationPath').textContent=
+          state.destination;
+
+        saveMeta();
+
+        toast(
+          'Destination selected.'
+        );
+
+      }catch(e){}
+
+      return;
+    }
+
+
+    toast(
+      'Folder selection is unavailable here. Download fallback will be used.'
+    );
+  };
+
+
+/* =========================================================
+   SAVE HTML
+========================================================= */
+
+$('saveHtmlBtn').onclick=
+  ()=>{
+
+    if(!state.sourceHTML){
+
+      toast(
+        'Load an HTML file first.'
+      );
+
+      return;
+    }
+
+    const filename=
+      sanitizeFileName(
+        $('saveFileName').value||
+        state.fileName||
+        'index.html'
+      );
+
+    $('saveFileName').value=
+      filename;
+
+    const html=
+      getWorkingHTML();
+
+    /*
+      Native Android bridge:
+        window.Android.saveFile(filename, base64)
+        window.Android.saveFileToFolder(destination,filename,base64)
+    */
+
+    let base64='';
+
+    try{
+
+      base64=
+        btoa(
+          unescape(
+            encodeURIComponent(
+              html
+            )
+          )
+        );
+
+    }catch(e){
+
+      toast(
+        'Could not prepare HTML for saving.'
+      );
+
+      return;
+    }
+
+
+    if(
+      window.Android &&
+      typeof window.Android.saveFile==='function'
+    ){
+
+      try{
+
+        if(
+          state.destination &&
+          typeof window.Android.saveFileToFolder===
+          'function'
+        ){
+
+          window.Android.saveFileToFolder(
+            state.destination,
+            filename,
+            base64
+          );
+
+        }else{
+
+          window.Android.saveFile(
+            filename,
+            base64
+          );
+        }
+
+        toast(
+          'HTML sent to Android save system.'
+        );
+
+        saveMeta();
+
+        return;
+
+      }catch(e){
+
+        console.error(e);
+      }
+    }
+
+
+    /*
+      Browser fallback.
+    */
+
+    downloadBlob(
+      new Blob(
+        [html],
+        {
+          type:
+            'text/html;charset=utf-8'
+        }
+      ),
+      filename
+    );
+
+    saveMeta();
+
+    toast(
+      'HTML saved using browser download.'
+    );
+  };
+
+
+/* =========================================================
+   RESET WORKSPACE
+========================================================= */
+
+$('resetWorkspaceBtn').onclick=
+  ()=>{
+
+    if(
+      !confirm(
+        'Reset the loaded HTML workspace?'
+      )
+    ){
+      return;
+    }
+
+    state.sourceHTML='';
+    state.colorMap={};
+    state.selectedColorKey=null;
+    state.selectedPreviewColors=[];
+    state.selectedElement=null;
+    state.fileName='';
+    state.fileSize=0;
+
+    detectedColors=[];
+
+    historyStack=[];
+    historyIndex=-1;
+
+    fileInput.value='';
+
+    $('fileName').textContent=
+      'No file';
+
+    $('fileSize').textContent=
+      '—';
+
+    $('fileLines').textContent=
+      '—';
+
+    $('fileElements').textContent=
+      '—';
+
+    $('styleBlocks').textContent=
+      '—';
+
+    $('htmlStructure').textContent=
+      '—';
+
+    clearPreviewSelection();
+
+    renderColors();
+
+    rebuildPreview();
+
+    updateHistoryButtons();
+
+    updateAnalysis();
+
+    updateSaveSummary();
+
+    toast(
+      'Workspace reset.'
+    );
+  };
+
+
+/* =========================================================
+   RESET COLOR MAP
+========================================================= */
+
+$('resetColorsBtn').onclick=
+  ()=>{
+
+    if(!state.sourceHTML){
+      toast(
+        'Load an HTML file first.'
+      );
+      return;
+    }
+
+    pushHistory();
+
+    state.colorMap={};
+
+    rebuildPreview();
+
+    renderColors();
+
+    updateAnalysis();
+
+    updateConfirm();
+
+    updateSaveSummary();
+
+    toast(
+      'All color changes reset.'
+    );
+  };
+
+
+/* =========================================================
+   CONTINUE SAVE
+========================================================= */
+
+$('continueSaveBtn').onclick=
+  ()=>goStage(5);
+
+
+/* =========================================================
+   SEARCH / SORT
+========================================================= */
+
+$('colorSearch').addEventListener(
+  'input',
+  renderColors
+);
+
+$('sortColors').addEventListener(
+  'change',
+  renderColors
+);
+
+
+/* =========================================================
+   FILE STATS
+========================================================= */
+
+function refreshFileStats(){
+
+  if(!state.sourceHTML){
+    return;
+  }
+
+  const doc=
+    parseHTML(
+      state.sourceHTML
+    );
+
+  $('fileElements').textContent=
+    doc.querySelectorAll('*').length;
+
+  $('styleBlocks').textContent=
+    doc.querySelectorAll(
+      'style'
+    ).length;
+
+  const parts=[
+    /<html[\s>]/i,
+    /<head[\s>]/i,
+    /<body[\s>]/i
+  ];
+
+  const found=
+    parts.filter(
+      x=>x.test(
+        state.sourceHTML
+      )
+    ).length;
+
+  $('htmlStructure').textContent=
+    found===3
+      ?'Valid basic'
+      :found+'/3 basic parts';
+}
+
+function parseHTML(html){
+
+  const doc=
+    document.implementation
+      .createHTMLDocument('');
+
+  doc.documentElement.innerHTML=
+    String(html||'')
+      .replace(
+        /<!DOCTYPE[^>]*>/i,
+        ''
+      );
+
+  return doc;
+}
+
+
+/* =========================================================
+   DOWNLOAD
+========================================================= */
+
+function downloadBlob(
+  blob,
+  filename
+){
+
+  const url=
+    URL.createObjectURL(
+      blob
+    );
+
+  const a=
+    document.createElement('a');
+
+  a.href=url;
+  a.download=filename;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    ()=>URL.revokeObjectURL(url),
+    1000
+  );
+}
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function countLines(text){
+
+  return String(
+    text||''
+  ).split(/\r?\n/).length;
+}
+
+function formatBytes(bytes){
+
+  if(!bytes){
+    return '0 B';
+  }
+
+  const units=[
+    'B',
+    'KB',
+    'MB',
+    'GB'
+  ];
+
+  const i=
+    Math.floor(
+      Math.log(bytes)/
+      Math.log(1024)
+    );
+
+  return(
+    bytes/
+    Math.pow(1024,i)
+  ).toFixed(
+    i?2:0
+  )+
+  ' '+
+  units[i];
+}
+
+function escapeHtml(value){
+
+  return String(value)
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+    .replace(
+      /</g,
+      '&lt;'
+    )
+    .replace(
+      />/g,
+      '&gt;'
+    )
+    .replace(
+      /"/g,
+      '&quot;'
+    );
+}
+
+function escapeHtmlAttr(value){
+
+  return escapeHtml(
+    value
+  );
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+loadMeta();
+
+/*
+  REQUIRED DEFAULT:
+  White Normal Responsive UI
+*/
+
+applyTheme(
+  state.theme==='blue'
+    ?'blue'
+    :'white'
+);
+
+if(state.fileName){
+
+  $('saveFileName').value=
+    sanitizeFileName(
+      state.fileName
+    );
+}
+
+if(state.destination){
+
+  $('destinationPath').textContent=
+    state.destination;
+}
+
+renderMyColors();
+
+renderColors();
+
+updateHistoryButtons();
+
+updateSaveSummary();
+
+rebuildPreview();
+
+</script>
+
+</body>
+</html>
