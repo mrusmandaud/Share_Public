@@ -200,6 +200,9 @@ input::placeholder{
     border-radius:var(--radius);
     background:linear-gradient(145deg,var(--card),var(--card2));
     box-shadow:var(--small-shadow);
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
 }
 
 .section-title{
@@ -209,14 +212,26 @@ input::placeholder{
 }
 
 .section-subtitle{
+    display:block;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    height:auto;
     margin:5px 0 18px;
     color:var(--muted);
     font-size:12px;
     line-height:1.5;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    overflow-wrap:normal;
+    word-break:normal;
+    box-sizing:border-box;
 }
 
 .field{
     margin-bottom:14px;
+    min-width:0;
 }
 
 .field:last-child{
@@ -231,6 +246,11 @@ input::placeholder{
     font-weight:800;
 }
 
+
+/* ============================================================
+   CHECKBOX
+   ============================================================ */
+
 .checkbox-row{
     display:flex;
     align-items:center;
@@ -240,6 +260,8 @@ input::placeholder{
     border:1px solid var(--border);
     border-radius:13px;
     background:var(--input);
+    min-width:0;
+    box-sizing:border-box;
 }
 
 .checkbox-row input{
@@ -248,12 +270,84 @@ input::placeholder{
     min-height:19px;
     margin:0;
     accent-color:var(--primary);
+    flex:0 0 19px;
 }
 
 .checkbox-row span{
+    min-width:0;
     font-size:13px;
     font-weight:700;
+    overflow-wrap:anywhere;
 }
+
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:11px;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
+}
+
+.summary-stat{
+    display:block;
+    min-width:0 !important;
+    width:100%;
+    max-width:100%;
+    padding:13px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--input);
+    box-sizing:border-box;
+    overflow:hidden;
+}
+
+.summary-stat-number{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    margin:0;
+    padding:0;
+    font-size:23px;
+    line-height:1.25;
+    font-weight:900;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    overflow-wrap:anywhere !important;
+    word-break:normal !important;
+    box-sizing:border-box !important;
+}
+
+.summary-stat-label{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:9px;
+    line-height:1.35;
+    font-weight:800;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    overflow-wrap:anywhere !important;
+    word-break:normal !important;
+    box-sizing:border-box !important;
+}
+
 
 /* ============================================================
    LOCATIONS
@@ -277,11 +371,13 @@ input::placeholder{
     display:block;
     width:100%;
     min-width:0;
+    max-width:100%;
     padding:17px;
     border:1px solid var(--border);
     border-radius:18px;
     background:var(--card2);
     overflow:hidden;
+    box-sizing:border-box;
 }
 
 
@@ -424,16 +520,20 @@ input::placeholder{
     display:block;
     width:100%;
     min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
 }
 
 .path-hint{
     display:block;
     width:100%;
+    min-width:0;
     margin:6px 0 0 0;
     padding:0;
     color:var(--muted);
     font-size:10px;
     line-height:1.4;
+    overflow-wrap:anywhere;
 }
 
 
@@ -451,6 +551,7 @@ input::placeholder{
     font-size:12px;
     font-weight:850;
     transition:.18s ease;
+    box-sizing:border-box;
 }
 
 .btn:hover,
@@ -495,6 +596,9 @@ input::placeholder{
     border:1px solid var(--border);
     border-radius:15px;
     background:var(--card);
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
 }
 
 .subsection-header{
@@ -503,17 +607,21 @@ input::placeholder{
     justify-content:space-between;
     gap:10px;
     margin-bottom:13px;
+    min-width:0;
 }
 
 .subsection-title{
+    min-width:0;
     font-size:14px;
     font-weight:900;
+    overflow-wrap:anywhere;
 }
 
 .items{
     display:flex;
     flex-direction:column;
     gap:11px;
+    min-width:0;
 }
 
 .item-card{
@@ -521,6 +629,9 @@ input::placeholder{
     border:1px solid var(--border);
     border-radius:14px;
     background:var(--input);
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
 }
 
 .item-top{
@@ -529,6 +640,7 @@ input::placeholder{
     justify-content:space-between;
     gap:10px;
     margin-bottom:12px;
+    min-width:0;
 }
 
 .item-number{
@@ -542,6 +654,7 @@ input::placeholder{
     grid-template-columns:
         repeat(2,minmax(0,1fr));
     gap:11px;
+    min-width:0;
 }
 
 .item-grid.three{
@@ -559,6 +672,8 @@ input::placeholder{
     border:1px solid var(--border);
     border-radius:13px;
     background:var(--input);
+    min-width:0;
+    box-sizing:border-box;
 }
 
 .icon-button-label{
@@ -566,6 +681,7 @@ input::placeholder{
     color:var(--muted);
     font-size:13px;
     font-weight:700;
+    overflow-wrap:anywhere;
 }
 
 .current-icon-button{
@@ -612,6 +728,7 @@ input::placeholder{
     border-radius:13px;
     color:var(--muted);
     font-size:12px;
+    overflow-wrap:anywhere;
 }
 
 
@@ -624,7 +741,180 @@ input::placeholder{
     justify-content:center;
     align-items:center;
     width:100%;
+    min-width:0;
     margin-top:16px;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media(max-width:600px){
+
+    .section{
+        min-width:0;
+        max-width:100%;
+        padding:17px;
+    }
+
+    .summary-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        min-width:0;
+        width:100%;
+    }
+
+    .summary-stat{
+        min-width:0;
+        width:100%;
+        max-width:100%;
+        padding:11px;
+    }
+
+    .summary-stat-number{
+        min-width:0 !important;
+        width:100% !important;
+        max-width:100% !important;
+        font-size:clamp(14px,5vw,23px);
+        line-height:1.25;
+        white-space:normal !important;
+        overflow-wrap:anywhere !important;
+        word-break:normal !important;
+    }
+
+    .summary-stat-label{
+        min-width:0 !important;
+        width:100% !important;
+        max-width:100% !important;
+        white-space:normal !important;
+        overflow-wrap:anywhere !important;
+        word-break:normal !important;
+    }
+
+    .locations{
+        width:100%;
+        min-width:0;
+        padding-top:5px;
+    }
+
+    .location-card{
+        width:100%;
+        min-width:0;
+        padding:15px;
+    }
+
+    .location-header{
+        width:100%;
+        margin-bottom:20px;
+    }
+
+    .location-title{
+        width:100%;
+    }
+
+    .location-path-display{
+        width:100%;
+        max-width:100%;
+        font-size:14px;
+    }
+
+    .location-header-actions{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:nowrap;
+        margin-top:14px;
+        gap:10px;
+    }
+
+    .location-status{
+        flex:0 0 auto;
+    }
+
+    .location-remove{
+        flex:0 0 auto;
+        margin-left:auto;
+    }
+
+    .location-path-row{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .location-path-row .btn{
+        width:100%;
+    }
+
+    .path-input-wrap{
+        width:100%;
+    }
+
+    .item-grid,
+    .item-grid.three{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:380px){
+
+    .section{
+        padding:15px;
+    }
+
+    .summary-grid{
+        gap:8px;
+    }
+
+    .summary-stat{
+        padding:9px;
+    }
+
+    .summary-stat-number{
+        font-size:clamp(13px,4.8vw,19px);
+    }
+
+    .summary-stat-label{
+        font-size:8px;
+    }
+
+    .locations{
+        padding-top:4px;
+    }
+
+    .location-card{
+        padding:13px;
+    }
+
+    .location-number{
+        font-size:10px;
+    }
+
+    .location-path-display{
+        font-size:13px;
+    }
+
+    .location-header-actions{
+        flex-direction:row;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:nowrap;
+        width:100%;
+    }
+
+    .location-status{
+        width:auto;
+        flex:0 0 auto;
+    }
+
+    .location-remove{
+        width:auto;
+        flex:0 0 auto;
+        margin-left:auto;
+    }
 }
 
 
@@ -839,33 +1129,51 @@ input::placeholder{
 }
 
 .summary-stat{
+    display:block;
+    min-width:0;
+    width:100%;
+    max-width:100%;
     padding:13px;
     border:1px solid var(--border);
     border-radius:14px;
     background:var(--input);
-    min-width:0;
-    width:100%;
     box-sizing:border-box;
     overflow:hidden;
 }
 
 .summary-stat-number{
+    display:block;
+    min-width:0;
+    width:100%;
+    max-width:100%;
+    height:auto;
+    margin:0;
+    padding:0;
     font-size:23px;
+    line-height:1.25;
     font-weight:900;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    word-break:normal;
+    overflow:visible;
+    box-sizing:border-box;
 }
 
 .summary-stat-label{
     display:block;
-    width:100%;
     min-width:0;
+    width:100%;
     max-width:100%;
     height:auto;
     margin-top:3px;
+    color:var(--muted);
+    font-size:9px;
+    line-height:1.35;
+    font-weight:800;
     white-space:normal;
-    overflow:visible;
-    overflow-wrap:normal;
+    overflow-wrap:anywhere;
     word-break:normal;
-    hyphens:none;
+    overflow:visible;
     box-sizing:border-box;
 }
 
@@ -3027,15 +3335,39 @@ function renderLocations(){
 
 
             nameInput.addEventListener(
-                "input",
-                ()=>{
+    "input",
+    ()=>{
+        folder.name =
+            nameInput.value;
 
-                    folder.name =
-                        nameInput.value;
+        card
+            .querySelectorAll(
+                ".parent-folder-select"
+            )
+            .forEach(
+                parentSelect=>{
+                    const option =
+                        parentSelect.querySelector(
+                            'option[value="' +
+                            folder.id +
+                            '"]'
+                        );
 
-                    refreshValidationOnly();
+                    if(option){
+                        option.textContent =
+                            (folder.icon || "📁") +
+                            " " +
+                            (
+                                folder.name.trim() ||
+                                "Unnamed Folder"
+                            );
+                    }
                 }
             );
+
+        refreshValidationOnly();
+    }
+);
 
 
             nameField.appendChild(
@@ -3611,6 +3943,8 @@ function renderLocations(){
             const parentSelect =
                 document.createElement("select");
 
+parentSelect.className =
+    "parent-folder-select";
 
             const rootOption =
                 document.createElement("option");
@@ -3639,12 +3973,14 @@ function renderLocations(){
                         folder.id;
 
                     option.textContent =
-                        folder.icon +
-                        " " +
-                        (
-                            folder.name ||
-                            "Unnamed Folder"
-                        );
+    (folder.icon || "📁") +
+    " " +
+    (
+        folder.name &&
+        folder.name.trim()
+            ? folder.name.trim()
+            : "Unnamed Folder"
+    );
 
 
                     if(
@@ -4548,15 +4884,96 @@ function renderConfirmPreview(){
             );
 
 
+            /* ------------------------------------------------
+               FOLDERS
+               ------------------------------------------------ */
+
             lines.push(
                 "  Folders: " +
                 location.folders.length
             );
 
 
+            location.files.forEach(
+    file=>{
+
+        const fileName =
+            (
+                file.name &&
+                file.name.trim()
+                    ? file.name.trim()
+                    : "Unnamed File"
+            );
+
+
+        const extension =
+            (
+                file.extension &&
+                file.extension.trim()
+                    ? file.extension.trim()
+                    : ""
+            );
+
+
+        lines.push(
+            "    " +
+            (
+                file.icon ||
+                "📄"
+            ) +
+            " " +
+            fileName +
+            (
+                extension
+                    ? "." + extension
+                    : ""
+            )
+        );
+    }
+);
+
+
+            /* ------------------------------------------------
+               FILES
+               ------------------------------------------------ */
+
             lines.push(
                 "  Files: " +
                 location.files.length
+            );
+
+
+            location.files.forEach(
+                file=>{
+
+                    const fileName =
+                        (
+                            file.name &&
+                            file.name.trim()
+                                ? file.name.trim()
+                                : "Unnamed File"
+                        );
+
+
+                    const extension =
+                        (
+                            file.extension &&
+                            file.extension.trim()
+                                ? file.extension.trim()
+                                : ""
+                        );
+
+
+                    lines.push(
+                        "    📄 " +
+                        fileName +
+                        (
+                            extension
+                                ? "." + extension
+                                : ""
+                        )
+                    );
+                }
             );
         }
     );
