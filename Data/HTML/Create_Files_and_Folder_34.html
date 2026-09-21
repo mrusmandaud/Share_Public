@@ -4840,12 +4840,16 @@ function renderConfirmPreview(){
 
 
     lines.push(
-        "Project: " +
-        (
-            state.rootFolderName.trim() ||
-            "Not set"
-        )
-    );
+    "Project: " +
+    (
+        state.rootFolderName.trim()
+            ? transformCase(
+                state.rootFolderName.trim(),
+                state.projectCase
+            )
+            : "Not set"
+    )
+);
 
 
     lines.push(
@@ -4885,23 +4889,131 @@ function renderConfirmPreview(){
 
 
             /* ------------------------------------------------
-               FOLDERS
-               ------------------------------------------------ */
+   FOLDERS
+   ------------------------------------------------ */
 
-            lines.push(
-                "  Folders: " +
-                location.folders.length
+lines.push(
+    "  Folders: " +
+    location.folders.length
+);
+
+
+location.folders.forEach(
+    folder=>{
+
+        const folderName =
+            (
+                folder.name &&
+                folder.name.trim()
+                    ? transformCase(
+                        folder.name.trim(),
+                        folder.caseMode
+                    )
+                    : "Unnamed Folder"
             );
 
 
-            location.files.forEach(
+        lines.push(
+            "    " +
+            (
+                folder.icon ||
+                "📁"
+            ) +
+            " " +
+            folderName
+        );
+
+
+        /* --------------------------------------------
+           FILES INSIDE THIS FOLDER
+           -------------------------------------------- */
+
+        location.files.forEach(
+            file=>{
+
+                if(
+                    file.folderId ===
+                    folder.id
+                ){
+
+                    const fileName =
+                        (
+                            file.name &&
+                            file.name.trim()
+                                ? transformCase(
+                                    file.name.trim(),
+                                    file.nameCase
+                                )
+                                : "Unnamed File"
+                        );
+
+
+                    const extension =
+                        (
+                            file.extension &&
+                            file.extension.trim()
+                                ? transformCase(
+                                    file.extension.trim(),
+                                    file.extensionCase
+                                )
+                                : ""
+                        );
+
+
+                    lines.push(
+                        "      " +
+                        (
+                            file.icon ||
+                            "📄"
+                        ) +
+                        " " +
+                        fileName +
+                        (
+                            extension
+                                ? "." + extension
+                                : ""
+                        )
+                    );
+                }
+            }
+        );
+    }
+);
+
+
+/* ------------------------------------------------
+   ROOT FILES
+   ------------------------------------------------ */
+
+const rootFiles =
+    location.files.filter(
+        file=>
+            !file.folderId ||
+            !location.folders.some(
+                folder=>
+                    folder.id ===
+                    file.folderId
+            )
+    );
+
+
+lines.push(
+    "  Root Files: " +
+    rootFiles.length
+);
+
+
+rootFiles.forEach(
     file=>{
 
         const fileName =
             (
                 file.name &&
                 file.name.trim()
-                    ? file.name.trim()
+                    ? transformCase(
+                        file.name.trim(),
+                        file.nameCase
+                    )
                     : "Unnamed File"
             );
 
@@ -4910,7 +5022,10 @@ function renderConfirmPreview(){
             (
                 file.extension &&
                 file.extension.trim()
-                    ? file.extension.trim()
+                    ? transformCase(
+                        file.extension.trim(),
+                        file.extensionCase
+                    )
                     : ""
             );
 
@@ -4930,57 +5045,12 @@ function renderConfirmPreview(){
             )
         );
     }
-);
-
-
-            /* ------------------------------------------------
-               FILES
-               ------------------------------------------------ */
-
-            lines.push(
-                "  Files: " +
-                location.files.length
-            );
-
-
-            location.files.forEach(
-                file=>{
-
-                    const fileName =
-                        (
-                            file.name &&
-                            file.name.trim()
-                                ? file.name.trim()
-                                : "Unnamed File"
-                        );
-
-
-                    const extension =
-                        (
-                            file.extension &&
-                            file.extension.trim()
-                                ? file.extension.trim()
-                                : ""
-                        );
-
-
-                    lines.push(
-                        "    📄 " +
-                        fileName +
-                        (
-                            extension
-                                ? "." + extension
-                                : ""
-                        )
-                    );
-                }
-            );
         }
     );
 
 
-    confirmPreview.textContent =
-        lines.join("\n");
+confirmPreview.textContent =
+    lines.join("\n");
 }
 
 
