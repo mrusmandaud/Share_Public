@@ -1,0 +1,6169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JSON Converter</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#061426;
+    --bg2:#0a1c32;
+    --card:#0d2139;
+    --card2:#102a46;
+    --soft:#132f4d;
+    --border:rgba(112,180,255,.18);
+    --border2:rgba(112,180,255,.30);
+
+    --text:#f4f8ff;
+    --muted:#9db1c8;
+
+    --blue:#248cff;
+    --blue2:#49b7ff;
+    --cyan:#25d9ff;
+
+    --success:#32d583;
+    --warning:#ffbd4a;
+    --danger:#ff647c;
+
+    --shadow:0 20px 55px rgba(0,0,0,.30);
+    --radius:22px;
+}
+
+body.light{
+    --bg:#f3f7fb;
+    --bg2:#ffffff;
+    --card:#ffffff;
+    --card2:#f7faff;
+    --soft:#edf4fb;
+    --border:rgba(23,64,104,.12);
+    --border2:rgba(23,64,104,.22);
+
+    --text:#102238;
+    --muted:#64778d;
+
+    --blue:#126ee8;
+    --blue2:#168fdc;
+    --cyan:#08a9d0;
+
+    --shadow:0 18px 45px rgba(23,64,104,.12);
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(circle at 10% 0%,rgba(36,140,255,.13),transparent 28%),
+        radial-gradient(circle at 90% 10%,rgba(37,217,255,.09),transparent 25%),
+        var(--bg);
+
+    color:var(--text);
+    min-height:100vh;
+    transition:.25s ease;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    width:min(1450px,100%);
+    margin:auto;
+    padding:20px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+    position:relative;
+    overflow:hidden;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+
+    min-height:125px;
+    padding:24px 28px;
+
+    border:1px solid var(--border);
+    border-radius:28px;
+
+    background:
+        linear-gradient(135deg,
+            rgba(20,72,125,.78),
+            rgba(8,31,57,.94));
+
+    box-shadow:var(--shadow);
+}
+
+body.light .header{
+    background:
+        linear-gradient(135deg,#ffffff,#edf6ff);
+}
+
+.header::after{
+    content:"";
+    position:absolute;
+    width:300px;
+    height:300px;
+    right:-100px;
+    top:-180px;
+
+    background:rgba(37,217,255,.12);
+    border-radius:50%;
+    filter:blur(10px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:17px;
+    position:relative;
+    z-index:1;
+}
+
+.app-icon{
+    width:66px;
+    height:66px;
+    flex:0 0 66px;
+
+    border-radius:19px;
+
+    display:grid;
+    place-items:center;
+
+    font-size:31px;
+    font-weight:900;
+
+    color:white;
+
+    background:
+        linear-gradient(135deg,#168cff,#20c8ff);
+
+    box-shadow:
+        0 10px 28px rgba(36,140,255,.35);
+}
+
+.brand h1{
+    font-size:27px;
+    line-height:1.1;
+    letter-spacing:-.5px;
+}
+
+.brand p{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    position:relative;
+    z-index:2;
+}
+
+.icon-button{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+
+    border:1px solid var(--border2);
+    background:var(--card);
+
+    color:var(--text);
+
+    display:grid;
+    place-items:center;
+}
+
+/* =========================================================
+   MODERN THEME CONTROL
+========================================================= */
+
+.theme-control{
+    position:relative;
+
+    width:88px;
+    height:42px;
+
+    padding:4px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    border:1px solid var(--border2);
+    border-radius:999px;
+
+    color:var(--muted);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.10),
+            rgba(255,255,255,.03)
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 8px 22px rgba(0,0,0,.14);
+
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+
+    transition:
+        border-color .25s ease,
+        background .25s ease,
+        box-shadow .25s ease,
+        transform .18s ease;
+}
+
+.theme-control:hover{
+    border-color:rgba(73,183,255,.55);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.10),
+        0 10px 28px rgba(36,140,255,.16);
+}
+
+.theme-control:active{
+    transform:scale(.97);
+}
+
+.theme-control:focus-visible{
+    outline:none;
+    box-shadow:
+        0 0 0 3px rgba(36,140,255,.18),
+        0 10px 28px rgba(36,140,255,.14);
+}
+
+.theme-icon{
+    position:relative;
+    z-index:2;
+
+    width:30px;
+    height:30px;
+
+    display:grid;
+    place-items:center;
+
+    font-size:15px;
+    line-height:1;
+
+    opacity:.72;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+.theme-control-track{
+    position:absolute;
+
+    left:4px;
+    top:4px;
+
+    width:80px;
+    height:32px;
+
+    border-radius:999px;
+
+    pointer-events:none;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(36,140,255,.12),
+            rgba(37,217,255,.08)
+        );
+}
+
+.theme-control-thumb{
+    position:absolute;
+
+    left:2px;
+    top:2px;
+
+    width:28px;
+    height:28px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:50%;
+
+    color:#102238;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dcecff
+        );
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,.22),
+        0 0 14px rgba(73,183,255,.18);
+
+    font-size:15px;
+    font-weight:900;
+
+    transition:
+        transform .3s cubic-bezier(.22,.8,.28,1),
+        background .3s ease,
+        box-shadow .3s ease;
+}
+
+.theme-control.is-light{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.72),
+            rgba(220,239,255,.52)
+        );
+}
+
+.theme-control.is-light .theme-control-thumb{
+    transform:translateX(48px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff9d6,
+            #ffd66b
+        );
+
+    box-shadow:
+        0 3px 12px rgba(190,130,0,.20),
+        0 0 18px rgba(255,211,91,.28);
+}
+
+.theme-control:not(.is-light) .theme-moon{
+    opacity:1;
+    transform:scale(1.08);
+}
+
+.theme-control.is-light .theme-sun{
+    opacity:1;
+    transform:scale(1.08);
+}
+
+@media(max-width:520px){
+
+    .theme-control{
+        width:78px;
+        height:38px;
+    }
+
+    .theme-control-track{
+        width:70px;
+        height:28px;
+    }
+
+    .theme-control-thumb{
+        width:24px;
+        height:24px;
+    }
+
+    .theme-control.is-light .theme-control-thumb{
+        transform:translateX(42px);
+    }
+
+    .theme-icon{
+        width:26px;
+        height:26px;
+        font-size:14px;
+    }
+}
+
+/* =========================================================
+   WORKFLOW
+========================================================= */
+
+.workflow{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+
+    margin:18px 0;
+}
+
+.step-nav{
+    border:1px solid var(--border);
+    background:var(--card);
+
+    border-radius:16px;
+
+    min-height:76px;
+
+    padding:12px;
+
+    text-align:left;
+    color:var(--muted);
+
+    transition:.2s;
+
+    position:relative;
+}
+
+.step-nav:hover{
+    transform:translateY(-2px);
+    border-color:var(--border2);
+}
+
+.step-nav.active{
+    color:var(--text);
+    border-color:rgba(36,140,255,.55);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(36,140,255,.18),
+            var(--card)
+        );
+
+    box-shadow:0 10px 30px rgba(36,140,255,.08);
+}
+
+.step-number{
+    display:block;
+
+    font-size:11px;
+    font-weight:800;
+
+    color:var(--blue2);
+
+    margin-bottom:6px;
+}
+
+.step-label{
+    font-size:13px;
+    font-weight:800;
+}
+
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+
+.workspace{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.step-box{
+    display:grid;
+    grid-template-columns:78px 1fr;
+
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+
+    background:var(--card);
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+}
+
+.step-side{
+    padding:25px 12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(36,140,255,.13),
+            rgba(37,217,255,.04)
+        );
+
+    border-right:1px solid var(--border);
+
+    text-align:center;
+}
+
+.step-side-number{
+    font-size:24px;
+    font-weight:900;
+
+    color:var(--blue2);
+}
+
+.step-side-title{
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+
+    margin:20px auto 0;
+
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:1.4px;
+
+    color:var(--muted);
+}
+
+.step-content{
+    padding:26px;
+}
+
+.step-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+
+    margin-bottom:20px;
+}
+
+.step-heading h2{
+    font-size:21px;
+}
+
+.step-heading p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:5px;
+}
+
+/* =========================================================
+   COMMON BOXES
+========================================================= */
+
+.panel{
+    border:1px solid var(--border);
+    background:var(--card2);
+
+    border-radius:18px;
+    padding:20px;
+}
+
+.panel-title{
+    font-size:13px;
+    font-weight:900;
+
+    margin-bottom:13px;
+
+    color:var(--text);
+}
+
+.two-column{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.three-column{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+}
+
+/* =========================================================
+   IMPORT
+========================================================= */
+
+.import-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:16px;
+}
+
+.drop-zone{
+    min-height:235px;
+
+    border:2px dashed var(--border2);
+    border-radius:20px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(36,140,255,.06),
+            transparent
+        );
+
+    transition:.2s;
+}
+
+.drop-zone.drag{
+    border-color:var(--blue);
+    background:rgba(36,140,255,.12);
+}
+
+.upload-icon{
+    width:60px;
+    height:60px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:18px;
+
+    background:rgba(36,140,255,.13);
+
+    color:var(--blue2);
+
+    font-size:28px;
+
+    margin-bottom:13px;
+}
+
+.drop-zone h3{
+    font-size:17px;
+}
+
+.drop-zone p{
+    color:var(--muted);
+    font-size:12px;
+    margin:7px 0 16px;
+}
+
+input[type=file]{
+    display:none;
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.success-btn{
+    border:0;
+    border-radius:13px;
+
+    padding:12px 17px;
+
+    font-size:13px;
+    font-weight:800;
+
+    transition:.2s;
+}
+
+.primary-btn{
+    color:white;
+    background:linear-gradient(135deg,var(--blue),var(--blue2));
+    box-shadow:0 8px 22px rgba(36,140,255,.22);
+}
+
+.secondary-btn{
+    color:var(--text);
+    background:var(--soft);
+    border:1px solid var(--border);
+}
+
+.success-btn{
+    color:#071a13;
+    background:var(--success);
+}
+
+.danger-btn{
+    color:white;
+    background:var(--danger);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.success-btn:hover,
+.danger-btn:hover{
+    transform:translateY(-2px);
+}
+
+.textarea{
+    width:100%;
+    min-height:235px;
+
+    resize:vertical;
+
+    border:1px solid var(--border2);
+    border-radius:16px;
+
+    background:var(--bg2);
+    color:var(--text);
+
+    padding:16px;
+
+    outline:none;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        monospace;
+
+    font-size:12px;
+    line-height:1.65;
+}
+
+.textarea:focus{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(36,140,255,.10);
+}
+
+.button-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+
+    margin-top:12px;
+}
+
+.status-line{
+    display:flex;
+    align-items:center;
+    gap:9px;
+
+    margin-top:14px;
+
+    font-size:12px;
+    color:var(--muted);
+}
+
+.status-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--muted);
+}
+
+.status-dot.good{
+    background:var(--success);
+    box-shadow:0 0 12px var(--success);
+}
+
+.status-dot.bad{
+    background:var(--danger);
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+
+    margin-top:16px;
+}
+
+.stat{
+    padding:14px;
+
+    border:1px solid var(--border);
+    border-radius:15px;
+
+    background:var(--bg2);
+}
+
+.stat span{
+    display:block;
+
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.7px;
+}
+
+.stat strong{
+    display:block;
+    margin-top:5px;
+    font-size:17px;
+}
+
+/* =========================================================
+   CONVERSION FORMAT
+========================================================= */
+
+.format-tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+
+    padding:5px;
+
+    border:1px solid var(--border);
+    background:var(--bg2);
+
+    border-radius:16px;
+}
+
+.category-tab{
+    border:0;
+    background:transparent;
+
+    color:var(--muted);
+
+    padding:9px 13px;
+    border-radius:11px;
+
+    font-size:12px;
+    font-weight:800;
+}
+
+.category-tab.active{
+    background:var(--soft);
+    color:var(--text);
+}
+
+.format-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+
+    margin-top:15px;
+}
+
+.format-card{
+    position:relative;
+
+    border:1px solid var(--border);
+    background:var(--bg2);
+
+    border-radius:16px;
+
+    padding:14px;
+
+    text-align:left;
+
+    color:var(--text);
+
+    transition:.2s;
+}
+
+.format-card:hover{
+    border-color:var(--border2);
+    transform:translateY(-2px);
+}
+
+.format-card.selected{
+    border-color:var(--blue);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(36,140,255,.16),
+            var(--bg2)
+        );
+
+    box-shadow:0 8px 24px rgba(36,140,255,.10);
+}
+
+.format-card .check{
+    position:absolute;
+    right:10px;
+    top:10px;
+
+    width:18px;
+    height:18px;
+
+    border-radius:50%;
+
+    display:grid;
+    place-items:center;
+
+    border:1px solid var(--border2);
+
+    font-size:10px;
+}
+
+.format-card.selected .check{
+    background:var(--blue);
+    border-color:var(--blue);
+    color:white;
+}
+
+.format-name{
+    font-weight:900;
+    font-size:14px;
+}
+
+.format-desc{
+    color:var(--muted);
+    font-size:10px;
+
+    margin-top:5px;
+}
+
+.converter-options{
+    margin-top:16px;
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.option-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.option-btn{
+    border:1px solid var(--border);
+    background:var(--bg2);
+
+    color:var(--muted);
+
+    border-radius:12px;
+
+    padding:10px 13px;
+
+    font-size:12px;
+    font-weight:700;
+}
+
+.option-btn.active{
+    color:white;
+    background:var(--blue);
+    border-color:var(--blue);
+}
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+.preview{
+    margin-top:16px;
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    overflow:hidden;
+
+    background:#07111f;
+}
+
+body.light .preview{
+    background:#f7faff;
+}
+
+.preview-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:12px 15px;
+
+    border-bottom:1px solid var(--border);
+
+    background:var(--card2);
+}
+
+.preview-head strong{
+    font-size:12px;
+}
+
+.preview-code{
+    min-height:230px;
+    max-height:500px;
+
+    overflow:auto;
+
+    padding:18px;
+
+    white-space:pre-wrap;
+    word-break:break-word;
+
+    color:#cfe8ff;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        monospace;
+
+    font-size:12px;
+    line-height:1.7;
+}
+
+body.light .preview-code{
+    color:#24415d;
+}
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+.location-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.location-display{
+    min-height:190px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+
+    padding:20px;
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(37,217,255,.08),
+            transparent 35%
+        ),
+        var(--bg2);
+}
+
+.location-icon{
+    font-size:29px;
+    margin-bottom:10px;
+}
+
+.location-name{
+    font-size:18px;
+    font-weight:900;
+}
+
+.location-data{
+    margin-top:9px;
+
+    color:var(--muted);
+
+    font-family:monospace;
+    font-size:11px;
+
+    line-height:1.7;
+}
+
+.location-form{
+    display:grid;
+    gap:10px;
+}
+
+.field{
+    display:grid;
+    gap:6px;
+}
+
+.field label{
+    font-size:11px;
+    font-weight:800;
+    color:var(--muted);
+}
+
+.input,
+.select{
+    width:100%;
+
+    border:1px solid var(--border);
+    background:var(--bg2);
+    color:var(--text);
+
+    border-radius:12px;
+
+    padding:12px;
+
+    outline:none;
+}
+
+.input:focus,
+.select:focus{
+    border-color:var(--blue);
+}
+
+.saved-list{
+    margin-top:15px;
+
+    display:grid;
+    gap:8px;
+}
+
+.saved-location{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+
+    padding:11px 13px;
+
+    border:1px solid var(--border);
+    border-radius:13px;
+
+    background:var(--bg2);
+}
+
+.saved-location-info strong{
+    display:block;
+    font-size:12px;
+}
+
+.saved-location-info span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+/* =========================================================
+   OUTPUT SETTINGS
+========================================================= */
+
+.settings-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+}
+
+.setting-card{
+    border:1px solid var(--border);
+    background:var(--card2);
+
+    border-radius:18px;
+    padding:18px;
+}
+
+.setting-card h3{
+    font-size:13px;
+    margin-bottom:13px;
+}
+
+.filename-preview{
+    margin-top:12px;
+
+    border:1px dashed var(--border2);
+    border-radius:12px;
+
+    padding:11px;
+
+    color:var(--blue2);
+
+    font-family:monospace;
+    font-size:11px;
+
+    word-break:break-all;
+}
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.summary-item{
+    padding:14px;
+
+    border:1px solid var(--border);
+    border-radius:15px;
+
+    background:var(--bg2);
+}
+
+.summary-item span{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+}
+
+.summary-item strong{
+    display:block;
+    margin-top:5px;
+
+    font-size:13px;
+
+    word-break:break-word;
+}
+
+.confirm-area{
+    margin-top:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+
+    padding:17px;
+
+    border:1px solid var(--border);
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(36,140,255,.08),
+            transparent
+        );
+}
+
+.confirm-message{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.confirm-message strong{
+    display:block;
+    color:var(--text);
+    margin-bottom:4px;
+}
+
+/* =========================================================
+   CREATE
+========================================================= */
+
+.create-box{
+    text-align:center;
+
+    padding:30px 20px;
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(36,140,255,.14),
+            transparent 50%
+        ),
+        var(--card2);
+}
+
+.create-icon{
+    width:70px;
+    height:70px;
+
+    margin:0 auto 14px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:22px;
+
+    background:rgba(36,140,255,.12);
+
+    color:var(--blue2);
+
+    font-size:30px;
+}
+
+.create-box h3{
+    font-size:20px;
+}
+
+.create-box p{
+    color:var(--muted);
+    font-size:12px;
+    margin:7px auto 18px;
+    max-width:600px;
+}
+
+.create-button{
+    min-width:240px;
+    padding:15px 25px;
+
+    border:0;
+    border-radius:15px;
+
+    color:white;
+
+    background:
+        linear-gradient(135deg,var(--blue),var(--cyan));
+
+    font-size:14px;
+    font-weight:900;
+
+    box-shadow:0 12px 30px rgba(36,140,255,.25);
+}
+
+.create-button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+.progress{
+    display:none;
+
+    margin:20px auto 0;
+
+    width:min(600px,100%);
+}
+
+.progress.show{
+    display:block;
+}
+
+.progress-track{
+    height:9px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:var(--soft);
+}
+
+.progress-bar{
+    width:0;
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    transition:.25s;
+}
+
+.progress-status{
+    margin-top:8px;
+
+    font-size:11px;
+    color:var(--muted);
+}
+
+.created-files{
+    margin-top:18px;
+
+    display:grid;
+    gap:9px;
+
+    text-align:left;
+}
+
+.file-result{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:13px 15px;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    background:var(--bg2);
+}
+
+.file-result strong{
+    font-size:12px;
+}
+
+.file-result span{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:3px;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+    position:fixed;
+
+    left:50%;
+    bottom:22px;
+
+    transform:translate(-50%,20px);
+
+    opacity:0;
+    pointer-events:none;
+
+    padding:13px 18px;
+
+    border-radius:14px;
+
+    background:#122a44;
+    color:white;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+
+    font-size:12px;
+    font-weight:700;
+
+    transition:.25s;
+
+    z-index:999;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+
+    display:none;
+    place-items:center;
+
+    padding:20px;
+
+    background:rgba(0,0,0,.62);
+
+    backdrop-filter:blur(8px);
+
+    z-index:1000;
+}
+
+.modal.show{
+    display:grid;
+}
+
+.modal-box{
+    width:min(470px,100%);
+
+    border:1px solid var(--border2);
+    border-radius:22px;
+
+    background:var(--card);
+
+    padding:22px;
+
+    box-shadow:var(--shadow);
+}
+
+.modal-box h3{
+    font-size:18px;
+    margin-bottom:5px;
+}
+
+.modal-box p{
+    color:var(--muted);
+    font-size:12px;
+    margin-bottom:18px;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:15px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+    text-align:center;
+
+    color:var(--muted);
+
+    font-size:10px;
+
+    padding:25px 0 10px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1100px){
+
+    .format-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+    .workflow{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .stats{
+        grid-template-columns:repeat(3,1fr);
+    }
+}
+
+@media(max-width:800px){
+
+    .app{
+        padding:12px;
+    }
+
+    .header{
+        padding:18px;
+        min-height:105px;
+        border-radius:21px;
+    }
+
+    .app-icon{
+        width:52px;
+        height:52px;
+        flex-basis:52px;
+        font-size:24px;
+    }
+
+    .brand h1{
+        font-size:21px;
+    }
+
+    .brand p{
+        font-size:11px;
+    }
+
+    .workflow{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .step-box{
+        grid-template-columns:55px 1fr;
+        border-radius:19px;
+    }
+
+    .step-content{
+        padding:18px;
+    }
+
+    .step-side{
+        padding:20px 7px;
+    }
+
+    .import-grid,
+    .location-grid,
+    .settings-grid,
+    .converter-options,
+    .two-column{
+        grid-template-columns:1fr;
+    }
+
+    .format-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .summary-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:520px){
+
+    .header{
+        align-items:flex-start;
+    }
+
+    .header-actions{
+        position:absolute;
+        right:15px;
+        top:15px;
+    }
+
+    .brand{
+        padding-right:80px;
+    }
+
+    .workflow{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .step-nav{
+        min-height:65px;
+    }
+
+    .step-box{
+        grid-template-columns:47px 1fr;
+    }
+
+    .step-side-number{
+        font-size:19px;
+    }
+
+    .step-content{
+        padding:15px;
+    }
+
+    .step-heading{
+        margin-bottom:15px;
+    }
+
+    .step-heading h2{
+        font-size:18px;
+    }
+
+    .format-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .summary-grid{
+        grid-template-columns:1fr;
+    }
+
+    .confirm-area{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .create-button{
+        width:100%;
+    }
+
+    .file-result{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="app-icon">
+            { }
+        </div>
+
+        <div>
+            <h1>JSON Converter</h1>
+            <p>Readable JSON conversion studio · Fast · Local · Responsive</p>
+        </div>
+
+    </div>
+
+    <div class="header-actions">
+
+        <button
+            class="icon-button"
+            onclick="resetWorkspace()"
+            title="Reset">
+            ↻
+        </button>
+
+        <button
+            id="themeToggleButton"
+            class="theme-control"
+            type="button"
+            onclick="toggleTheme()"
+            title="Switch to light theme"
+            aria-label="Switch theme"
+            aria-pressed="false">
+
+            <span class="theme-icon theme-moon">☾</span>
+
+            <span class="theme-control-track">
+                <span
+                    id="themeThumb"
+                    class="theme-control-thumb">☾</span>
+            </span>
+
+            <span class="theme-icon theme-sun">☀</span>
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<nav class="workflow">
+
+    <button class="step-nav active" onclick="goToStep('importStep')">
+        <span class="step-number">01</span>
+        <span class="step-label">IMPORT</span>
+    </button>
+
+    <button class="step-nav" onclick="goToStep('convertStep')">
+        <span class="step-number">02</span>
+        <span class="step-label">CONVERT</span>
+    </button>
+
+    <button class="step-nav" onclick="goToStep('locationStep')">
+        <span class="step-number">03</span>
+        <span class="step-label">LOCATION</span>
+    </button>
+
+    <button class="step-nav" onclick="goToStep('settingsStep')">
+        <span class="step-number">04</span>
+        <span class="step-label">OUTPUT</span>
+    </button>
+
+    <button class="step-nav" onclick="goToStep('confirmStep')">
+        <span class="step-number">05</span>
+        <span class="step-label">CONFIRM</span>
+    </button>
+
+    <button class="step-nav" onclick="goToStep('createStep')">
+        <span class="step-number">06</span>
+        <span class="step-label">CREATE</span>
+    </button>
+
+</nav>
+
+
+<div class="workspace">
+
+
+<section class="step-box" id="importStep">
+
+    <aside class="step-side">
+        <div class="step-side-number">01</div>
+        <div class="step-side-title">IMPORT</div>
+    </aside>
+
+    <div class="step-content">
+
+        <div class="step-heading">
+            <div>
+                <h2>Import JSON</h2>
+                <p>Load a JSON file or paste JSON. The converter analyzes the structure automatically.</p>
+            </div>
+        </div>
+
+        <div class="import-grid">
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Pick JSON File
+                </div>
+
+                <div
+                    class="drop-zone"
+                    id="dropZone">
+
+                    <div class="upload-icon">↑</div>
+
+                    <h3>Drop JSON file here</h3>
+
+                    <p>
+                        JSON files are parsed locally in your browser.
+                    </p>
+
+                    <label
+                        for="fileInput"
+                        class="primary-btn">
+                        Pick JSON File
+                    </label>
+
+                    <input
+                        id="fileInput"
+                        type="file"
+                        accept=".json,application/json">
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Paste JSON
+                </div>
+
+                <textarea
+                    id="sourceInput"
+                    class="textarea"
+                    placeholder='Paste your JSON here...'></textarea>
+
+                <div class="button-row">
+
+                    <button
+                        class="primary-btn"
+                        onclick="importPastedJSON()">
+                        Import JSON
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="formatSource()">
+                        Format
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="minifySource()">
+                        Minify
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="clearSource()">
+                        Clear
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="status-line">
+
+            <span
+                id="statusDot"
+                class="status-dot"></span>
+
+            <span id="statusText">
+                Waiting for JSON
+            </span>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+                <span>Type</span>
+                <strong id="statType">—</strong>
+            </div>
+
+            <div class="stat">
+                <span>Records</span>
+                <strong id="statRecords">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Objects</span>
+                <strong id="statObjects">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Arrays</span>
+                <strong id="statArrays">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>Size</span>
+                <strong id="statSize">0 B</strong>
+            </div>
+
+        </div>
+
+
+        <div class="preview">
+
+            <div class="preview-head">
+                <strong>Imported JSON Preview</strong>
+
+                <button
+                    class="secondary-btn"
+                    onclick="copySource()">
+                    Copy
+                </button>
+            </div>
+
+            <pre
+                id="sourcePreview"
+                class="preview-code">No JSON imported yet.</pre>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="step-box" id="convertStep">
+
+    <aside class="step-side">
+        <div class="step-side-number">02</div>
+        <div class="step-side-title">CONVERT</div>
+    </aside>
+
+    <div class="step-content">
+
+        <div class="step-heading">
+
+            <div>
+                <h2>Choose Conversion</h2>
+                <p>
+                    Select the format you want. JSON is converted according to the selected format.
+                </p>
+            </div>
+
+            <div class="button-row" style="margin-top:0">
+
+                <button
+                    class="secondary-btn"
+                    onclick="selectAllFormats()">
+                    Select All
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    onclick="clearFormats()">
+                    Clear
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="format-tabs">
+
+            <button
+                class="category-tab active"
+                onclick="filterFormats('all',this)">
+                All
+            </button>
+
+            <button
+                class="category-tab"
+                onclick="filterFormats('data',this)">
+                Data
+            </button>
+
+            <button
+                class="category-tab"
+                onclick="filterFormats('document',this)">
+                Document
+            </button>
+
+            <button
+                class="category-tab"
+                onclick="filterFormats('code',this)">
+                Code
+            </button>
+
+            <button
+                class="category-tab"
+                onclick="filterFormats('database',this)">
+                Database
+            </button>
+
+        </div>
+
+
+        <div
+            id="formatGrid"
+            class="format-grid">
+        </div>
+
+
+        <div class="converter-options">
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Text Conversion Style
+                </div>
+
+                <div class="option-buttons">
+
+                    <button
+                        class="option-btn active"
+                        data-text-style="readable"
+                        onclick="setTextStyle('readable',this)">
+                        Readable
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        data-text-style="full"
+                        onclick="setTextStyle('full',this)">
+                        Full Details
+                    </button>
+
+                </div>
+
+                <p style="
+                    margin-top:10px;
+                    color:var(--muted);
+                    font-size:11px;
+                    line-height:1.6;">
+                    Readable mode keeps meaningful field names and values while hiding
+                    technical metadata and JSON syntax.
+                </p>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Selected Conversion
+                </div>
+
+                <div id="selectedFormatsText"
+                     style="
+                     font-size:13px;
+                     font-weight:800;
+                     color:var(--blue2);">
+                    No format selected
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="preview">
+
+            <div class="preview-head">
+
+                <strong id="conversionPreviewTitle">
+                    Conversion Preview
+                </strong>
+
+                <button
+                    class="secondary-btn"
+                    onclick="copyConversionPreview()">
+                    Copy
+                </button>
+
+            </div>
+
+            <pre
+                id="conversionPreview"
+                class="preview-code">Select a conversion format.</pre>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="step-box" id="locationStep">
+
+    <aside class="step-side">
+        <div class="step-side-number">03</div>
+        <div class="step-side-title">LOCATION</div>
+    </aside>
+
+    <div class="step-content">
+
+        <div class="step-heading">
+            <div>
+                <h2>Location</h2>
+                <p>Pick, enter and save a location for this conversion.</p>
+            </div>
+        </div>
+
+
+        <div class="location-grid">
+
+            <div class="location-display">
+
+                <div class="location-icon">⌖</div>
+
+                <div
+                    id="locationName"
+                    class="location-name">
+                    No location selected
+                </div>
+
+                <div
+                    id="locationData"
+                    class="location-data">
+                    Pick current location or enter coordinates manually.
+                </div>
+
+                <div class="button-row">
+
+                    <button
+                        class="primary-btn"
+                        onclick="pickCurrentLocation()">
+                        Pick Current
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="openLocationModal()">
+                        Manual
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="saveCurrentLocation()">
+                        Save Location
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-title">
+                    Saved Locations
+                </div>
+
+                <div
+                    id="savedLocations"
+                    class="saved-list">
+                    No saved locations.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="step-box" id="settingsStep">
+
+    <aside class="step-side">
+        <div class="step-side-number">04</div>
+        <div class="step-side-title">OUTPUT</div>
+    </aside>
+
+    <div class="step-content">
+
+        <div class="step-heading">
+            <div>
+                <h2>Output Settings</h2>
+                <p>Set filename, numbering and text case before confirmation.</p>
+            </div>
+        </div>
+
+
+        <div class="settings-grid">
+
+            <div class="setting-card">
+
+                <h3>File Name</h3>
+
+                <div class="field">
+
+                    <label>Base name</label>
+
+                    <input
+                        id="filenameInput"
+                        class="input"
+                        value="converted"
+                        oninput="settingsChanged()">
+
+                </div>
+
+                <div class="filename-preview"
+                     id="filenamePreview">
+                    converted.txt
+                </div>
+
+            </div>
+
+
+            <div class="setting-card">
+
+                <h3>Numbering</h3>
+
+                <div class="two-column">
+
+                    <div class="field">
+
+                        <label>Number</label>
+
+                        <input
+                            id="numberInput"
+                            class="input"
+                            type="number"
+                            value="1"
+                            min="0"
+                            oninput="settingsChanged()">
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>Padding</label>
+
+                        <select
+                            id="paddingSelect"
+                            class="select"
+                            onchange="settingsChanged()">
+
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="setting-card">
+
+                <h3>Number Position</h3>
+
+                <div class="option-buttons">
+
+                    <button
+                        class="option-btn active"
+                        data-numbering="after"
+                        onclick="setNumbering('after',this)">
+                        name_001
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        data-numbering="before"
+                        onclick="setNumbering('before',this)">
+                        001_name
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        data-numbering="none"
+                        onclick="setNumbering('none',this)">
+                        None
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="setting-card">
+
+                <h3>Case Style</h3>
+
+                <div class="option-buttons">
+
+                    <button
+                        class="option-btn active"
+                        onclick="setCaseStyle('original',this)">
+                        Original
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        onclick="setCaseStyle('lower',this)">
+                        lowercase
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        onclick="setCaseStyle('upper',this)">
+                        UPPERCASE
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        onclick="setCaseStyle('title',this)">
+                        Title Case
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        onclick="setCaseStyle('snake',this)">
+                        snake_case
+                    </button>
+
+                    <button
+                        class="option-btn"
+                        onclick="setCaseStyle('kebab',this)">
+                        kebab-case
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel" style="margin-top:16px">
+
+            <div class="panel-title">
+                Output Filename Preview
+            </div>
+
+            <div
+                id="allFilenamePreview"
+                style="
+                display:grid;
+                gap:7px;
+                color:var(--muted);
+                font-family:monospace;
+                font-size:11px;">
+                No formats selected.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="step-box" id="confirmStep">
+
+    <aside class="step-side">
+        <div class="step-side-number">05</div>
+        <div class="step-side-title">CONFIRM</div>
+    </aside>
+
+    <div class="step-content">
+
+        <div class="step-heading">
+            <div>
+                <h2>Confirm Settings</h2>
+                <p>Review everything before creating the converted files.</p>
+            </div>
+        </div>
+
+
+        <div class="summary-grid">
+
+            <div class="summary-item">
+                <span>Source</span>
+                <strong id="summarySource">—</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>JSON Type</span>
+                <strong id="summaryType">—</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Records</span>
+                <strong id="summaryRecords">0</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Conversions</span>
+                <strong id="summaryFormats">—</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Filename</span>
+                <strong id="summaryFilename">—</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Location</span>
+                <strong id="summaryLocation">Not selected</strong>
+            </div>
+
+        </div>
+
+
+        <div class="confirm-area">
+
+            <div class="confirm-message">
+
+                <strong id="confirmStatus">
+                    Settings not confirmed
+                </strong>
+
+                Changing conversion or output settings requires confirmation again.
+
+            </div>
+
+            <button
+                id="confirmButton"
+                class="primary-btn"
+                onclick="confirmSettings()">
+                CONFIRM SETTINGS
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="step-box" id="createStep">
+
+    <aside class="step-side">
+        <div class="step-side-number">06</div>
+        <div class="step-side-title">CREATE</div>
+    </aside>
+
+    <div class="step-content">
+
+        <div class="step-heading">
+            <div>
+                <h2>Create & Save</h2>
+                <p>The final conversion is generated only after settings are confirmed.</p>
+            </div>
+        </div>
+
+
+        <div class="create-box">
+
+            <div class="create-icon">✓</div>
+
+            <h3>Ready to Create</h3>
+
+            <p id="createMessage">
+                Confirm your settings first, then create the converted files.
+            </p>
+
+            <button
+                id="createButton"
+                class="create-button"
+                onclick="createConversion()"
+                disabled>
+                CREATE CONVERSION
+            </button>
+
+
+            <div
+                id="progress"
+                class="progress">
+
+                <div class="progress-track">
+
+                    <div
+                        id="progressBar"
+                        class="progress-bar">
+                    </div>
+
+                </div>
+
+                <div
+                    id="progressStatus"
+                    class="progress-status">
+                    Preparing...
+                </div>
+
+            </div>
+
+
+            <div
+                id="createdFiles"
+                class="created-files">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<footer class="footer">
+    JSON Converter · Browser-based local conversion
+</footer>
+
+</div>
+
+
+<div
+    id="locationModal"
+    class="modal">
+
+    <div class="modal-box">
+
+        <h3>Enter Location</h3>
+
+        <p>
+            Enter a name and valid latitude / longitude.
+        </p>
+
+        <div class="location-form">
+
+            <div class="field">
+
+                <label>Name</label>
+
+                <input
+                    id="manualLocationName"
+                    class="input"
+                    placeholder="My Location">
+
+            </div>
+
+            <div class="field">
+
+                <label>Latitude</label>
+
+                <input
+                    id="manualLatitude"
+                    class="input"
+                    type="number"
+                    step="any"
+                    placeholder="31.5204">
+
+            </div>
+
+            <div class="field">
+
+                <label>Longitude</label>
+
+                <input
+                    id="manualLongitude"
+                    class="input"
+                    type="number"
+                    step="any"
+                    placeholder="74.3587">
+
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="closeLocationModal()">
+                Cancel
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="applyManualLocation()">
+                Use Location
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast">
+</div>
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   APPLICATION STATE
+========================================================= */
+
+const state = {
+
+    sourceText:"",
+    data:null,
+    valid:false,
+    filename:"",
+
+    selectedFormats:[],
+
+    textStyle:"readable",
+
+    numbering:"after",
+    caseStyle:"original",
+
+    location:null,
+
+    confirmed:false,
+
+    createdFiles:[],
+
+    currentFilter:"all"
+};
+
+
+/* =========================================================
+   SAFE BROWSER STORAGE
+========================================================= */
+
+const LOCATION_STORAGE_KEY="jsonConverterLocations";
+const THEME_STORAGE_KEY="jsonConverterTheme";
+
+let memoryLocationStore=[];
+let storageWarningShown=false;
+
+
+function safeGetStorage(key,fallback=null){
+
+    try{
+
+        const value=
+            localStorage.getItem(key);
+
+        return value===null
+            ? fallback
+            : value;
+
+    }catch(error){
+
+        return fallback;
+    }
+}
+
+
+function safeSetStorage(key,value){
+
+    try{
+
+        localStorage.setItem(key,value);
+
+        return true;
+
+    }catch(error){
+
+        return false;
+    }
+}
+
+
+function safeRemoveStorage(key){
+
+    try{
+
+        localStorage.removeItem(key);
+
+        return true;
+
+    }catch(error){
+
+        return false;
+    }
+}
+
+
+function readSavedLocations(){
+
+    try{
+
+        const raw=
+            localStorage.getItem(
+                LOCATION_STORAGE_KEY
+            );
+
+        if(!raw){
+
+            return memoryLocationStore.slice();
+        }
+
+        const parsed=
+            JSON.parse(raw);
+
+        if(!Array.isArray(parsed)){
+
+            return memoryLocationStore.slice();
+        }
+
+        memoryLocationStore=
+            parsed.slice();
+
+        return parsed;
+
+    }catch(error){
+
+        return memoryLocationStore.slice();
+    }
+}
+
+
+function writeSavedLocations(list){
+
+    memoryLocationStore=
+        Array.isArray(list)
+            ? list.slice()
+            : [];
+
+    try{
+
+        localStorage.setItem(
+            LOCATION_STORAGE_KEY,
+            JSON.stringify(memoryLocationStore)
+        );
+
+        return true;
+
+    }catch(error){
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   FORMAT DEFINITIONS
+========================================================= */
+
+const formats = [
+
+    {
+        id:"json",
+        name:"JSON",
+        desc:"Original JSON",
+        category:"data",
+        ext:"json",
+        mime:"application/json"
+    },
+
+    {
+        id:"txt",
+        name:"Text",
+        desc:"Readable text",
+        category:"document",
+        ext:"txt",
+        mime:"text/plain"
+    },
+
+    {
+        id:"csv",
+        name:"CSV",
+        desc:"Table data",
+        category:"data",
+        ext:"csv",
+        mime:"text/csv"
+    },
+
+    {
+        id:"tsv",
+        name:"TSV",
+        desc:"Tab separated",
+        category:"data",
+        ext:"tsv",
+        mime:"text/tab-separated-values"
+    },
+
+    {
+        id:"xml",
+        name:"XML",
+        desc:"Structured XML",
+        category:"data",
+        ext:"xml",
+        mime:"application/xml"
+    },
+
+    {
+        id:"yaml",
+        name:"YAML",
+        desc:"Readable YAML",
+        category:"data",
+        ext:"yaml",
+        mime:"text/yaml"
+    },
+
+    {
+        id:"html",
+        name:"HTML",
+        desc:"Web document",
+        category:"document",
+        ext:"html",
+        mime:"text/html"
+    },
+
+    {
+        id:"md",
+        name:"Markdown",
+        desc:"Markdown document",
+        category:"document",
+        ext:"md",
+        mime:"text/markdown"
+    },
+
+    {
+        id:"javascript",
+        name:"JavaScript",
+        desc:"JS source",
+        category:"code",
+        ext:"js",
+        mime:"text/javascript"
+    },
+
+    {
+        id:"typescript",
+        name:"TypeScript",
+        desc:"TS source",
+        category:"code",
+        ext:"ts",
+        mime:"text/typescript"
+    },
+
+    {
+        id:"python",
+        name:"Python",
+        desc:"Python source",
+        category:"code",
+        ext:"py",
+        mime:"text/x-python"
+    },
+
+    {
+        id:"java",
+        name:"Java",
+        desc:"Java source",
+        category:"code",
+        ext:"java",
+        mime:"text/plain"
+    },
+
+    {
+        id:"kotlin",
+        name:"Kotlin",
+        desc:"Kotlin source",
+        category:"code",
+        ext:"kt",
+        mime:"text/plain"
+    },
+
+    {
+        id:"csharp",
+        name:"C#",
+        desc:"C# source",
+        category:"code",
+        ext:"cs",
+        mime:"text/plain"
+    },
+
+    {
+        id:"cpp",
+        name:"C++",
+        desc:"C++ source",
+        category:"code",
+        ext:"cpp",
+        mime:"text/plain"
+    },
+
+    {
+        id:"dart",
+        name:"Dart",
+        desc:"Dart source",
+        category:"code",
+        ext:"dart",
+        mime:"text/plain"
+    },
+
+    {
+        id:"swift",
+        name:"Swift",
+        desc:"Swift source",
+        category:"code",
+        ext:"swift",
+        mime:"text/plain"
+    },
+
+    {
+        id:"sql",
+        name:"SQL",
+        desc:"SQL table",
+        category:"database",
+        ext:"sql",
+        mime:"application/sql"
+    }
+];
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+    loadTheme();
+
+    renderFormats();
+
+    renderSavedLocations();
+
+    setupDropZone();
+
+    updateSettingsPreview();
+
+    updateConfirmation();
+
+});
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function toggleTheme(){
+
+    const isLight=
+        !document.body.classList.contains("light");
+
+    document.body.classList.toggle(
+        "light",
+        isLight
+    );
+
+    safeSetStorage(
+        THEME_STORAGE_KEY,
+        isLight ? "light" : "dark"
+    );
+
+    updateThemeControl();
+}
+
+
+function updateThemeControl(){
+
+    const button=
+        document.getElementById(
+            "themeToggleButton"
+        );
+
+    const thumb=
+        document.getElementById(
+            "themeThumb"
+        );
+
+    if(!button){
+        return;
+    }
+
+    const isLight=
+        document.body.classList.contains("light");
+
+    button.classList.toggle(
+        "is-light",
+        isLight
+    );
+
+    button.setAttribute(
+        "aria-pressed",
+        String(isLight)
+    );
+
+    button.setAttribute(
+        "aria-label",
+        isLight
+            ? "Switch to dark theme"
+            : "Switch to light theme"
+    );
+
+    button.title=
+        isLight
+            ? "Switch to dark theme"
+            : "Switch to light theme";
+
+    if(thumb){
+
+        thumb.textContent=
+            isLight
+                ? "☀"
+                : "☾";
+    }
+}
+
+
+function loadTheme(){
+
+    const saved=
+        safeGetStorage(
+            THEME_STORAGE_KEY,
+            "dark"
+        );
+
+    const isLight=
+        saved==="light";
+
+    document.body.classList.toggle(
+        "light",
+        isLight
+    );
+
+    updateThemeControl();
+}
+
+
+/* =========================================================
+   WORKFLOW
+========================================================= */
+
+function goToStep(id){
+
+    const el=document.getElementById(id);
+
+    if(el){
+
+        el.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+    }
+}
+
+
+/* =========================================================
+   DROP ZONE
+========================================================= */
+
+function setupDropZone(){
+
+    const zone=document.getElementById("dropZone");
+    const input=document.getElementById("fileInput");
+
+    input.addEventListener("change",event=>{
+
+        const file=event.target.files[0];
+
+        if(file){
+
+            readJSONFile(file);
+        }
+    });
+
+
+    ["dragenter","dragover"].forEach(eventName=>{
+
+        zone.addEventListener(eventName,event=>{
+
+            event.preventDefault();
+
+            zone.classList.add("drag");
+        });
+    });
+
+
+    ["dragleave","drop"].forEach(eventName=>{
+
+        zone.addEventListener(eventName,event=>{
+
+            event.preventDefault();
+
+            zone.classList.remove("drag");
+        });
+    });
+
+
+    zone.addEventListener("drop",event=>{
+
+        const file=event.dataTransfer.files[0];
+
+        if(file){
+
+            readJSONFile(file);
+        }
+    });
+}
+
+
+function readJSONFile(file){
+
+    const reader=new FileReader();
+
+    reader.onload=()=>{
+
+        document.getElementById("sourceInput").value =
+            reader.result;
+
+        state.filename =
+            file.name.replace(/\.[^/.]+$/,"");
+
+        importJSON(reader.result);
+
+    };
+
+    reader.onerror=()=>{
+
+        setStatus(
+            "Could not read the selected file.",
+            false
+        );
+    };
+
+    reader.readAsText(file);
+}
+
+
+/* =========================================================
+   IMPORT JSON
+========================================================= */
+
+function importPastedJSON(){
+
+    const text=
+        document.getElementById("sourceInput").value;
+
+    importJSON(text);
+}
+
+
+function importJSON(text){
+
+    if(!text || !text.trim()){
+
+        setStatus(
+            "Please import or paste JSON first.",
+            false
+        );
+
+        return;
+    }
+
+    try{
+
+        const parsed=JSON.parse(text);
+
+        state.sourceText=text;
+        state.data=parsed;
+        state.valid=true;
+
+        state.confirmed=false;
+        state.createdFiles=[];
+
+        analyzeJSON(parsed,text);
+
+        setStatus(
+            "Valid JSON imported successfully.",
+            true
+        );
+
+        updateSourcePreview();
+
+        updateConversionPreview();
+
+        updateConfirmation();
+
+        updateCreateState();
+
+        showToast("JSON imported successfully");
+
+    }catch(error){
+
+        state.valid=false;
+        state.data=null;
+        state.confirmed=false;
+
+        setStatus(
+            "Invalid JSON: " + error.message,
+            false
+        );
+
+        document.getElementById("sourcePreview").textContent =
+            error.message;
+
+        updateConfirmation();
+
+        updateCreateState();
+    }
+}
+
+
+/* =========================================================
+   JSON ANALYSIS
+========================================================= */
+
+function analyzeJSON(data,text){
+
+    let objects=0;
+    let arrays=0;
+
+    function walk(value){
+
+        if(Array.isArray(value)){
+
+            arrays++;
+
+            value.forEach(walk);
+
+        }else if(
+            value &&
+            typeof value==="object"
+        ){
+
+            objects++;
+
+            Object.values(value).forEach(walk);
+        }
+    }
+
+    walk(data);
+
+    let type="Value";
+
+    if(Array.isArray(data)){
+        type="Array";
+    }else if(
+        data &&
+        typeof data==="object"
+    ){
+        type="Object";
+    }else{
+        type=typeof data;
+    }
+
+    let records=0;
+
+    if(Array.isArray(data)){
+        records=data.length;
+    }else if(
+        data &&
+        Array.isArray(data.items)
+    ){
+        records=data.items.length;
+    }else if(
+        data &&
+        Array.isArray(data.records)
+    ){
+        records=data.records.length;
+    }else if(
+        data &&
+        typeof data==="object"
+    ){
+
+        const arrayValue=
+            Object.values(data)
+                .find(value=>Array.isArray(value));
+
+        if(arrayValue){
+            records=arrayValue.length;
+        }
+    }
+
+    document.getElementById("statType").textContent=type;
+    document.getElementById("statRecords").textContent=records;
+    document.getElementById("statObjects").textContent=objects;
+    document.getElementById("statArrays").textContent=arrays;
+    document.getElementById("statSize").textContent=
+        formatBytes(new Blob([text]).size);
+}
+
+
+function formatBytes(bytes){
+
+    if(bytes<1024){
+        return bytes+" B";
+    }
+
+    if(bytes<1024*1024){
+        return (bytes/1024).toFixed(1)+" KB";
+    }
+
+    return (bytes/(1024*1024)).toFixed(1)+" MB";
+}
+
+
+/* =========================================================
+   SOURCE PREVIEW
+========================================================= */
+
+function updateSourcePreview(){
+
+    if(!state.valid){
+
+        document.getElementById("sourcePreview").textContent =
+            "No valid JSON imported.";
+
+        return;
+    }
+
+    document.getElementById("sourcePreview").textContent =
+        JSON.stringify(state.data,null,2);
+}
+
+
+function formatSource(){
+
+    if(!state.valid){
+
+        importPastedJSON();
+
+        return;
+    }
+
+    const formatted=
+        JSON.stringify(state.data,null,2);
+
+    document.getElementById("sourceInput").value=formatted;
+
+    state.sourceText=formatted;
+
+    updateSourcePreview();
+
+    showToast("JSON formatted");
+}
+
+
+function minifySource(){
+
+    if(!state.valid){
+
+        importPastedJSON();
+
+        return;
+    }
+
+    const minified=
+        JSON.stringify(state.data);
+
+    document.getElementById("sourceInput").value=minified;
+
+    state.sourceText=minified;
+
+    updateSourcePreview();
+
+    showToast("JSON minified");
+}
+
+
+function clearSource(){
+
+    document.getElementById("sourceInput").value="";
+
+    state.sourceText="";
+    state.data=null;
+    state.valid=false;
+    state.confirmed=false;
+
+    document.getElementById("sourcePreview").textContent=
+        "No JSON imported yet.";
+
+    document.getElementById("statType").textContent="—";
+    document.getElementById("statRecords").textContent="0";
+    document.getElementById("statObjects").textContent="0";
+    document.getElementById("statArrays").textContent="0";
+    document.getElementById("statSize").textContent="0 B";
+
+    setStatus("Waiting for JSON",false);
+
+    updateConversionPreview();
+    updateConfirmation();
+    updateCreateState();
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(message,good){
+
+    document.getElementById("statusText").textContent=message;
+
+    const dot=document.getElementById("statusDot");
+
+    dot.className="status-dot";
+
+    if(good){
+        dot.classList.add("good");
+    }else{
+        dot.classList.add("bad");
+    }
+}
+
+
+/* =========================================================
+   FORMAT UI
+========================================================= */
+
+function renderFormats(){
+
+    const grid=document.getElementById("formatGrid");
+
+    grid.innerHTML="";
+
+    formats.forEach(format=>{
+
+        const button=document.createElement("button");
+
+        button.className="format-card";
+
+        button.dataset.id=format.id;
+        button.dataset.category=format.category;
+
+        button.innerHTML=`
+            <span class="check">✓</span>
+            <div class="format-name">${format.name}</div>
+            <div class="format-desc">${format.desc}</div>
+        `;
+
+        button.onclick=()=>{
+
+            toggleFormat(format.id);
+
+        };
+
+        grid.appendChild(button);
+
+    });
+
+    refreshFormatSelectionUI();
+}
+
+
+function toggleFormat(id){
+
+    const index=
+        state.selectedFormats.indexOf(id);
+
+    if(index>=0){
+
+        state.selectedFormats.splice(index,1);
+
+    }else{
+
+        state.selectedFormats.push(id);
+    }
+
+    state.confirmed=false;
+
+    refreshFormatSelectionUI();
+
+    updateConversionPreview();
+
+    updateSettingsPreview();
+
+    updateConfirmation();
+
+    updateCreateState();
+}
+
+
+function refreshFormatSelectionUI(){
+
+    document.querySelectorAll(".format-card")
+        .forEach(card=>{
+
+            const selected=
+                state.selectedFormats.includes(
+                    card.dataset.id
+                );
+
+            card.classList.toggle(
+                "selected",
+                selected
+            );
+
+        });
+
+
+    const names=
+        state.selectedFormats
+            .map(id=>
+                formats.find(f=>f.id===id)?.name
+            )
+            .join(", ");
+
+    document.getElementById("selectedFormatsText").textContent =
+        names || "No format selected";
+}
+
+
+function selectAllFormats(){
+
+    state.selectedFormats=
+        formats.map(f=>f.id);
+
+    state.confirmed=false;
+
+    refreshFormatSelectionUI();
+    updateConversionPreview();
+    updateSettingsPreview();
+    updateConfirmation();
+    updateCreateState();
+}
+
+
+function clearFormats(){
+
+    state.selectedFormats=[];
+
+    state.confirmed=false;
+
+    refreshFormatSelectionUI();
+    updateConversionPreview();
+    updateSettingsPreview();
+    updateConfirmation();
+    updateCreateState();
+}
+
+
+function filterFormats(category,button){
+
+    state.currentFilter=category;
+
+    document.querySelectorAll(".category-tab")
+        .forEach(btn=>
+            btn.classList.remove("active")
+        );
+
+    button.classList.add("active");
+
+    document.querySelectorAll(".format-card")
+        .forEach(card=>{
+
+            card.style.display =
+                category==="all" ||
+                card.dataset.category===category
+                    ? ""
+                    : "none";
+        });
+}
+
+
+/* =========================================================
+   TEXT STYLE
+========================================================= */
+
+function setTextStyle(style,button){
+
+    state.textStyle=style;
+
+    document.querySelectorAll(
+        "[data-text-style]"
+    ).forEach(btn=>
+        btn.classList.remove("active")
+    );
+
+    button.classList.add("active");
+
+    state.confirmed=false;
+
+    updateConversionPreview();
+    updateConfirmation();
+    updateCreateState();
+}
+
+
+/* =========================================================
+   SMART JSON -> TEXT
+========================================================= */
+
+/*
+    READABLE MODE:
+    - Keeps the ORIGINAL JSON field name.
+    - Keeps the actual value.
+    - Does not add "Record 1".
+    - Does not add artificial "Text:" / "Name:" labels.
+    - Removes configured technical fields.
+    - Removes null fields.
+    - Keeps nested meaningful objects readable.
+    - Separates array records with one blank line.
+
+    Example:
+
+    firstName: Joe
+    lastName: Jackson
+    gender: male
+    age: 28
+    number: 7349282382
+
+    firstName: James
+    lastName: Smith
+    gender: male
+    age: 32
+    number: 5678568567
+*/
+
+const hiddenReadableFields = new Set([
+    "htmlText",
+    "contentHash",
+    "createdAt",
+    "lastUsedAt",
+    "imageFile",
+    "thumbnailFile",
+    "mimeType",
+    "isPinned",
+    "isFavorite"
+]);
+
+
+function readableLabel(key){
+
+    /*
+       IMPORTANT:
+       Keep the original JSON key exactly.
+
+       Old behavior changed:
+       firstName -> First Name
+
+       New behavior:
+       firstName -> firstName
+    */
+
+    return String(key);
+}
+
+
+function valueToReadable(value){
+
+    if(value===null || value===undefined){
+        return null;
+    }
+
+    if(typeof value==="boolean"){
+        return value ? "Yes" : "No";
+    }
+
+    if(typeof value==="string"){
+        return value;
+    }
+
+    if(typeof value==="number"){
+        return String(value);
+    }
+
+    return JSON.stringify(value,null,2);
+}
+
+
+function findPrimaryText(obj){
+
+    if(!obj || typeof obj!=="object"){
+        return null;
+    }
+
+    const priority=[
+        "plainText",
+        "previewText",
+        "text",
+        "content",
+        "name",
+        "title",
+        "description"
+    ];
+
+    for(const key of priority){
+
+        if(
+            Object.prototype.hasOwnProperty.call(obj,key) &&
+            obj[key]!==null &&
+            obj[key]!==undefined &&
+            String(obj[key]).trim()!==""
+        ){
+
+            return String(obj[key]);
+        }
+    }
+
+    return null;
+}
+
+
+function isTechnicalReadableField(key){
+
+    return hiddenReadableFields.has(
+        String(key)
+    );
+}
+
+
+function appendReadableField(lines,key,value,indent=""){
+
+    if(
+        state.textStyle==="readable" &&
+        isTechnicalReadableField(key)
+    ){
+
+        return;
+    }
+
+    if(
+        value===null ||
+        value===undefined
+    ){
+
+        if(state.textStyle==="full"){
+
+            lines.push(
+                indent+
+                readableLabel(key)+
+                ": None"
+            );
+        }
+
+        return;
+    }
+
+
+    if(Array.isArray(value)){
+
+        value.forEach((item,index)=>{
+
+            if(
+                item &&
+                typeof item==="object"
+            ){
+
+                if(index>0){
+                    lines.push("");
+                }
+
+                appendReadableObject(
+                    lines,
+                    item,
+                    indent
+                );
+
+            }else{
+
+                const scalar=
+                    valueToReadable(item);
+
+                if(scalar!==null){
+
+                    lines.push(
+                        indent+
+                        readableLabel(key)+
+                        ": "+
+                        scalar
+                    );
+                }
+            }
+        });
+
+        return;
+    }
+
+
+    if(
+        value &&
+        typeof value==="object"
+    ){
+
+        lines.push(
+            indent+
+            readableLabel(key)+
+            ":"
+        );
+
+        appendReadableObject(
+            lines,
+            value,
+            indent+"    "
+        );
+
+        return;
+    }
+
+
+    const readable=
+        valueToReadable(value);
+
+    if(readable===null){
+        return;
+    }
+
+
+    if(
+        typeof value==="string" &&
+        value.includes("\n")
+    ){
+
+        lines.push(
+            indent+
+            readableLabel(key)+
+            ":"
+        );
+
+        value
+            .split("\n")
+            .forEach(line=>{
+
+                lines.push(
+                    indent+
+                    "    "+
+                    line
+                );
+            });
+
+        return;
+    }
+
+
+    lines.push(
+        indent+
+        readableLabel(key)+
+        ": "+
+        readable
+    );
+}
+
+
+function appendReadableObject(lines,obj,indent=""){
+
+    if(
+        !obj ||
+        typeof obj!=="object" ||
+        Array.isArray(obj)
+    ){
+
+        return;
+    }
+
+    Object.entries(obj)
+        .forEach(([key,value])=>{
+
+            appendReadableField(
+                lines,
+                key,
+                value,
+                indent
+            );
+
+        });
+}
+
+
+function convertJSONToReadableText(data){
+
+    const lines=[];
+
+
+    /*
+       ARRAY ROOT
+
+       Each object is treated as one readable record.
+       No "Record 1" heading is added.
+    */
+
+    if(Array.isArray(data)){
+
+        data.forEach((item,index)=>{
+
+            if(
+                item &&
+                typeof item==="object" &&
+                !Array.isArray(item)
+            ){
+
+                appendReadableObject(
+                    lines,
+                    item
+                );
+
+            }else{
+
+                const value=
+                    valueToReadable(item);
+
+                if(value!==null){
+
+                    lines.push(
+                        String(value)
+                    );
+                }
+            }
+
+            if(index<data.length-1){
+
+                lines.push("");
+            }
+        });
+
+    }else if(
+        data &&
+        typeof data==="object"
+    ){
+
+        /*
+           If the root object contains an array such as:
+
+           {
+             "people":[
+               {...},
+               {...}
+             ]
+           }
+
+           export the records themselves, without adding:
+
+           people:
+           Record 1
+        */
+
+        const arrayEntry=
+            Object.entries(data)
+                .find(([,value])=>
+                    Array.isArray(value) &&
+                    value.some(item=>
+                        item &&
+                        typeof item==="object" &&
+                        !Array.isArray(item)
+                    )
+                );
+
+
+        if(arrayEntry){
+
+            const arrayValue=
+                arrayEntry[1];
+
+            arrayValue.forEach((item,index)=>{
+
+                if(
+                    item &&
+                    typeof item==="object" &&
+                    !Array.isArray(item)
+                ){
+
+                    appendReadableObject(
+                        lines,
+                        item
+                    );
+
+                }else{
+
+                    const value=
+                        valueToReadable(item);
+
+                    if(value!==null){
+
+                        lines.push(
+                            String(value)
+                        );
+                    }
+                }
+
+                if(index<arrayValue.length-1){
+
+                    lines.push("");
+                }
+            });
+
+
+            /*
+               Also preserve meaningful non-array
+               root fields if they exist.
+            */
+
+            const otherEntries=
+                Object.entries(data)
+                    .filter(([key])=>
+                        key!==arrayEntry[0]
+                    )
+                    .filter(([key,value])=>
+                        !(
+                            state.textStyle==="readable" &&
+                            isTechnicalReadableField(key)
+                        )
+                    )
+                    .filter(([,value])=>
+                        value!==null &&
+                        value!==undefined
+                    );
+
+
+            if(otherEntries.length){
+
+                if(lines.length){
+                    lines.push("");
+                }
+
+                otherEntries.forEach(
+                    ([key,value])=>
+                        appendReadableField(
+                            lines,
+                            key,
+                            value
+                        )
+                );
+            }
+
+        }else{
+
+            appendReadableObject(
+                lines,
+                data
+            );
+        }
+
+    }else{
+
+        const value=
+            valueToReadable(data);
+
+        if(value!==null){
+
+            lines.push(
+                String(value)
+            );
+        }
+    }
+
+
+    return lines
+        .join("\n")
+        .replace(/\n{3,}/g,"\n\n")
+        .trim();
+}
+
+
+/* =========================================================
+   GENERIC FLATTEN
+========================================================= */
+
+function flattenObject(obj,prefix="",out={}){
+
+    Object.entries(obj).forEach(([key,value])=>{
+
+        const fullKey=
+            prefix ? prefix+"."+key : key;
+
+        if(
+            value &&
+            typeof value==="object" &&
+            !Array.isArray(value)
+        ){
+
+            flattenObject(
+                value,
+                fullKey,
+                out
+            );
+
+        }else if(Array.isArray(value)){
+
+            out[fullKey]=
+                JSON.stringify(value);
+
+        }else{
+
+            out[fullKey]=value;
+        }
+    });
+
+    return out;
+}
+
+
+function getRows(data){
+
+    if(Array.isArray(data)){
+
+        return data.map(item=>
+            item && typeof item==="object"
+                ? flattenObject(item)
+                : {value:item}
+        );
+    }
+
+    if(
+        data &&
+        Array.isArray(data.items)
+    ){
+
+        return data.items.map(item=>
+            item && typeof item==="object"
+                ? flattenObject(item)
+                : {value:item}
+        );
+    }
+
+    if(
+        data &&
+        Array.isArray(data.records)
+    ){
+
+        return data.records.map(item=>
+            item && typeof item==="object"
+                ? flattenObject(item)
+                : {value:item}
+        );
+    }
+
+    if(
+        data &&
+        typeof data==="object"
+    ){
+
+        return [flattenObject(data)];
+    }
+
+    return [{value:data}];
+}
+
+
+/* =========================================================
+   CSV / TSV
+========================================================= */
+
+function csvEscape(value){
+
+    if(value===null || value===undefined){
+        return "";
+    }
+
+    const text=String(value);
+
+    if(
+        text.includes(",") ||
+        text.includes('"') ||
+        text.includes("\n")
+    ){
+
+        return '"' +
+            text.replace(/"/g,'""') +
+            '"';
+    }
+
+    return text;
+}
+
+
+function convertCSV(data,separator=","){
+
+    const rows=getRows(data);
+
+    const columns=[
+        ...new Set(
+            rows.flatMap(row=>Object.keys(row))
+        )
+    ];
+
+    const output=[];
+
+    output.push(
+        columns
+            .map(csvEscape)
+            .join(separator)
+    );
+
+    rows.forEach(row=>{
+
+        output.push(
+            columns
+                .map(column=>
+                    csvEscape(row[column])
+                )
+                .join(separator)
+        );
+    });
+
+    return output.join("\n");
+}
+
+
+/* =========================================================
+   XML
+========================================================= */
+
+function xmlEscape(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&apos;");
+}
+
+
+function xmlTag(key){
+
+    let result=
+        String(key)
+        .replace(/[^a-zA-Z0-9_-]/g,"_");
+
+    if(!/^[a-zA-Z_]/.test(result)){
+        result="_"+result;
+    }
+
+    return result || "item";
+}
+
+
+function objectToXML(value,tag="root",level=0){
+
+    const indent="  ".repeat(level);
+
+    if(Array.isArray(value)){
+
+        return value.map(item=>
+            objectToXML(item,"item",level)
+        ).join("\n");
+    }
+
+    if(
+        value &&
+        typeof value==="object"
+    ){
+
+        const inner=Object.entries(value)
+            .map(([key,val])=>
+                objectToXML(
+                    val,
+                    xmlTag(key),
+                    level+1
+                )
+            )
+            .join("\n");
+
+        return `${indent}<${tag}>\n${inner}\n${indent}</${tag}>`;
+    }
+
+    return `${indent}<${tag}>${xmlEscape(value ?? "")}</${tag}>`;
+}
+
+
+function convertXML(data){
+
+    return `<?xml version="1.0" encoding="UTF-8"?>\n` +
+        objectToXML(data);
+}
+
+
+/* =========================================================
+   YAML
+========================================================= */
+
+function yamlScalar(value){
+
+    if(value===null){
+        return "null";
+    }
+
+    if(typeof value==="boolean"){
+        return value ? "true" : "false";
+    }
+
+    if(typeof value==="number"){
+        return String(value);
+    }
+
+    const text=String(value);
+
+    if(
+        text==="" ||
+        /[:#{}\[\],&*?|<>=!%@`]/.test(text) ||
+        /^\s|\s$/.test(text)
+    ){
+
+        return JSON.stringify(text);
+    }
+
+    return text;
+}
+
+
+function convertYAML(data,level=0){
+
+    const indent="  ".repeat(level);
+
+    if(Array.isArray(data)){
+
+        return data.map(item=>{
+
+            if(
+                item &&
+                typeof item==="object"
+            ){
+
+                const nested=
+                    convertYAML(item,level+1);
+
+                return indent+"-\n"+nested;
+
+            }
+
+            return indent+"- "+yamlScalar(item);
+
+        }).join("\n");
+    }
+
+    if(
+        data &&
+        typeof data==="object"
+    ){
+
+        return Object.entries(data)
+            .map(([key,value])=>{
+
+                if(
+                    value &&
+                    typeof value==="object"
+                ){
+
+                    return indent+
+                        key+
+                        ":\n"+
+                        convertYAML(value,level+1);
+
+                }
+
+                return indent+
+                    key+
+                    ": "+
+                    yamlScalar(value);
+
+            })
+            .join("\n");
+    }
+
+    return indent+yamlScalar(data);
+}
+
+
+/* =========================================================
+   MARKDOWN
+========================================================= */
+
+function convertMarkdown(data){
+
+    const rows=getRows(data);
+
+    if(
+        rows.length &&
+        Object.keys(rows[0]).length
+    ){
+
+        const columns=[
+            ...new Set(
+                rows.flatMap(row=>
+                    Object.keys(row)
+                )
+            )
+        ];
+
+        const output=[];
+
+        output.push(
+            "| " +
+            columns.join(" | ") +
+            " |"
+        );
+
+        output.push(
+            "| " +
+            columns.map(()=> "---").join(" | ") +
+            " |"
+        );
+
+        rows.forEach(row=>{
+
+            output.push(
+                "| " +
+                columns.map(column=>
+                    String(
+                        row[column] ?? ""
+                    )
+                    .replace(/\|/g,"\\|")
+                    .replace(/\n/g," ")
+                ).join(" | ") +
+                " |"
+            );
+        });
+
+        return output.join("\n");
+    }
+
+    return "```json\n" +
+        JSON.stringify(data,null,2) +
+        "\n```";
+}
+
+
+/* =========================================================
+   HTML
+========================================================= */
+
+function convertHTML(data){
+
+    const rows=getRows(data);
+
+    const columns=[
+        ...new Set(
+            rows.flatMap(row=>Object.keys(row))
+        )
+    ];
+
+    return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Converted JSON</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+padding:30px;
+background:#f5f7fa;
+color:#182230;
+}
+table{
+border-collapse:collapse;
+width:100%;
+background:white;
+}
+th,td{
+border:1px solid #d8dee8;
+padding:10px;
+text-align:left;
+vertical-align:top;
+}
+th{
+background:#eaf2fb;
+}
+</style>
+</head>
+<body>
+<h1>Converted JSON</h1>
+<table>
+<thead>
+<tr>
+${columns.map(c=>`<th>${xmlEscape(c)}</th>`).join("")}
+</tr>
+</thead>
+<tbody>
+${rows.map(row=>`
+<tr>
+${columns.map(c=>`<td>${xmlEscape(row[c] ?? "")}</td>`).join("")}
+</tr>
+`).join("")}
+</tbody>
+</table>
+</body>
+</html>`;
+}
+
+
+/* =========================================================
+   CODE CONVERTERS
+========================================================= */
+
+function convertJavaScript(data){
+
+    return `const data = ${JSON.stringify(data,null,2)};
+
+export default data;
+`;
+}
+
+
+function convertTypeScript(data){
+
+    return `export const data = ${JSON.stringify(data,null,2)} as const;
+`;
+}
+
+
+function convertPython(data){
+
+    return `import json
+
+data = ${JSON.stringify(data,null,4)}
+
+print(json.dumps(data, indent=4))
+`;
+}
+
+
+function convertJava(data){
+
+    return `import java.util.*;
+
+public class ConvertedData {
+
+    public static void main(String[] args) {
+
+        String json = """
+${JSON.stringify(data,null,2)}
+""";
+
+        System.out.println(json);
+    }
+}
+`;
+}
+
+
+function convertKotlin(data){
+
+    return `fun main() {
+
+    val json = """
+${JSON.stringify(data,null,4)}
+"""
+
+    println(json)
+}
+`;
+}
+
+
+function convertCSharp(data){
+
+    return `using System;
+
+class ConvertedData
+{
+    static void Main()
+    {
+        string json = """
+${JSON.stringify(data,null,4)}
+""";
+
+        Console.WriteLine(json);
+    }
+}
+`;
+}
+
+
+function convertCPP(data){
+
+    return `#include <iostream>
+#include <string>
+
+int main() {
+
+    std::string json = R"JSON(
+${JSON.stringify(data,null,2)}
+)JSON";
+
+    std::cout << json << std::endl;
+
+    return 0;
+}
+`;
+}
+
+
+function convertDart(data){
+
+    return `import 'dart:convert';
+
+void main() {
+
+  final data = ${JSON.stringify(data,null,2)};
+
+  print(jsonEncode(data));
+}
+`;
+}
+
+
+function convertSwift(data){
+
+    return `import Foundation
+
+let json = """
+${JSON.stringify(data,null,2)}
+"""
+
+print(json)
+`;
+}
+
+
+function convertSQL(data){
+
+    const rows=getRows(data);
+
+    const columns=[
+        ...new Set(
+            rows.flatMap(row=>Object.keys(row))
+        )
+    ];
+
+    const safeColumns=
+        columns.map(c=>
+            c.replace(/[^a-zA-Z0-9_]/g,"_")
+        );
+
+    const output=[];
+
+    output.push(
+        `CREATE TABLE converted_data (${safeColumns.map(c=>`
+    ${c} TEXT`).join(",")}
+
+);`
+    );
+
+    rows.forEach(row=>{
+
+        const values=
+            columns.map(c=>
+                "'" +
+                String(row[c] ?? "")
+                    .replace(/'/g,"''") +
+                "'"
+            ).join(", ");
+
+        output.push(
+            `INSERT INTO converted_data (${safeColumns.join(", ")}) VALUES (${values});`
+        );
+    });
+
+    return output.join("\n");
+}
+
+
+/* =========================================================
+   CONVERT DISPATCHER
+========================================================= */
+
+function convertData(format,data){
+
+    switch(format){
+
+        case "json":
+            return JSON.stringify(data,null,2);
+
+        case "txt":
+            return convertJSONToReadableText(data);
+
+        case "csv":
+            return convertCSV(data,",");
+
+        case "tsv":
+            return convertCSV(data,"\t");
+
+        case "xml":
+            return convertXML(data);
+
+        case "yaml":
+            return convertYAML(data);
+
+        case "html":
+            return convertHTML(data);
+
+        case "md":
+            return convertMarkdown(data);
+
+        case "javascript":
+            return convertJavaScript(data);
+
+        case "typescript":
+            return convertTypeScript(data);
+
+        case "python":
+            return convertPython(data);
+
+        case "java":
+            return convertJava(data);
+
+        case "kotlin":
+            return convertKotlin(data);
+
+        case "csharp":
+            return convertCSharp(data);
+
+        case "cpp":
+            return convertCPP(data);
+
+        case "dart":
+            return convertDart(data);
+
+        case "swift":
+            return convertSwift(data);
+
+        case "sql":
+            return convertSQL(data);
+
+        default:
+            return "";
+    }
+}
+
+
+/* =========================================================
+   CONVERSION PREVIEW
+========================================================= */
+
+function updateConversionPreview(){
+
+    const preview=
+        document.getElementById("conversionPreview");
+
+    if(!state.valid){
+
+        preview.textContent=
+            "Import valid JSON first.";
+
+        return;
+    }
+
+    if(state.selectedFormats.length===0){
+
+        preview.textContent=
+            "Select a conversion format.";
+
+        document.getElementById(
+            "conversionPreviewTitle"
+        ).textContent="Conversion Preview";
+
+        return;
+    }
+
+    const id=state.selectedFormats[0];
+
+    const format=
+        formats.find(f=>f.id===id);
+
+    let output="";
+
+    try{
+
+        output=convertData(
+            id,
+            applyCaseTransformToData()
+        );
+
+    }catch(error){
+
+        output=
+            "Conversion error:\n\n" +
+            error.message;
+    }
+
+    document.getElementById(
+        "conversionPreviewTitle"
+    ).textContent=
+        format.name+" Preview";
+
+    preview.textContent=output;
+}
+
+
+function copyConversionPreview(){
+
+    const text=
+        document.getElementById(
+            "conversionPreview"
+        ).textContent;
+
+    if(
+        !text ||
+        text.startsWith("Select a conversion")
+    ){
+
+        return;
+    }
+
+    if(
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ){
+
+        navigator.clipboard
+            .writeText(text)
+            .then(()=>
+                showToast("Preview copied")
+            )
+            .catch(()=>
+                showToast("Could not copy preview")
+            );
+
+    }else{
+
+        showToast("Clipboard is unavailable.");
+    }
+}
+
+
+/* =========================================================
+   CASE TRANSFORMATION
+========================================================= */
+
+function wordsFromString(text){
+
+    return String(text)
+        .replace(/([a-z])([A-Z])/g,"$1 $2")
+        .replace(/[_\-\.]+/g," ")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+}
+
+
+function transformString(text,style){
+
+    const words=wordsFromString(text);
+
+    if(style==="original"){
+        return text;
+    }
+
+    if(style==="lower"){
+        return String(text).toLowerCase();
+    }
+
+    if(style==="upper"){
+        return String(text).toUpperCase();
+    }
+
+    if(style==="title"){
+
+        return words
+            .map(word=>
+                word.charAt(0).toUpperCase()+
+                word.slice(1).toLowerCase()
+            )
+            .join(" ");
+    }
+
+    if(style==="snake"){
+
+        return words
+            .map(word=>word.toLowerCase())
+            .join("_");
+    }
+
+    if(style==="kebab"){
+
+        return words
+            .map(word=>word.toLowerCase())
+            .join("-");
+    }
+
+    return text;
+}
+
+
+function transformKeysAndStrings(value){
+
+    if(Array.isArray(value)){
+
+        return value.map(
+            transformKeysAndStrings
+        );
+    }
+
+    if(
+        value &&
+        typeof value==="object"
+    ){
+
+        const output={};
+
+        Object.entries(value)
+            .forEach(([key,val])=>{
+
+                let newKey=key;
+
+                if(state.caseStyle!=="original"){
+
+                    newKey=
+                        transformString(
+                            key,
+                            state.caseStyle
+                        );
+                }
+
+                output[newKey]=
+                    transformKeysAndStrings(val);
+            });
+
+        return output;
+    }
+
+    return value;
+}
+
+
+function applyCaseTransformToData(){
+
+    return transformKeysAndStrings(state.data);
+}
+
+
+/* =========================================================
+   OUTPUT SETTINGS
+========================================================= */
+
+function setNumbering(style,button){
+
+    state.numbering=style;
+
+    document.querySelectorAll(
+        "[data-numbering]"
+    ).forEach(btn=>
+        btn.classList.remove("active")
+    );
+
+    button.classList.add("active");
+
+    settingsChanged();
+}
+
+
+function setCaseStyle(style,button){
+
+    state.caseStyle=style;
+
+    const parent=button.parentElement;
+
+    parent.querySelectorAll(".option-btn")
+        .forEach(btn=>
+            btn.classList.remove("active")
+        );
+
+    button.classList.add("active");
+
+    settingsChanged();
+
+    updateConversionPreview();
+}
+
+
+function settingsChanged(){
+
+    state.confirmed=false;
+
+    updateSettingsPreview();
+    updateConfirmation();
+    updateCreateState();
+}
+
+
+function buildNumber(){
+
+    const number=
+        Number(
+            document.getElementById(
+                "numberInput"
+            ).value || 1
+        );
+
+    const padding=
+        Number(
+            document.getElementById(
+                "paddingSelect"
+            ).value || 3
+        );
+
+    return String(number).padStart(
+        padding,
+        "0"
+    );
+}
+
+
+function buildBaseFilename(){
+
+    let name=
+        document.getElementById(
+            "filenameInput"
+        ).value.trim();
+
+    if(!name){
+        name="converted";
+    }
+
+    name=name.replace(
+        /[\\/:*?"<>|]+/g,
+        "_"
+    );
+
+    if(state.caseStyle!=="original"){
+
+        name=
+            transformString(
+                name,
+                state.caseStyle
+            );
+    }
+
+    const number=buildNumber();
+
+    if(state.numbering==="after"){
+
+        return name+"_"+number;
+    }
+
+    if(state.numbering==="before"){
+
+        return number+"_"+name;
+    }
+
+    return name;
+}
+
+
+function updateSettingsPreview(){
+
+    const base=buildBaseFilename();
+
+    const preview=
+        document.getElementById(
+            "allFilenamePreview"
+        );
+
+    const singlePreview=
+        document.getElementById(
+            "filenamePreview"
+        );
+
+    if(state.selectedFormats.length===0){
+
+        preview.textContent=
+            "No formats selected.";
+
+        singlePreview.textContent=
+            base+".txt";
+
+        return;
+    }
+
+    preview.innerHTML=
+        state.selectedFormats
+            .map(id=>{
+
+                const f=
+                    formats.find(
+                        item=>item.id===id
+                    );
+
+                return `
+                    <div>
+                        ${base}.${f.ext}
+                    </div>
+                `;
+            })
+            .join("");
+
+    const first=
+        formats.find(
+            f=>f.id===state.selectedFormats[0]
+        );
+
+    singlePreview.textContent=
+        base+"."+first.ext;
+}
+
+
+/* =========================================================
+   CONFIRMATION
+========================================================= */
+
+function updateConfirmation(){
+
+    document.getElementById(
+        "summarySource"
+    ).textContent=
+        state.filename || "Pasted JSON";
+
+    document.getElementById(
+        "summaryType"
+    ).textContent=
+        document.getElementById(
+            "statType"
+        ).textContent;
+
+    document.getElementById(
+        "summaryRecords"
+    ).textContent=
+        document.getElementById(
+            "statRecords"
+        ).textContent;
+
+    document.getElementById(
+        "summaryFormats"
+    ).textContent=
+        state.selectedFormats
+            .map(id=>
+                formats.find(f=>f.id===id)?.name
+            )
+            .join(", ") || "None";
+
+    document.getElementById(
+        "summaryFilename"
+    ).textContent=
+        buildBaseFilename();
+
+    document.getElementById(
+        "summaryLocation"
+    ).textContent=
+        state.location
+            ? state.location.name
+            : "Not selected";
+
+
+    const status=
+        document.getElementById(
+            "confirmStatus"
+        );
+
+    const button=
+        document.getElementById(
+            "confirmButton"
+        );
+
+    if(state.confirmed){
+
+        status.textContent=
+            "Settings confirmed ✓";
+
+        button.textContent=
+            "CONFIRMED ✓";
+
+        button.className=
+            "success-btn";
+
+    }else{
+
+        status.textContent=
+            "Settings not confirmed";
+
+        button.textContent=
+            "CONFIRM SETTINGS";
+
+        button.className=
+            "primary-btn";
+    }
+}
+
+
+function confirmSettings(){
+
+    if(!state.valid){
+
+        showToast("Import valid JSON first.");
+
+        return;
+    }
+
+    if(state.selectedFormats.length===0){
+
+        showToast("Select at least one conversion format.");
+
+        goToStep("convertStep");
+
+        return;
+    }
+
+    state.confirmed=true;
+
+    updateConfirmation();
+    updateCreateState();
+
+    showToast("Settings confirmed");
+
+    setTimeout(()=>
+        goToStep("createStep"),
+        250
+    );
+}
+
+
+function updateCreateState(){
+
+    const button=
+        document.getElementById(
+            "createButton"
+        );
+
+    const message=
+        document.getElementById(
+            "createMessage"
+        );
+
+    const ready=
+        state.valid &&
+        state.selectedFormats.length>0 &&
+        state.confirmed;
+
+    button.disabled=!ready;
+
+    if(ready){
+
+        message.textContent=
+            "Everything is ready. Create the selected converted files.";
+
+    }else if(!state.valid){
+
+        message.textContent=
+            "Import valid JSON before creating.";
+
+    }else if(state.selectedFormats.length===0){
+
+        message.textContent=
+            "Select at least one conversion format.";
+
+    }else{
+
+        message.textContent=
+            "Confirm settings first, then create the converted files.";
+    }
+}
+
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+function pickCurrentLocation(){
+
+    if(!navigator.geolocation){
+
+        showToast(
+            "Geolocation is not available in this browser. Use Manual instead."
+        );
+
+        return;
+    }
+
+    showToast("Requesting current location...");
+
+    navigator.geolocation.getCurrentPosition(
+
+        position=>{
+
+            const coords=
+                position.coords;
+
+            state.location={
+
+                name:"Current Location",
+
+                latitude:Number(
+                    coords.latitude
+                ),
+
+                longitude:Number(
+                    coords.longitude
+                ),
+
+                accuracy:
+                    Number.isFinite(coords.accuracy)
+                        ? Number(coords.accuracy)
+                        : null,
+
+                timestamp:Date.now()
+            };
+
+            renderLocation();
+
+            updateConfirmation();
+
+            state.confirmed=false;
+
+            updateCreateState();
+
+            showToast("Current location selected");
+
+        },
+
+        error=>{
+
+            let message=
+                "Could not get current location.";
+
+            if(error.code===1){
+
+                message=
+                    "Location permission was denied. You can still use Manual location.";
+            }
+
+            if(error.code===2){
+
+                message=
+                    "Current location is unavailable. You can still use Manual location.";
+            }
+
+            if(error.code===3){
+
+                message=
+                    "Location request timed out. You can still use Manual location.";
+            }
+
+            showToast(message);
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000,
+            maximumAge:0
+        }
+    );
+}
+
+
+function openLocationModal(){
+
+    document.getElementById(
+        "locationModal"
+    ).classList.add("show");
+}
+
+
+function closeLocationModal(){
+
+    document.getElementById(
+        "locationModal"
+    ).classList.remove("show");
+}
+
+
+function applyManualLocation(){
+
+    const name=
+        document.getElementById(
+            "manualLocationName"
+        ).value.trim() ||
+        "Manual Location";
+
+    const latitude=
+        Number(
+            document.getElementById(
+                "manualLatitude"
+            ).value
+        );
+
+    const longitude=
+        Number(
+            document.getElementById(
+                "manualLongitude"
+            ).value
+        );
+
+    if(
+        !Number.isFinite(latitude) ||
+        latitude < -90 ||
+        latitude > 90
+    ){
+
+        showToast("Latitude must be between -90 and 90.");
+
+        return;
+    }
+
+    if(
+        !Number.isFinite(longitude) ||
+        longitude < -180 ||
+        longitude > 180
+    ){
+
+        showToast("Longitude must be between -180 and 180.");
+
+        return;
+    }
+
+    state.location={
+
+        name:name,
+
+        latitude:latitude,
+
+        longitude:longitude,
+
+        accuracy:null,
+
+        timestamp:Date.now()
+    };
+
+    closeLocationModal();
+
+    renderLocation();
+
+    state.confirmed=false;
+
+    updateConfirmation();
+    updateCreateState();
+
+    showToast("Manual location selected");
+}
+
+
+function renderLocation(){
+
+    if(!state.location){
+
+        document.getElementById(
+            "locationName"
+        ).textContent=
+            "No location selected";
+
+        document.getElementById(
+            "locationData"
+        ).textContent=
+            "Pick current location or enter coordinates manually.";
+
+        return;
+    }
+
+    const location=state.location;
+
+    document.getElementById(
+        "locationName"
+    ).textContent=
+        location.name;
+
+    const accuracyText=
+        location.accuracy !== null &&
+        Number.isFinite(Number(location.accuracy))
+            ? "Accuracy: "+
+              Number(location.accuracy).toFixed(1)+
+              " m<br>"
+            : "";
+
+    document.getElementById(
+        "locationData"
+    ).innerHTML=
+        `Latitude: ${escapeHTML(location.latitude)}<br>
+         Longitude: ${escapeHTML(location.longitude)}<br>
+         ${accuracyText}
+         Selected: ${escapeHTML(new Date(location.timestamp).toLocaleString())}`;
+}
+
+
+function saveCurrentLocation(){
+
+    if(!state.location){
+
+        showToast(
+            "Select a location before saving."
+        );
+
+        return;
+    }
+
+
+    const current={
+        id:
+            Date.now()+
+            Math.floor(Math.random()*1000),
+
+        name:String(
+            state.location.name ||
+            "Saved Location"
+        ),
+
+        latitude:Number(
+            state.location.latitude
+        ),
+
+        longitude:Number(
+            state.location.longitude
+        ),
+
+        accuracy:
+            state.location.accuracy === null ||
+            state.location.accuracy === undefined
+                ? null
+                : Number(state.location.accuracy),
+
+        timestamp:
+            Number(state.location.timestamp) ||
+            Date.now()
+    };
+
+
+    let saved=
+        readSavedLocations();
+
+
+    /*
+       If the same location already exists,
+       update it instead of creating endless duplicates.
+    */
+
+    const existingIndex=
+        saved.findIndex(location=>
+            Number(location.latitude)===current.latitude &&
+            Number(location.longitude)===current.longitude &&
+            String(location.name)===current.name
+        );
+
+
+    if(existingIndex>=0){
+
+        saved[existingIndex]={
+            ...saved[existingIndex],
+            ...current
+        };
+
+    }else{
+
+        saved.push(current);
+    }
+
+
+    const persisted=
+        writeSavedLocations(saved);
+
+    renderSavedLocations();
+
+
+    if(persisted){
+
+        showToast("Location saved");
+
+    }else{
+
+        showToast(
+            "Location saved for this session. Browser storage is blocked."
+        );
+    }
+}
+
+
+function renderSavedLocations(){
+
+    const container=
+        document.getElementById(
+            "savedLocations"
+        );
+
+    const saved=
+        readSavedLocations();
+
+
+    if(!saved.length){
+
+        container.textContent=
+            "No saved locations.";
+
+        return;
+    }
+
+
+    container.innerHTML="";
+
+
+    saved
+        .slice()
+        .reverse()
+        .forEach(location=>{
+
+            const row=
+                document.createElement("div");
+
+            row.className=
+                "saved-location";
+
+
+            const info=
+                document.createElement("div");
+
+            info.className=
+                "saved-location-info";
+
+
+            const name=
+                document.createElement("strong");
+
+            name.textContent=
+                location.name ||
+                "Saved Location";
+
+
+            const coordinates=
+                document.createElement("span");
+
+            coordinates.textContent=
+                `${location.latitude}, ${location.longitude}`;
+
+
+            info.appendChild(name);
+            info.appendChild(coordinates);
+
+
+            const actions=
+                document.createElement("div");
+
+            actions.className=
+                "button-row";
+
+            actions.style.marginTop="0";
+
+
+            const loadButton=
+                document.createElement("button");
+
+            loadButton.className=
+                "secondary-btn";
+
+            loadButton.textContent=
+                "Load";
+
+            loadButton.type="button";
+
+            loadButton.onclick=()=>
+                loadSavedLocation(location.id);
+
+
+            const deleteButton=
+                document.createElement("button");
+
+            deleteButton.className=
+                "danger-btn";
+
+            deleteButton.textContent=
+                "Delete";
+
+            deleteButton.type="button";
+
+            deleteButton.onclick=()=>
+                deleteSavedLocation(location.id);
+
+
+            actions.appendChild(loadButton);
+            actions.appendChild(deleteButton);
+
+            row.appendChild(info);
+            row.appendChild(actions);
+
+            container.appendChild(row);
+        });
+}
+
+
+function loadSavedLocation(id){
+
+    const saved=
+        readSavedLocations();
+
+    const location=
+        saved.find(
+            item=>String(item.id)===String(id)
+        );
+
+    if(!location){
+
+        showToast("Saved location was not found.");
+
+        return;
+    }
+
+
+    state.location={
+        name:
+            String(
+                location.name ||
+                "Saved Location"
+            ),
+
+        latitude:
+            Number(location.latitude),
+
+        longitude:
+            Number(location.longitude),
+
+        accuracy:
+            location.accuracy === null ||
+            location.accuracy === undefined
+                ? null
+                : Number(location.accuracy),
+
+        timestamp:
+            Number(location.timestamp) ||
+            Date.now()
+    };
+
+
+    renderLocation();
+
+    state.confirmed=false;
+
+    updateConfirmation();
+    updateCreateState();
+
+    showToast("Location loaded");
+}
+
+
+function deleteSavedLocation(id){
+
+    let saved=
+        readSavedLocations();
+
+
+    saved=
+        saved.filter(
+            location=>
+                String(location.id)!==String(id)
+        );
+
+
+    const persisted=
+        writeSavedLocations(saved);
+
+    renderSavedLocations();
+
+
+    if(persisted){
+
+        showToast("Location deleted");
+
+    }else{
+
+        showToast(
+            "Location deleted for this session. Browser storage is blocked."
+        );
+    }
+}
+
+
+/* =========================================================
+   CREATE
+========================================================= */
+
+async function createConversion(){
+
+    if(
+        !state.valid ||
+        !state.confirmed ||
+        !state.selectedFormats.length
+    ){
+
+        return;
+    }
+
+    const progress=
+        document.getElementById("progress");
+
+    const bar=
+        document.getElementById("progressBar");
+
+    const status=
+        document.getElementById("progressStatus");
+
+    const created=
+        document.getElementById("createdFiles");
+
+    created.innerHTML="";
+
+    progress.classList.add("show");
+
+    state.createdFiles=[];
+
+    const start=performance.now();
+
+    const transformed=
+        applyCaseTransformToData();
+
+
+    const stages=[
+        ["Validating JSON",15],
+        ["Preparing conversion",30],
+        ["Converting",55],
+        ["Finalizing files",80],
+        ["Complete",100]
+    ];
+
+
+    for(const stage of stages){
+
+        status.textContent=stage[0];
+
+        bar.style.width=
+            stage[1]+"%";
+
+        await delay(
+            stage[1]===100 ? 250 : 220
+        );
+    }
+
+
+    for(const id of state.selectedFormats){
+
+        const format=
+            formats.find(
+                f=>f.id===id
+            );
+
+        const content=
+            convertData(
+                id,
+                transformed
+            );
+
+        const filename=
+            buildBaseFilename() +
+            "." +
+            format.ext;
+
+        state.createdFiles.push({
+
+            id:id,
+
+            format:format.name,
+
+            filename:filename,
+
+            content:content,
+
+            mime:format.mime,
+
+            size:new Blob([content]).size
+        });
+    }
+
+
+    const elapsed=
+        Math.round(
+            performance.now()-start
+        );
+
+
+    renderCreatedFiles();
+
+    status.textContent=
+        `Created ${state.createdFiles.length} file(s) in ${elapsed} ms.`;
+
+    showToast("Conversion completed");
+}
+
+
+function delay(ms){
+
+    return new Promise(
+        resolve=>setTimeout(resolve,ms)
+    );
+}
+
+
+function renderCreatedFiles(){
+
+    const container=
+        document.getElementById(
+            "createdFiles"
+        );
+
+    container.innerHTML="";
+
+    state.createdFiles.forEach((file,index)=>{
+
+        const row=
+            document.createElement("div");
+
+        row.className="file-result";
+
+        row.innerHTML=`
+
+            <div>
+                <strong>
+                    ${escapeHTML(file.filename)}
+                </strong>
+
+                <span>
+                    ${escapeHTML(file.format)} ·
+                    ${formatBytes(file.size)}
+                </span>
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="downloadCreated(${index})">
+                Save File
+            </button>
+
+        `;
+
+        container.appendChild(row);
+    });
+
+
+    if(state.createdFiles.length>0){
+
+        const downloadAll=
+            document.createElement("button");
+
+        downloadAll.className=
+            "secondary-btn";
+
+        downloadAll.textContent=
+            "Save All Files";
+
+        downloadAll.onclick=
+            downloadAllFiles;
+
+        container.appendChild(downloadAll);
+    }
+}
+
+
+function downloadCreated(index){
+
+    const file=
+        state.createdFiles[index];
+
+    if(!file){
+        return;
+    }
+
+    const blob=
+        new Blob(
+            [file.content],
+            {type:file.mime}
+        );
+
+    const url=
+        URL.createObjectURL(blob);
+
+    const anchor=
+        document.createElement("a");
+
+    anchor.href=url;
+    anchor.download=file.filename;
+
+    document.body.appendChild(anchor);
+
+    anchor.click();
+
+    anchor.remove();
+
+    setTimeout(()=>
+        URL.revokeObjectURL(url),
+        1000
+    );
+
+    showToast(
+        "Saved "+file.filename
+    );
+}
+
+
+async function downloadAllFiles(){
+
+    for(
+        let i=0;
+        i<state.createdFiles.length;
+        i++
+    ){
+
+        downloadCreated(i);
+
+        await delay(300);
+    }
+}
+
+
+/* =========================================================
+   COPY SOURCE
+========================================================= */
+
+function copySource(){
+
+    if(!state.sourceText){
+
+        showToast("Nothing to copy.");
+
+        return;
+    }
+
+    if(
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ){
+
+        navigator.clipboard
+            .writeText(state.sourceText)
+            .then(()=>
+                showToast("JSON copied")
+            )
+            .catch(()=>
+                showToast("Could not copy JSON")
+            );
+
+    }else{
+
+        showToast("Clipboard is unavailable.");
+    }
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetWorkspace(){
+
+    state.sourceText="";
+    state.data=null;
+    state.valid=false;
+    state.filename="";
+    state.selectedFormats=[];
+    state.confirmed=false;
+    state.createdFiles=[];
+    state.location=null;
+    state.textStyle="readable";
+    state.numbering="after";
+    state.caseStyle="original";
+
+    document.getElementById(
+        "sourceInput"
+    ).value="";
+
+    document.getElementById(
+        "filenameInput"
+    ).value="converted";
+
+    document.getElementById(
+        "numberInput"
+    ).value="1";
+
+    document.getElementById(
+        "sourcePreview"
+    ).textContent=
+        "No JSON imported yet.";
+
+    document.getElementById(
+        "conversionPreview"
+    ).textContent=
+        "Import valid JSON first.";
+
+    document.getElementById(
+        "createdFiles"
+    ).innerHTML="";
+
+    document.getElementById(
+        "progress"
+    ).classList.remove("show");
+
+    document.getElementById(
+        "progressBar"
+    ).style.width="0";
+
+    document.getElementById(
+        "statType"
+    ).textContent="—";
+
+    document.getElementById(
+        "statRecords"
+    ).textContent="0";
+
+    document.getElementById(
+        "statObjects"
+    ).textContent="0";
+
+    document.getElementById(
+        "statArrays"
+    ).textContent="0";
+
+    document.getElementById(
+        "statSize"
+    ).textContent="0 B";
+
+    document.getElementById(
+        "locationName"
+    ).textContent=
+        "No location selected";
+
+    document.getElementById(
+        "locationData"
+    ).textContent=
+        "Pick current location or enter coordinates manually.";
+
+    document.getElementById(
+        "selectedFormatsText"
+    ).textContent=
+        "No format selected";
+
+    document.querySelectorAll(
+        "[data-text-style]"
+    ).forEach(button=>{
+
+        button.classList.toggle(
+            "active",
+            button.dataset.textStyle==="readable"
+        );
+    });
+
+    document.querySelectorAll(
+        "[data-numbering]"
+    ).forEach(button=>{
+
+        button.classList.toggle(
+            "active",
+            button.dataset.numbering==="after"
+        );
+    });
+
+    const caseButtons=
+        document.querySelectorAll(
+            ".setting-card .option-buttons"
+        );
+
+    if(caseButtons.length){
+
+        const caseGroup=
+            caseButtons[caseButtons.length-1];
+
+        caseGroup
+            .querySelectorAll(".option-btn")
+            .forEach((button,index)=>
+                button.classList.toggle(
+                    "active",
+                    index===0
+                )
+            );
+    }
+
+    renderFormats();
+
+    updateSettingsPreview();
+    updateConfirmation();
+    updateCreateState();
+
+    setStatus(
+        "Waiting for JSON",
+        false
+    );
+
+    showToast("Workspace reset");
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer=null;
+
+function showToast(message){
+
+    const toast=
+        document.getElementById("toast");
+
+    toast.textContent=message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer=
+        setTimeout(()=>
+            toast.classList.remove("show"),
+            2400
+        );
+}
+
+</script>
+
+</body>
+</html>
